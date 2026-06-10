@@ -39,7 +39,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-aarch64-linux-gnu libc6-dev-arm64-cross
       - name: Install build deps
-        run: sudo apt-get update && sudo apt-get install -y cmake pkg-config libclang-dev
+        run: sudo apt-get update && sudo apt-get install -y cmake pkg-config libelf-dev libclang-dev zlib1g-dev
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
