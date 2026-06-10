@@ -14,7 +14,7 @@ anyhow = "1"
 thiserror = "1"
 clap = { version = "4", features = ["derive"] }
 libbpf-rs = "0.26"
-plain = "1"
+plain = "0.2"
 toml = "0.8"
 uuid = { version = "1", features = ["v4"] }
 libbpf-cargo = { version = "0.22", optional = true }

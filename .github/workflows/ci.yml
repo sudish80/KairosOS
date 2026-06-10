@@ -49,8 +49,15 @@ jobs:
         run: cargo fmt --all --check
         working-directory: src
       - name: Clippy (deny warnings)
-        run: cargo clippy --workspace --all-targets -- -D warnings
+        run: |
+          cargo clippy --workspace --all-targets -- -D warnings 2> clippy_output.txt || (cat clippy_output.txt; exit 1)
         working-directory: src
+      - name: Upload clippy output
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clippy-output-${{ matrix.target }}
+          path: src/clippy_output.txt
       - name: Build (release)
         run: cargo build --release --workspace
         working-directory: src
