@@ -1,0 +1,26 @@
+#!/bin/bash
+# 044: THP De-fragmentation Governor
+# Triggers aggressive page compaction during idle, low-temperature phases.
+set -euo pipefail
+
+ACTION="${1:-status}"
+
+case "$ACTION" in
+    compact)
+        echo 1 > /proc/sys/vm/compact_memory 2>/dev/null || true
+        echo "Memory compaction triggered"
+        ;;
+    defrag_always)
+        echo "always" > /sys/kernel/mm/transparent_hugepage/defrag 2>/dev/null || true
+        echo "THP defrag: always"
+        ;;
+    defrag_defer)
+        echo "defer" > /sys/kernel/mm/transparent_hugepage/defrag 2>/dev/null || true
+        echo "THP defrag: defer"
+        ;;
+    status)
+        echo "THP: $(cat /sys/kernel/mm/transparent_hugepage/enabled 2>/dev/null)"
+        echo "Defrag: $(cat /sys/kernel/mm/transparent_hugepage/defrag 2>/dev/null)"
+        echo "khugepaged pages: $(cat /sys/kernel/mm/transparent_hugepage/khugepaged/pages_to_scan 2>/dev/null)"
+        ;;
+esac

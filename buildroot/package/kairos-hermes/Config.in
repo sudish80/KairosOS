@@ -1,0 +1,12 @@
+config BR2_PACKAGE_KAIROS_HERMES
+	bool "kairos-hermes"
+	select BR2_PACKAGE_PYTHON3
+	select BR2_PACKAGE_PYTHON_PIP
+	select BR2_PACKAGE_PYTHON_SETUPTOOLS
+	select BR2_PACKAGE_PYTHON_WHEEL
+	select BR2_PACKAGE_NODEJS
+	select BR2_PACKAGE_GIT
+	select BR2_PACKAGE_CURL
+	help
+	  Kairos Hermes Agent integration package.
+	  Installs Hermes Agent as the primary AI assistant.

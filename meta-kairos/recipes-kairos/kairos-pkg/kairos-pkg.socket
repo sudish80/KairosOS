@@ -1,0 +1,12 @@
+[Unit]
+Description=KairosOS PKG MCP Socket
+Documentation=https://kairosos.org/docs/services/pkg
+
+[Socket]
+ListenStream=/run/kairos/pkg.sock
+SocketMode=0660
+DirectoryMode=0755
+RemoveOnStop=true
+
+[Install]
+WantedBy=sockets.target

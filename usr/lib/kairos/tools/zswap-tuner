@@ -1,0 +1,29 @@
+#!/bin/bash
+# 027/037: Zswap Compression Tuner
+set -euo pipefail
+
+ACTION="${1:-status}"
+ALGO="${2:-lz4}"
+
+case "$ACTION" in
+    lz4|zstd|lzo|deflate)
+        echo "$ALGO" > /sys/module/zswap/parameters/compressor 2>/dev/null || {
+            echo "Zswap not loaded or parameter unavailable"
+            echo "Try: modprobe zswap && echo $ALGO > /sys/module/zswap/parameters/compressor"
+        }
+        echo "Zswap compressor set to $ALGO"
+        ;;
+    status)
+        echo "=== Zswap Status ==="
+        for param in enabled compressor max_pool_percent same_filled_pages_enabled; do
+            val=$(cat /sys/module/zswap/parameters/$param 2>/dev/null || echo "N/A")
+            echo "  $param: $val"
+        done
+        if [ -f /sys/kernel/debug/zswap/total_size_bytes ]; then
+            echo "  Total size: $(cat /sys/kernel/debug/zswap/total_size_bytes 2>/dev/null) bytes"
+        fi
+        ;;
+    *)
+        echo "Usage: $0 <lz4|zstd|lzo|deflate|status>"
+        ;;
+esac

@@ -1,0 +1,20 @@
+#!/bin/bash
+# 001: Interrupt Line Affinity Steering
+# Binds high-speed peripheral IRQs to performance cores, isolating from AI inference paths.
+set -euo pipefail
+
+PERF_CORES="${1:-0-3}"
+IRQ_LIST="${2:-}"
+
+if [ -z "$IRQ_LIST" ]; then
+    IRQ_LIST=$(ls /proc/irq/ | grep -E '^[0-9]+$')
+fi
+
+for irq in $IRQ_LIST; do
+    irq_path="/proc/irq/$irq"
+    if [ -f "$irq_path/smp_affinity" ]; then
+        echo "$PERF_CORES" > "$irq_path/smp_affinity" 2>/dev/null || true
+    fi
+done
+
+echo "IRQs $IRQ_LIST bound to cores $PERF_CORES"

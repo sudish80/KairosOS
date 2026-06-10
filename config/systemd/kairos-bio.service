@@ -1,0 +1,10 @@
+[Unit]
+Description=DNA/RNA sequence analysis and genomics pipeline
+After=network.target
+[Service]
+ExecStart=/usr/bin/kairos-bio
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

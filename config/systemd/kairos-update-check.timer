@@ -1,0 +1,11 @@
+[Unit]
+Description=KairosOS daily OTA update check
+Documentation=https://kairosos.org/docs/ota
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+RandomizedDelaySec=3600
+
+[Install]
+WantedBy=timers.target

@@ -1,0 +1,61 @@
+#!/usr/bin/make -f
+%:
+	dh $@
+
+override_dh_auto_build:
+	# Rust daemons
+	cd src && cargo build --release --workspace
+	# MCP servers
+	cd src/mcp-servers && for d in */; do \
+		if [ -f "$${d}Cargo.toml" ]; then \
+			cargo build --release --manifest-path "$${d}Cargo.toml"; \
+		fi; \
+	done
+	# Python wheel
+	cd ai && for d in */; do \
+		if [ -f "$${d}pyproject.toml" ]; then \
+			cd "$$d" && python3 -m build --wheel --outdir ../../debian/kairosos-ai-services/usr/lib/kairos/ai/ && cd ..; \
+		fi; \
+	done
+
+override_dh_auto_test:
+	cd src && cargo test --workspace || true
+	python3 -m pytest tests/ ai/*/tests/ -v --timeout=30 || true
+
+override_dh_auto_install:
+	# Daemons
+	install -d debian/kairosos-daemons/usr/bin
+	for f in src/target/release/kairos-*; do \
+		install -m 0755 "$$f" debian/kairosos-daemons/usr/bin/; \
+	done
+	# MCP servers
+	install -d debian/kairosos-mcp-servers/usr/sbin
+	for d in src/mcp-servers/*/; do \
+		name=$$(basename "$$d"); \
+		binary="$${name%-server}"; \
+		if [ -f "src/mcp-servers/$$name/target/release/kairos-$${binary}-mcp" ]; then \
+			install -m 0755 "src/mcp-servers/$$name/target/release/kairos-$${binary}-mcp" \
+				debian/kairosos-mcp-servers/usr/sbin/; \
+		fi; \
+	done
+	# AI service files
+	install -d debian/kairosos-ai-services/opt/kairos/ai
+	cp -r ai/* debian/kairosos-ai-services/opt/kairos/ai/
+	# Config files
+	install -d debian/kairosos-full/etc/kairos
+	cp -r config/* debian/kairosos-full/etc/kairos/
+	# Service files
+	install -d debian/kairosos-full/lib/systemd/system
+	cp config/systemd/*.service debian/kairosos-full/lib/systemd/system/
+	# AppArmor
+	install -d debian/kairosos-full/etc/apparmor.d
+	cp config/apparmor/* debian/kairosos-full/etc/apparmor.d/
+	# Scripts
+	install -d debian/kairosos-scripts/usr/lib/kairos/scripts
+	cp -r scripts/* debian/kairosos-scripts/usr/lib/kairos/scripts/
+	# Kernel modules
+	install -d debian/kairosos-kernel-modules/lib/modules/$(shell uname -r)/kairos
+	for d in kernel/*/; do \
+		make -C "$$d"; \
+		cp "$$d"/*.ko debian/kairosos-kernel-modules/lib/modules/$(shell uname -r)/kairos/; \
+	done

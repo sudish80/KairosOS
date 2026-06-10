@@ -1,0 +1,11 @@
+# vim:syntax=apparmor
+profile kairos-climate /usr/bin/kairos-climate {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,
+
+  /etc/kairos/climate.toml r,
+  /var/lib/kairos/climate/input/** r,
+  /var/lib/kairos/climate/output/** w,
+  /usr/bin/kairos-climate ix,
+}

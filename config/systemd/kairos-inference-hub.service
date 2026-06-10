@@ -1,0 +1,10 @@
+[Unit]
+Description=Asynchronous inference hub and model orchestrator
+After=network.target
+[Service]
+ExecStart=/usr/bin/kairos-inference-hub
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

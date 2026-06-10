@@ -1,0 +1,10 @@
+[Unit]
+Description=MCP protocol router and service registry
+After=network.target
+[Service]
+ExecStart=/usr/bin/kairos-mcp
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

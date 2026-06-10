@@ -1,0 +1,19 @@
+[Unit]
+Description=KairosOS Filesystem MCP Server
+Documentation=https://kairosos.org/docs/mcp/filesystem
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/kairos-filesystem-mcp
+Restart=on-failure
+RestartSec=5
+CapabilityBoundingSet=CAP_DAC_READ_SEARCH CAP_DAC_OVERRIDE
+AmbientCapabilities=CAP_DAC_READ_SEARCH CAP_DAC_OVERRIDE
+ProtectSystem=strict
+ReadWritePaths=/home /tmp /var/lib/kairos
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

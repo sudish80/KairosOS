@@ -1,0 +1,10 @@
+# vim:syntax=apparmor
+profile kairos-bio /usr/bin/kairos-bio {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,
+
+  /etc/kairos/bio.toml r,
+  /var/lib/kairos/bio/** rw,
+  /usr/bin/kairos-bio ix,
+}

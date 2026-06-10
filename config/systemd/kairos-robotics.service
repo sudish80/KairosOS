@@ -1,0 +1,10 @@
+[Unit]
+Description=Robotic control loops and motor drivers
+After=network.target
+[Service]
+ExecStart=/usr/bin/kairos-robotics
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

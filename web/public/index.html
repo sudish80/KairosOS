@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KairosOS Dashboard v2</title>
+<style>
+  :root {
+    --bg: #0d1117; --surface: #161b22; --border: #30363d;
+    --text: #e6edf3; --text-dim: #8b949e; --accent: #58a6ff;
+    --green: #3fb950; --orange: #d29922; --red: #f85149;
+    --purple: #bc8cff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace;
+    background: var(--bg); color: var(--text); display: flex;
+    height: 100vh; overflow: hidden;
+  }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 240px; background: var(--surface);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; padding: 16px; gap: 4px;
+    flex-shrink: 0;
+  }
+  .logo { font-size: 20px; font-weight: 700; padding: 8px 12px 4px;
+    background: linear-gradient(135deg, var(--accent), var(--green));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .logo-sub { font-size: 11px; color: var(--text-dim); padding: 0 12px 12px; border-bottom: 1px solid var(--border); margin-bottom: 8px; }
+  .nav-item {
+    padding: 10px 12px; border-radius: 6px; cursor: pointer;
+    font-size: 13px; transition: all 0.15s; display: flex; align-items: center; gap: 8px;
+  }
+  .nav-item:hover { background: var(--bg); }
+  .nav-item.active { background: var(--bg); color: var(--accent); }
+  .nav-item .icon { width: 16px; text-align: center; }
+
+  /* Status bar at bottom of sidebar */
+  .status-bar {
+    margin-top: auto; padding: 12px; border-top: 1px solid var(--border);
+    font-size: 11px; color: var(--text-dim);
+  }
+  .status-row { display: flex; justify-content: space-between; padding: 2px 0; }
+  .dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+  .dot.green { background: var(--green); }
+  .dot.red { background: var(--red); }
+  .dot.yellow { background: var(--orange); }
+  .dot.blue { background: var(--accent); }
+
+  /* Main content */
+  .main { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+  .tab-header {
+    padding: 12px 24px; border-bottom: 1px solid var(--border);
+    font-size: 13px; color: var(--text-dim);
+    display: flex; align-items: center; gap: 12px;
+  }
+  .tab-content { flex: 1; overflow-y: auto; padding: 20px 24px; display: none; }
+  .tab-content.active { display: flex; flex-direction: column; }
+
+  /* Chat */
+  .chat-messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-bottom: 12px; }
+  .message { max-width: 80%; padding: 10px 14px; border-radius: 10px; font-size: 13px; line-height: 1.5; }
+  .message.user { align-self: flex-end; background: var(--accent); color: #fff; }
+  .message.agent { align-self: flex-start; background: var(--surface); border: 1px solid var(--border); }
+  .chat-input { display: flex; gap: 8px; padding-top: 8px; }
+  .chat-input input {
+    flex: 1; padding: 10px 14px; border-radius: 6px;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--text); font-size: 13px; font-family: inherit; outline: none;
+  }
+  .chat-input input:focus { border-color: var(--accent); }
+  .chat-input button {
+    padding: 10px 20px; border-radius: 6px; border: none;
+    background: var(--accent); color: #fff; font-size: 13px; cursor: pointer;
+  }
+
+  /* Cards grid */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px;
+  }
+  .card .value { font-size: 28px; font-weight: 600; }
+  .card .label { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+  .card .sub { font-size: 12px; color: var(--text-dim); margin-top: 8px; }
+
+  /* Telemetry panel */
+  .telemetry-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .probe-list { display: flex; flex-direction: column; gap: 6px; }
+  .probe-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 8px 12px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 6px; font-size: 12px;
+  }
+  .probe-item .name { font-weight: 500; }
+  .probe-item .count { color: var(--accent); }
+  .probe-item .rate { color: var(--text-dim); font-size: 11px; }
+
+  /* Config editor */
+  .config-editor { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+  .config-editor textarea {
+    flex: 1; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 16px; color: var(--text);
+    font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.5;
+    resize: none; outline: none; tab-size: 2;
+  }
+  .config-editor textarea:focus { border-color: var(--accent); }
+  .config-toolbar { display: flex; gap: 8px; align-items: center; }
+  .config-toolbar button {
+    padding: 6px 14px; border-radius: 4px; border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); cursor: pointer; font-size: 12px;
+  }
+  .config-toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+  .config-toolbar .save-btn { background: var(--green); color: #000; border-color: var(--green); }
+
+  /* Knowledge Graph */
+  .kg-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; height: 100%; }
+  .kg-query { display: flex; flex-direction: column; gap: 8px; }
+  .kg-query input { padding: 10px 14px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 13px; outline: none; }
+  .kg-query input:focus { border-color: var(--accent); }
+  .kg-results { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+  .kg-result { padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; }
+  .kg-result .title { color: var(--accent); font-weight: 500; }
+  .kg-result .snippet { color: var(--text-dim); margin-top: 4px; }
+  .kg-result .meta { font-size: 11px; color: var(--text-dim); margin-top: 4px; display: flex; gap: 8px; }
+  .kg-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  /* Logs */
+  .log-controls { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
+  .log-controls select { padding: 6px 10px; border-radius: 4px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: 12px; outline: none; }
+  .log-controls button { padding: 6px 14px; border-radius: 4px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; font-size: 12px; }
+  pre.logs { background: var(--surface); padding: 12px; border-radius: 6px; border: 1px solid var(--border); font-size: 11px; line-height: 1.4; overflow: auto; flex: 1; white-space: pre-wrap; word-break: break-all; }
+
+  .hidden { display: none !important; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+  .badge.green { background: #3fb95030; color: var(--green); }
+  .badge.red { background: #f8514930; color: var(--red); }
+</style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="logo">KairosOS</div>
+  <div class="logo-sub">v2 — AI-Native OS</div>
+  <div class="nav-item active" data-tab="chat"><span class="icon">💬</span> Chat</div>
+  <div class="nav-item" data-tab="telemetry"><span class="icon">📊</span> Telemetry</div>
+  <div class="nav-item" data-tab="config"><span class="icon">⚙️</span> Config</div>
+  <div class="nav-item" data-tab="knowledge"><span class="icon">🧠</span> Knowledge Graph</div>
+  <div class="nav-item" data-tab="logs"><span class="icon">📋</span> Logs</div>
+  <div class="nav-item" data-tab="generations"><span class="icon">🕒</span> Generations</div>
+  <div class="status-bar" id="statusBar">
+    <div class="status-row"><span>Agent</span><span><span class="dot green" id="sAgent"></span><span id="lAgent">Online</span></span></div>
+    <div class="status-row"><span>eBPF</span><span><span class="dot yellow" id="sBpf"></span><span id="lBpf">--</span></span></div>
+    <div class="status-row"><span>PKG</span><span><span class="dot yellow" id="sPkg"></span><span id="lPkg">--</span></span></div>
+    <div class="status-row"><span>Host</span><span id="lHost">--</span></div>
+  </div>
+</div>
+
+<div class="main">
+  <!-- Chat -->
+  <div class="tab-content active" id="tabChat">
+    <div class="tab-header">KairosOS Agent — ask me anything about your system</div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="message agent">Hello! I'm Kairos, your AI operating system. I can help manage your system, monitor performance with eBPF telemetry, query your knowledge graph, edit system config, and more. Try asking about system status or check the tabs on the left.</div>
+    </div>
+    <div class="chat-input">
+      <input type="text" id="chatInput" placeholder="Ask me anything..." autofocus>
+      <button id="sendBtn">Send</button>
+    </div>
+  </div>
+
+  <!-- Telemetry -->
+  <div class="tab-content" id="tabTelemetry">
+    <div class="tab-header">Live eBPF Telemetry — real-time system observability</div>
+    <div class="telemetry-grid">
+      <div class="card"><div class="value" id="tTotalEvents">--</div><div class="label">Total Events</div></div>
+      <div class="card"><div class="value" id="tActiveProbes">--</div><div class="label">Active Probes</div></div>
+      <div class="card"><div class="value" id="tDropped">--</div><div class="label">Dropped Events</div></div>
+      <div class="card"><div class="value" id="tBpfMem">--</div><div class="label">BPF Memory (KB)</div></div>
+    </div>
+    <h3 style="font-size:13px;color:var(--text-dim);margin:16px 0 8px;">Probe Activity</h3>
+    <div class="probe-list" id="probeList">
+      <div class="probe-item"><span class="name">execsnoop</span><span class="count">0</span><span class="rate">0/s</span></div>
+      <div class="probe-item"><span class="name">tcptop</span><span class="count">0</span><span class="rate">0/s</span></div>
+      <div class="probe-item"><span class="name">filemon</span><span class="count">0</span><span class="rate">0/s</span></div>
+      <div class="probe-item"><span class="name">anomaly</span><span class="count">0</span><span class="rate">0/s</span></div>
+      <div class="probe-item"><span class="name">schedlatency</span><span class="count">0</span><span class="rate">0/s</span></div>
+      <div class="probe-item"><span class="name">oomkill</span><span class="count">0</span><span class="rate">0/s</span></div>
+    </div>
+    <div style="margin-top:12px;font-size:11px;color:var(--text-dim);" id="tInfo"></div>
+  </div>
+
+  <!-- Config Editor -->
+  <div class="tab-content" id="tabConfig">
+    <div class="tab-header">Declarative Configuration Editor — /etc/kairos/configuration.nix</div>
+    <div class="config-editor">
+      <div class="config-toolbar">
+        <span style="font-size:12px;color:var(--text-dim);flex:1;" id="configStatus">Loaded</span>
+        <button onclick="loadConfig()">Reload</button>
+        <button class="save-btn" onclick="saveConfig()">Save & Apply</button>
+      </div>
+      <textarea id="configEditor" spellcheck="false"></textarea>
+    </div>
+  </div>
+
+  <!-- Knowledge Graph -->
+  <div class="tab-content" id="tabKnowledge">
+    <div class="tab-header">Personal Knowledge Graph — GraphRAG semantic memory</div>
+    <div class="kg-layout">
+      <div class="kg-query">
+        <input type="text" id="kgInput" placeholder="Ask your knowledge graph..." onkeydown="if(event.key==='Enter')kgQuery()">
+        <button onclick="kgQuery()" style="padding:6px 14px;border-radius:4px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;font-size:12px;width:fit-content;">Search</button>
+        <div class="kg-results" id="kgResults">
+          <div style="color:var(--text-dim);font-size:12px;padding:20px;text-align:center;">Enter a query to search your knowledge graph</div>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-size:13px;color:var(--text-dim);margin-bottom:12px;">Graph Stats</h3>
+        <div class="kg-stats">
+          <div class="card"><div class="value" id="kgEntities">--</div><div class="label">Entities</div></div>
+          <div class="card"><div class="value" id="kgRelationships">--</div><div class="label">Relationships</div></div>
+        </div>
+        <div id="kgStore" style="margin-top:12px;font-size:12px;color:var(--text-dim);"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logs -->
+  <div class="tab-content" id="tabLogs">
+    <div class="tab-header">System Logs</div>
+    <div class="log-controls">
+      <select id="logService">
+        <option value="kairos-hermes">Hermes Agent</option>
+        <option value="kairos-bpf">eBPF Daemon</option>
+        <option value="kairos-mcp">MCP Router</option>
+        <option value="kairos-git-logger">Git Logger</option>
+        <option value="kairos-apply">Config Engine</option>
+        <option value="kairos-pkg">Knowledge Graph</option>
+      </select>
+      <button onclick="fetchLogs()">Refresh</button>
+    </div>
+    <pre class="logs" id="logsContent">Select a service and click Refresh...</pre>
+  </div>
+
+  <!-- Generations -->
+  <div class="tab-content" id="tabGenerations">
+    <div class="tab-header">Config Generations — atomic rollback snapshots</div>
+    <div id="gensList" style="display:flex;flex-direction:column;gap:6px;"></div>
+  </div>
+</div>
+
+<script>
+const API = '/api';
+let eventSource = null;
+
+// --- Status ---
+async function fetchStatus() {
+  try {
+    const r = await fetch(`${API}/status`);
+    const d = await r.json();
+    document.getElementById('lHost').textContent = d.hostname;
+    const svc = d.services || {};
+    const set = (id, dotId, status) => {
+      const el = document.getElementById(id);
+      const dot = document.getElementById(dotId);
+      if (el) el.textContent = status;
+      if (dot) dot.className = 'dot ' + (status === 'active' ? 'green' : status === 'unknown' ? 'yellow' : 'red');
+    };
+    set('lAgent', 'sAgent', svc['kairos-hermes'] || 'unknown');
+    set('lBpf', 'sBpf', svc['kairos-bpf'] || 'unknown');
+    set('lPkg', 'sPkg', svc['kairos-pkg'] || 'unknown');
+  } catch {}
+}
+
+// --- SSE Events ---
+function connectSSE() {
+  if (eventSource) eventSource.close();
+  eventSource = new EventSource(`${API}/events`);
+  eventSource.onmessage = (e) => {
+    try {
+      const msg = JSON.parse(e.data);
+      if (msg.type === 'bpf') updateTelemetry(msg.data);
+    } catch {}
+  };
+  eventSource.onerror = () => setTimeout(connectSSE, 3000);
+}
+
+// --- Telemetry ---
+let prevProbeCounts = {};
+function updateTelemetry(data) {
+  if (!data) return;
+  document.getElementById('tTotalEvents').textContent = data.total_events ?? '--';
+  document.getElementById('tActiveProbes').textContent = data.active_probes ?? '--';
+  document.getElementById('tDropped').textContent = data.dropped_events ?? '0';
+  document.getElementById('tBpfMem').textContent = data.memory_kb ?? '--';
+  document.getElementById('tInfo').textContent = data.info || 'Receiving live eBPF telemetry';
+
+  if (data.probes) {
+    const list = document.getElementById('probeList');
+    list.innerHTML = data.probes.map(p => {
+      const prev = prevProbeCounts[p.name] || 0;
+      const rate = ((p.events - prev) / 5).toFixed(1);
+      prevProbeCounts[p.name] = p.events;
+      return `<div class="probe-item"><span class="name">${p.name}</span><span class="count">${p.events}</span><span class="rate">${rate}/s</span></div>`;
+    }).join('');
+  }
+
+  if (data.cpu_load) {
+    document.getElementById('tInfo').textContent += ` | CPU: ${data.cpu_load.map(v=>v.toFixed(2)).join(', ')}`;
+  }
+}
+
+// --- Config ---
+async function loadConfig() {
+  try {
+    const r = await fetch(`${API}/config`);
+    const d = await r.json();
+    document.getElementById('configEditor').value = d.content || '/* No config loaded */';
+    document.getElementById('configStatus').textContent = d.error ? `Error: ${d.error}` : `Loaded from ${d.path}`;
+  } catch (e) {
+    document.getElementById('configStatus').textContent = `Error: ${e.message}`;
+  }
+}
+
+async function saveConfig() {
+  const btn = document.querySelector('.save-btn');
+  btn.textContent = 'Saving...';
+  btn.disabled = true;
+  try {
+    const r = await fetch(`${API}/config`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: document.getElementById('configEditor').value }),
+    });
+    const d = await r.json();
+    document.getElementById('configStatus').textContent = d.ok ? 'Saved successfully!' : `Error: ${d.error}`;
+  } catch (e) {
+    document.getElementById('configStatus').textContent = `Error: ${e.message}`;
+  }
+  btn.textContent = 'Save & Apply';
+  btn.disabled = false;
+}
+
+// --- Knowledge Graph ---
+async function kgQuery() {
+  const q = document.getElementById('kgInput').value.trim();
+  if (!q) return;
+  const results = document.getElementById('kgResults');
+  results.innerHTML = '<div style="color:var(--text-dim);font-size:12px;text-align:center;padding:20px;">Searching...</div>';
+  try {
+    const r = await fetch(`${API}/kg/query`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ q, top_k: 10 }),
+    });
+    const d = await r.json();
+    const items = d.result?.content || d.results || [];
+    if (items.length === 0) {
+      results.innerHTML = '<div style="color:var(--text-dim);font-size:12px;text-align:center;padding:20px;">No results found</div>';
+      return;
+    }
+    results.innerHTML = items.map(i => `
+      <div class="kg-result">
+        <div class="title">${esc(i.title || i.name || 'Result')}</div>
+        <div class="snippet">${esc(i.snippet || i.content || i.text || '')}</div>
+        <div class="meta">
+          <span>Score: ${(i.score || i.relevance || 0).toFixed(3)}</span>
+          <span>Type: ${i.type || 'entity'}</span>
+        </div>
+      </div>
+    `).join('');
+  } catch (e) {
+    results.innerHTML = `<div style="color:var(--red);font-size:12px;">Error: ${esc(e.message)}</div>`;
+  }
+}
+
+async function kgStats() {
+  try {
+    const r = await fetch(`${API}/kg/stats`);
+    const d = await r.json();
+    const s = d.result?.content || d;
+    document.getElementById('kgEntities').textContent = s.entities ?? '--';
+    document.getElementById('kgRelationships').textContent = s.relationships ?? '--';
+    document.getElementById('kgStore').textContent = s.error ? `PKG: ${s.error}` : 'Knowledge graph operational';
+  } catch {
+    document.getElementById('kgEntities').textContent = '--';
+    document.getElementById('kgRelationships').textContent = '--';
+    document.getElementById('kgStore').textContent = 'Knowledge graph unavailable';
+  }
+}
+
+// --- Logs ---
+async function fetchLogs() {
+  const svc = document.getElementById('logService').value;
+  const el = document.getElementById('logsContent');
+  el.textContent = 'Loading...';
+  try {
+    const r = await fetch(`${API}/logs?service=${svc}&lines=50`);
+    const d = await r.json();
+    el.textContent = d.logs || 'No logs found';
+  } catch (e) {
+    el.textContent = `Error: ${e.message}`;
+  }
+}
+
+// --- Generations ---
+async function fetchGenerations() {
+  try {
+    const r = await fetch(`${API}/generations`);
+    const gens = await r.json();
+    const el = document.getElementById('gensList');
+    if (gens.length === 0) {
+      el.innerHTML = '<div style="color:var(--text-dim);font-size:12px;text-align:center;padding:20px;">No generations found</div>';
+      return;
+    }
+    el.innerHTML = gens.map(g => `
+      <div class="card" style="padding:12px;font-size:12px;">
+        <div style="display:flex;justify-content:space-between;">
+          <span style="font-weight:500;">${esc(g.id)}</span>
+          <span style="color:var(--text-dim);">${g.timestamp ? new Date(g.timestamp*1000).toLocaleString() : '--'}</span>
+        </div>
+        <div style="color:var(--text-dim);margin-top:4px;">${esc(g.description || '')}</div>
+        <div style="margin-top:4px;font-size:11px;color:var(--text-dim);">SHA256: ${(g.hash || '').slice(0,16)}...</div>
+      </div>
+    `).join('');
+  } catch {
+    document.getElementById('gensList').innerHTML = '<div style="color:var(--red);font-size:12px;">Failed to load generations</div>';
+  }
+}
+
+// --- Chat ---
+async function sendMessage(text) {
+  const msgDiv = document.getElementById('chatMessages');
+  msgDiv.innerHTML += `<div class="message user">${esc(text)}</div>`;
+  msgDiv.scrollTop = msgDiv.scrollHeight;
+  const input = document.getElementById('chatInput');
+  input.disabled = true;
+  input.value = 'Thinking...';
+  msgDiv.innerHTML += `<div class="message agent" id="thinking"><em>Kairos is thinking...</em></div>`;
+  msgDiv.scrollTop = msgDiv.scrollHeight;
+  try {
+    const r = await fetch(`${API}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text }),
+    });
+    const d = await r.json();
+    document.getElementById('thinking')?.remove();
+    msgDiv.innerHTML += `<div class="message agent">${esc(d.response || 'No response')}</div>`;
+  } catch (e) {
+    document.getElementById('thinking')?.remove();
+    msgDiv.innerHTML += `<div class="message agent" style="color:var(--red)">Error: ${esc(e.message)}</div>`;
+  }
+  msgDiv.scrollTop = msgDiv.scrollHeight;
+  input.disabled = false;
+  input.value = '';
+  input.focus();
+}
+
+// --- Navigation ---
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    item.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    const tab = document.getElementById('tab' + item.dataset.tab.charAt(0).toUpperCase() + item.dataset.tab.slice(1));
+    if (tab) {
+      tab.classList.add('active');
+      // Lazy load
+      if (item.dataset.tab === 'config') loadConfig();
+      if (item.dataset.tab === 'logs') fetchLogs();
+      if (item.dataset.tab === 'generations') fetchGenerations();
+      if (item.dataset.tab === 'knowledge') kgStats();
+    }
+  });
+});
+
+function esc(str) {
+  if (!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+// --- Init ---
+document.getElementById('sendBtn').addEventListener('click', () => {
+  const input = document.getElementById('chatInput');
+  if (input.value.trim()) sendMessage(input.value.trim());
+});
+document.getElementById('chatInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && e.target.value.trim()) sendMessage(e.target.value.trim());
+});
+
+fetchStatus();
+connectSSE();
+setInterval(fetchStatus, 15000);
+</script>
+</body>
+</html>

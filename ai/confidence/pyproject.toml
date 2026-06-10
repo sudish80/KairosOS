@@ -1,0 +1,6 @@
+[project]
+name = "kairos-confidence"
+version = "1.0.0"
+description = "AI confidence scoring"
+requires-python = ">=3.11"
+dependencies = []

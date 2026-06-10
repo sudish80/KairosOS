@@ -1,0 +1,10 @@
+[Unit]
+Description=High-density terminal UI multiplexer
+After=network.target
+[Service]
+ExecStart=/usr/bin/kairos-tui
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

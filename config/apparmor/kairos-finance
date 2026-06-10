@@ -1,0 +1,10 @@
+# vim:syntax=apparmor
+profile kairos-finance /usr/bin/kairos-finance {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,
+
+  /etc/kairos/finance.toml r,
+  /var/log/kairos/market-data.log w,
+  /usr/bin/kairos-finance ix,
+}

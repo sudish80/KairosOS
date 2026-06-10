@@ -1,0 +1,10 @@
+[Unit]
+Description=Boot recovery and sovereign fallback environment
+After=network.target
+[Service]
+ExecStart=/usr/bin/kairos-recovery
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

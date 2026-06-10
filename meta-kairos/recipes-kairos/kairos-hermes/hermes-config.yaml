@@ -1,0 +1,29 @@
+# KairosOS Hermes Agent Configuration
+agent:
+  name: "Hermes"
+  provider: "ollama"
+  model: "hermes-3-llama-3.1:8b-q4_k_m"
+  context_length: 8192
+
+mcp:
+  socket: "/run/kairos/mcp.sock"
+  timeout_seconds: 30
+
+skills:
+  directory: "/etc/kairos/agent/skills"
+  auto_load: true
+
+knowledge_graph:
+  enabled: true
+  socket: "/run/kairos/pkg.sock"
+
+logging:
+  level: "info"
+  file: "/var/log/kairos/hermes.log"
+
+fallback:
+  - provider: "ollama"
+    model: "llama3.2:3b"
+  - provider: "openai"
+    model: "gpt-4o-mini"
+    api_key_ref: "secrets/openai-key"

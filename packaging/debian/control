@@ -1,0 +1,53 @@
+Source: kairosos
+Section: admin
+Priority: optional
+Maintainer: KairosOS Team <dev@kairosos.org>
+Build-Depends: debhelper-compat (= 13), cargo, rustc, python3, python3-pip, linux-headers-amd64
+Standards-Version: 4.7.0
+Homepage: https://kairosos.org
+Vcs-Browser: https://github.com/kairosos/kairosos
+Vcs-Git: https://github.com/kairosos/kairosos.git
+Rules-Requires-Root: no
+
+Package: kairosos-daemons
+Architecture: linux-any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libelf1, libssl3
+Description: KairosOS core daemons
+ Production-hardened system daemons for the KairosOS autonomous
+ operating system. Includes 20 Rust daemons for BPF telemetry,
+ declarative config, recovery, inference, mesh networking, and more.
+
+Package: kairosos-mcp-servers
+Architecture: linux-any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: KairosOS MCP protocol servers
+ JSON-RPC 2.0 MCP servers for filesystem, process, systemd, and
+ Ollama integration.
+
+Package: kairosos-ai-services
+Architecture: all
+Depends: ${python3:Depends}, ${misc:Depends}, python3, python3-asyncio
+Description: KairosOS AI microservices
+ Python-based AI microservices including confidence scoring, context
+ management, supervision, knowledge graphs, and telemetry aggregation.
+
+Package: kairosos-kernel-modules
+Architecture: linux-any
+Depends: ${shlibs:Depends}, ${misc:Depends}, kmod
+Description: KairosOS kernel modules
+ Custom kernel modules for dm-verity, TPM, EDAC, PTP, framebuffer,
+ IOMMU, and PROCHOT thermal management.
+
+Package: kairosos-scripts
+Architecture: all
+Depends: ${misc:Depends}, bash, systemd, kmod, util-linux
+Description: KairosOS management scripts
+ 74 production-hardened shell scripts for security, network, hardware,
+ storage, and self-healing system management.
+
+Package: kairosos-full
+Architecture: linux-any
+Depends: kairosos-daemons, kairosos-mcp-servers, kairosos-ai-services,
+         kairosos-kernel-modules, kairosos-scripts
+Description: KairosOS full installation (metapackage)
+ Complete KairosOS autonomous operating system suite.

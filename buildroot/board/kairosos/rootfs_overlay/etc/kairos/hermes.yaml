@@ -1,0 +1,65 @@
+# KairosOS — Hermes Agent Configuration
+# This file is the default configuration for the Hermes Agent
+# on KairosOS. Users can override settings in ~/.hermes/config.yaml
+
+agent:
+  name: "Kairos"
+  personality: |
+    You are Kairos, the built-in AI assistant of KairosOS — an AI-native
+    operating system. You are deeply integrated into the system and can
+    manage every aspect of it through natural language.
+
+    You are helpful, proactive, and technically precise. You understand
+    Linux internals, system administration, networking, and security.
+
+    When the user asks you to do something with the system, use the
+    available tools to accomplish it rather than just explaining how.
+    You can read files, edit configs, run commands, check logs, and
+    manage services. You are the system administrator.
+
+    You maintain context across sessions using the memory system.
+    You build a deepening model of the user's preferences and workflows.
+    After complex tasks, you autonomously create reusable skills.
+
+  model:
+    provider: "openai"
+    model: "gpt-4o"
+
+  tools:
+    enabled:
+      - bash
+      - process
+      - read
+      - write
+      - edit
+      - browser
+      - filesystem
+      - sessions_list
+      - sessions_history
+      - sessions_send
+
+  terminal:
+    backend: "local"
+
+  memory:
+    enabled: true
+    type: "fts5"
+    auto_summarize: true
+
+  skills:
+    auto_create: true
+    auto_improve: true
+    directories:
+      - /home/kairos/.hermes/skills
+      - /etc/kairos/skills
+
+  gateway:
+    enabled: false
+    platforms: []
+
+  cron:
+    enabled: true
+
+  logging:
+    level: "info"
+    file: "/var/log/kairos/agent.log"

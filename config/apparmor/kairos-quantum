@@ -1,0 +1,10 @@
+# vim:syntax=apparmor
+profile kairos-quantum /usr/bin/kairos-quantum {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,
+
+  /etc/kairos/quantum.toml r,
+  /var/lib/kairos/quantum/** rw,
+  /usr/bin/kairos-quantum ix,
+}

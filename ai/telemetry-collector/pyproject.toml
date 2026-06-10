@@ -1,0 +1,6 @@
+[project]
+name = "kairos-telemetry-collector"
+version = "1.0.0"
+description = "Telemetry data collection"
+requires-python = ">=3.11"
+dependencies = []

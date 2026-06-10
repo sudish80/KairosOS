@@ -1,0 +1,20 @@
+#!/bin/bash
+# 214: TCP BBR Congestion Control Switcher
+set -euo pipefail
+
+ACTION="${1:-status}"
+
+case "$ACTION" in
+    enable)
+        echo "bbr" > /proc/sys/net/ipv4/tcp_congestion_control 2>/dev/null || true
+        echo "BBR congestion control enabled"
+        ;;
+    cubic)
+        echo "cubic" > /proc/sys/net/ipv4/tcp_congestion_control 2>/dev/null || true
+        echo "Cubic congestion control enabled"
+        ;;
+    status)
+        echo "Current CC: $(sysctl net.ipv4.tcp_congestion_control 2>/dev/null)"
+        echo "Available: $(sysctl net.ipv4.tcp_available_congestion_control 2>/dev/null)"
+        ;;
+esac

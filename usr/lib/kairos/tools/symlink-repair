@@ -1,0 +1,25 @@
+#!/bin/bash
+# 258: Dangling Symlink Repair Daemon
+set -euo pipefail
+
+TARGET_DIR="${1:-/etc /usr /opt /home}"
+echo "Scanning for dangling symlinks in $TARGET_DIR..."
+
+find $TARGET_DIR -type l ! -exec test -e {} \; -print 2>/dev/null | while IFS= read -r link; do
+    target=$(readlink "$link")
+    echo "  Dangling: $link -> $target"
+    
+    # Try to find the target elsewhere
+    basename=$(basename "$target")
+    found=$(find /usr /etc /opt -name "$basename" -type f 2>/dev/null | head -1)
+    
+    if [ -n "$found" ]; then
+        ln -sf "$found" "$link"
+        echo "    Fixed: relinked to $found"
+    else
+        echo "    Removed: $link"
+        rm -f "$link" 2>/dev/null || true
+    fi
+done
+
+echo "Symlink scan complete"

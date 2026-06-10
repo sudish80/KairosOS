@@ -1,0 +1,42 @@
+#!/bin/bash
+# 076: Seccomp Filter Profile Generator
+# Auto-synthesizes seccomp-bpf profiles by tracking execution syscall footprint.
+set -euo pipefail
+
+BINARY="$1"
+OUTPUT="${2:-/etc/kairos/seccomp/$1.json}"
+
+if [ -z "$BINARY" ]; then
+    echo "Usage: $0 <binary> [output-path]"
+    exit 1
+fi
+
+mkdir -p "$(dirname "$OUTPUT")"
+
+# Use strace to capture syscall footprint
+echo "Tracing syscalls for $BINARY..."
+TEMP_LOG=$(mktemp)
+strace -cf -o "$TEMP_LOG" "$BINARY" 2>/dev/null || true
+
+# Parse the summary to build seccomp profile
+SYSCALLS=$(awk 'NR>2 {print $NF}' "$TEMP_LOG" | grep -v '^$' | sort -u)
+
+cat > "$OUTPUT" << EOF
+{
+    "defaultAction": "SCMP_ACT_ERRNO",
+    "architectures": ["SCMP_ARCH_X86_64"],
+    "syscalls": [
+        {
+            "names": [
+$(echo "$SYSCALLS" | sed 's/^/                "/;s/$/",/')
+                "exit_group"
+            ],
+            "action": "SCMP_ACT_ALLOW"
+        }
+    ]
+}
+EOF
+
+echo "Seccomp profile written to $OUTPUT"
+echo "Syscalls tracked: $(echo "$SYSCALLS" | wc -l)"
+rm -f "$TEMP_LOG"

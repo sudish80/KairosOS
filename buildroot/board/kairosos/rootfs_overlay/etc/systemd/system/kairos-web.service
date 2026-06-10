@@ -1,0 +1,25 @@
+[Unit]
+Description=KairosOS Web Dashboard
+Documentation=https://kairosos.org/docs
+Wants=kairos-agent.service network-online.target
+After=kairos-agent.service network-online.target
+
+[Service]
+Type=simple
+User=kairos
+Group=kairos
+WorkingDirectory=/opt/kairos/web
+Environment=NODE_ENV=production
+Environment=PORT=8080
+Environment=HERMES_SOCKET=/home/kairos/.hermes/agent.sock
+ExecStart=/usr/bin/node /opt/kairos/web/server.js
+Restart=on-failure
+RestartSec=10
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+
+[Install]
+WantedBy=multi-user.target

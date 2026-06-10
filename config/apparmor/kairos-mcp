@@ -1,0 +1,21 @@
+# vim:syntax=apparmor
+# KairosOS MCP protocol router — JSON-RPC 2.0, service registry, TLS
+profile kairos-mcp /usr/bin/kairos-mcp {
+  capability dac_override,
+  capability net_bind_service,   # TCP listen (:8080)
+  capability sys_admin,
+
+  # Config and runtime
+  /etc/kairos/mcp.toml r,
+  /var/run/kairos/mcp.sock rw,
+  /var/run/kairos/mcp.pid rw,
+
+  # Audit log
+  /var/log/kairos/audit.log w,
+
+  # TLS certs
+  /etc/kairos/certs/** r,
+
+  # Binary
+  /usr/bin/kairos-mcp ix,
+}

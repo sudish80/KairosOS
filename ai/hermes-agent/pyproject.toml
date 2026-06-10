@@ -1,0 +1,6 @@
+[project]
+name = "kairos-hermes-agent"
+version = "1.0.0"
+description = "Hermes AI agent entry point"
+requires-python = ">=3.11"
+dependencies = []

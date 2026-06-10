@@ -1,0 +1,14 @@
+[workspace]
+members = [
+    "kairos-bpf", "kairos-mcp", "kairos-apply", "kairos-git-logger",
+    "kairos-inference-hub", "kairos-recovery", "kairos-tui",
+    "kairos-orchestrator", "kairos-mesh", "kairos-db",
+    "kairos-fb", "kairos-llm", "kairos-build", "kairos-climate",
+    "kairos-finance", "kairos-vision", "kairos-avionics",
+    "kairos-quantum", "kairos-robotics", "kairos-bio",
+    "mcp-servers/filesystem-server",
+    "mcp-servers/ollama-server",
+    "mcp-servers/process-server",
+    "mcp-servers/systemd-server",
+]
+resolver = "2"

@@ -1,0 +1,10 @@
+[Unit]
+Description=Real-time vision processing and object detection
+After=network.target
+[Service]
+ExecStart=/usr/bin/kairos-vision
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

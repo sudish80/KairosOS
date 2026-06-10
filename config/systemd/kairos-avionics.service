@@ -1,0 +1,10 @@
+[Unit]
+Description=Avionics bus protocols and telemetry standards
+After=network.target
+[Service]
+ExecStart=/usr/bin/kairos-avionics
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

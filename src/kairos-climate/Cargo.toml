@@ -1,0 +1,18 @@
+﻿[package]
+name = "kairos-climate"
+version = "1.0.0"
+edition = "2021"
+description = "Climate model data assimilation engine daemon — production-hardened"
+[dependencies]
+tokio = { version = "1", features = ["full", "rt-multi-thread", "macros", "sync", "signal"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+anyhow = "1"
+thiserror = "1"
+clap = { version = "4", features = ["derive"] }
+toml = "0.8"
+chrono = { version = "0.4", features = ["serde"] }
+[lib] name = "kairos_climate" path = "src/lib.rs"
+[[bin]] name = "kairos-climate" path = "src/main.rs"

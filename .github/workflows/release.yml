@@ -1,0 +1,185 @@
+# =============================================================================
+# KairosOS Release Pipeline — Tag: v* triggers release build
+# =============================================================================
+name: KairosOS Release
+
+on:
+  push:
+    tags: ["v*"]
+
+env:
+  CARGO_TERM_COLOR: always
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Build Rust daemons (workspace members only — excludes MCP servers)
+  # ---------------------------------------------------------------------------
+  build-daemons:
+    name: Daemons ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [x86_64-unknown-linux-gnu, aarch64-unknown-linux-gnu]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install cross deps
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu libc6-dev-arm64-cross libelf-dev libz-dev libssl-dev
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src
+      - run: cargo build --release --workspace
+        working-directory: src
+      - name: Collect binaries
+        run: |
+          mkdir -p release/daemons
+          cp src/target/${{ matrix.target }}/release/kairos-* release/daemons/ 2>/dev/null || true
+          # Also copy MCP server binaries
+          for d in src/mcp-servers/*/; do
+            name=$(basename "$d")
+            binary="${name%-server}"
+            cp "src/mcp-servers/$name/target/${{ matrix.target }}/release/kairos-${binary}-mcp" release/daemons/ 2>/dev/null || true
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: daemons-${{ matrix.target }}
+          path: release/daemons/
+
+  # ---------------------------------------------------------------------------
+  # Build kernel modules
+  # ---------------------------------------------------------------------------
+  build-kernel:
+    name: Kernel modules
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build modules
+        run: |
+          sudo apt-get update && sudo apt-get install -y linux-headers-$(uname -r) build-essential
+          mkdir -p release/kernel
+          for d in kernel/*/; do
+            make -C "$d"
+            cp "$d"/*.ko release/kernel/
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kernel-modules
+          path: release/kernel/
+
+  # ---------------------------------------------------------------------------
+  # Build Python AI packages (wheel-based)
+  # ---------------------------------------------------------------------------
+  build-python:
+    name: Python AI packages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Build wheels
+        run: |
+          pip install --upgrade pip build
+          mkdir -p release/python
+          for d in ai/*/; do
+            if [ -f "${d}pyproject.toml" ]; then
+              cd "$d"
+              python3 -m build --wheel --outdir ../../release/python/
+              cd ../../
+            fi
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-wheels
+          path: release/python/
+
+  # ---------------------------------------------------------------------------
+  # Build documentation
+  # ---------------------------------------------------------------------------
+  build-docs:
+    name: Documentation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build Rust docs
+        run: cargo doc --workspace --no-deps
+        working-directory: src
+      - name: Copy docs
+        run: |
+          mkdir -p release/docs
+          cp -r src/target/doc/* release/docs/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: documentation
+          path: release/docs/
+
+  # ---------------------------------------------------------------------------
+  # Create Debian packages
+  # ---------------------------------------------------------------------------
+  build-deb:
+    name: Debian packages
+    runs-on: ubuntu-latest
+    needs: [build-daemons]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: daemons-x86_64-unknown-linux-gnu
+          path: release/daemons
+      - name: Build .deb
+        run: |
+          sudo apt-get update && sudo apt-get install -y debhelper build-essential
+          cd packaging/debian
+          dpkg-buildpackage -us -uc -b
+          mkdir -p ../../release/deb
+          mv ../*.deb ../../release/deb/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deb-packages
+          path: release/deb/
+
+  # ---------------------------------------------------------------------------
+  # Create release archive and publish
+  # ---------------------------------------------------------------------------
+  create-release:
+    name: Create GitHub Release
+    needs: [build-daemons, build-kernel, build-python, build-docs, build-deb]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: "*"
+          path: release/artifacts
+      - name: Package release
+        run: |
+          cd release/artifacts
+          for d in */; do
+            tar czf "${d%/}.tar.gz" "$d"
+          done
+          mv *.tar.gz ../../
+      - name: Generate release notes
+        run: |
+          echo "# KairosOS ${{ github.ref_name }}" > release-notes.md
+          echo "" >> release-notes.md
+          echo "See CHECKLIST.md for full item status." >> release-notes.md
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: release-notes.md
+          files: |
+            release/artifacts/*.tar.gz
+            release/artifacts/deb/*.deb
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref_name, 'rc') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'alpha') }}

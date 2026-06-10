@@ -1,0 +1,16 @@
+# vim:syntax=apparmor
+# KairosOS SQLite vector database and event bus
+profile kairos-db /usr/bin/kairos-db {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,
+
+  # Config
+  /etc/kairos/db.toml r,
+
+  # Database files
+  /var/lib/kairos/db/** rw,
+
+  # Binary
+  /usr/bin/kairos-db ix,
+}

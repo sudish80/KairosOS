@@ -1,0 +1,19 @@
+[Unit]
+Description=KairosOS Multi-Channel Gateway
+Documentation=https://kairosos.org/docs
+Wants=kairos-agent.service network-online.target
+After=kairos-agent.service network-online.target
+
+[Service]
+Type=simple
+User=kairos
+Group=kairos
+WorkingDirectory=/home/kairos
+Environment=HOME=/home/kairos
+Environment=HERMES_CONFIG=/etc/kairos/hermes.yaml
+ExecStart=/opt/hermes/bin/hermes gateway --config /etc/kairos/hermes.yaml
+Restart=on-failure
+RestartSec=15
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,24 @@
+source "$BR2_EXTERNAL_KAIROSOS_PATH/package/kairos-hermes/Config.in"
+
+config BR2_PACKAGE_KAIROSOS
+	bool "kairosos"
+	select BR2_PACKAGE_PYTHON3
+	select BR2_PACKAGE_PYTHON_PIP
+	select BR2_PACKAGE_PYTHON_SETUPTOOLS
+	select BR2_PACKAGE_NODEJS
+	select BR2_PACKAGE_OPENSSH
+	select BR2_PACKAGE_CA_CERTIFICATES
+	help
+	  KairosOS core meta-package
+
+config BR2_PACKAGE_KAIROSOS_WEB
+	bool "kairosos-web (web dashboard)"
+	select BR2_PACKAGE_NODEJS
+	default y
+	help
+	  KairosOS web dashboard for browser-based agent interaction
+
+config BR2_PACKAGE_KAIROSOS_OPENCLAW
+	bool "kairosos-openclaw (optional)"
+	help
+	  Include OpenClaw multi-channel gateway alongside Hermes

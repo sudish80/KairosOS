@@ -1,0 +1,13 @@
+# vim:syntax=apparmor
+profile kairos-robotics /usr/bin/kairos-robotics {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,
+  capability sys_rawio,
+
+  /etc/kairos/robotics.toml r,
+  /etc/kairos/robotics/dh.toml r,
+  /dev/pwm rw,
+  /dev/encoder rw,
+  /usr/bin/kairos-robotics ix,
+}

@@ -1,0 +1,35 @@
+# vim:syntax=apparmor
+# KairosOS A/B partition manager — block devices, fsck, mount, dm-verity
+profile kairos-recovery /usr/bin/kairos-recovery {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,          # mount/umount
+  capability sys_rawio,          # block device access
+
+  # Config
+  /etc/kairos/recovery.toml r,
+
+  # Block devices (A/B/data/recovery)
+  /dev/disk/by-label/KAIROS_* rw,
+  /dev/disk/by-partlabel/EFI rw,
+  /dev/mapper/kairos-verity-* rw,
+
+  # Commands
+  /sbin/fsck ix,
+  /bin/mount ix,
+  /bin/umount ix,
+  /sbin/veritysetup ix,
+
+  # Boot state
+  /var/lib/kairos/boot_count rw,
+  /var/lib/kairos/updates/** rw,
+
+  # Kernel cmdline
+  /proc/cmdline r,
+
+  # Mount points
+  /mnt/kairos/** rw,
+
+  # Binary
+  /usr/bin/kairos-recovery ix,
+}

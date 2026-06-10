@@ -1,0 +1,24 @@
+# vim:syntax=apparmor
+# Ollama LLM runtime — model serving, subprocess management
+profile ollama /usr/bin/ollama {
+  capability dac_override,
+  capability net_bind_service,   # HTTP serve :11434
+  capability sys_admin,
+  capability sys_ptrace,         # subprocess management
+
+  # Config
+  /etc/ollama/** r,
+
+  # Model storage
+  /usr/share/ollama/** r,
+  /var/lib/ollama/** rw,
+
+  # GPU access
+  /dev/dri/** rw,
+  /dev/nvidia* rw,
+  /dev/kfd rw,
+
+  # Binary
+  /usr/bin/ollama ix,
+  /usr/lib/ollama/** ix,
+}

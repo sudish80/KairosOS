@@ -1,0 +1,23 @@
+[Unit]
+Description=KairosOS Git-backed /etc tracker
+Documentation=https://kairosos.org/docs/daemons/git-logger
+After=local-fs.target
+
+[Service]
+Type=simple
+ExecStartPre=/usr/bin/git init --bare /var/lib/kairos/git-store
+ExecStart=/usr/sbin/kairos-git-logger --watch /etc --store /var/lib/kairos/git-store
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=10
+CapabilityBoundingSet=CAP_DAC_OVERRIDE CAP_DAC_READ_SEARCH
+AmbientCapabilities=CAP_DAC_OVERRIDE CAP_DAC_READ_SEARCH
+ProtectSystem=strict
+ReadWritePaths=/var/lib/kairos/git-store /var/log/kairos
+ReadOnlyPaths=/etc
+PrivateTmp=true
+NoNewPrivileges=true
+SystemCallFilter=@file-system @network-io @system-service
+
+[Install]
+WantedBy=multi-user.target

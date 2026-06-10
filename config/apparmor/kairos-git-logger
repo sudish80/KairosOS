@@ -1,0 +1,20 @@
+# vim:syntax=apparmor
+# KairosOS Git-backed /etc version tracker — filesystem watcher, git operations
+profile kairos-git-logger /usr/bin/kairos-git-logger {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,
+
+  # Config
+  /etc/kairos/git-logger.toml r,
+
+  # Watched paths
+  /etc/** r,
+  /var/lib/kairos/** r,
+
+  # Git state
+  /var/lib/kairos/git/state.git/** rw,
+
+  # Binary
+  /usr/bin/kairos-git-logger ix,
+}

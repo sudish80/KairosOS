@@ -1,0 +1,11 @@
+# vim:syntax=apparmor
+profile kairos-hermes /usr/bin/kairos-hermes {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,
+
+  /etc/kairos/hermes.toml r,
+  /var/run/kairos/hermes.sock rw,
+  /var/lib/kairos/hermes/** rw,
+  /usr/bin/kairos-hermes ix,
+}

@@ -1,0 +1,60 @@
+# Maintainer: KairosOS Team <dev@kairosos.org>
+# Arch Linux PKGBUILD for KairosOS
+pkgname=kairosos
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="Production-hardened autonomous operating system suite"
+arch=('x86_64' 'aarch64')
+url="https://kairosos.org"
+license=('GPL2')
+depends=('systemd' 'kmod' 'util-linux' 'bash' 'python' 'glibc')
+makedepends=('cargo' 'rust' 'python-build' 'python-pip' 'linux-headers')
+source=("${pkgname}-${pkgver}.tar.gz::https://github.com/kairosos/kairosos/archive/v${pkgver}.tar.gz")
+sha256sums=('SKIP')
+
+build() {
+    cd "${srcdir}/${pkgname}-${pkgver}"
+    # Rust daemons
+    cd src && cargo build --release --workspace && cd ..
+    # MCP servers
+    cd src/mcp-servers && for d in */; do
+        [ -f "${d}Cargo.toml" ] && cargo build --release --manifest-path "${d}Cargo.toml"
+    done && cd ../..
+    # Python wheels
+    for d in ai/*/; do
+        [ -f "${d}pyproject.toml" ] && (cd "$d" && python -m build --wheel --outdir ../../pkg/python/ && cd ../..)
+    done
+    # Kernel modules
+    for d in kernel/*/; do
+        make -C "$d"
+    done
+}
+
+package() {
+    cd "${srcdir}/${pkgname}-${pkgver}"
+    # Binaries
+    install -Dm0755 -t "${pkgdir}/usr/bin/" src/target/release/kairos-*
+    # MCP server binaries
+    for d in src/mcp-servers/*/; do
+        name=$(basename "$d")
+        binary="${name%-server}"
+        binfile="src/mcp-servers/${name}/target/release/kairos-${binary}-mcp"
+        [ -x "$binfile" ] && install -Dm0755 "$binfile" "${pkgdir}/usr/sbin/kairos-${binary}-mcp"
+    done
+    # AI services
+    install -d "${pkgdir}/opt/kairos/ai"
+    cp -r ai/* "${pkgdir}/opt/kairos/ai/"
+    # Systemd
+    install -Dm0644 -t "${pkgdir}/usr/lib/systemd/system/" config/systemd/*.service
+    # AppArmor
+    install -Dm0644 -t "${pkgdir}/etc/apparmor.d/" config/apparmor/*
+    # Scripts
+    install -d "${pkgdir}/usr/lib/kairos/scripts"
+    cp -r scripts/* "${pkgdir}/usr/lib/kairos/scripts/"
+    # Kernel modules
+    install -d "${pkgdir}/usr/lib/modules/$(uname -r)/kairos"
+    install -m0644 kernel/*/*.ko "${pkgdir}/usr/lib/modules/$(uname -r)/kairos/"
+    # Config
+    install -d "${pkgdir}/etc/kairos"
+    cp -r config/* "${pkgdir}/etc/kairos/"
+}

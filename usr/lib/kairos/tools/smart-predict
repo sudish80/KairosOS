@@ -1,0 +1,31 @@
+#!/bin/bash
+# 265: Predictive Solid-State Media Wear Tracker
+set -euo pipefail
+
+THRESHOLD_PERCENT="${1:-90}"
+THRESHOLD_TEMP="${2:-65}"
+
+echo "=== SMART Predictive Wear Analysis ==="
+for dev in /dev/sd? /dev/nvme?n?; do
+    [ -b "$dev" ] || continue
+    echo "Device: $dev"
+    
+    if smartctl -H "$dev" &>/dev/null; then
+        health=$(smartctl -H "$dev" | grep -i 'health' | awk '{print $NF}')
+        temp=$(smartctl -A "$dev" 2>/dev/null | grep -i 'temperature' | awk '{print $(NF)}' | head -1)
+        wear=$(smartctl -A "$dev" 2>/dev/null | grep -i 'percentage_used\|wear_level' | awk '{print $(NF)}' | grep -o '[0-9]*')
+        
+        echo "  Health: $health"
+        [ -n "$temp" ] && echo "  Temp: ${temp}°C"
+        [ -n "$wear" ] && echo "  Wear: ${wear}%"
+        
+        if [ -n "$wear" ] && [ "$wear" -gt "$THRESHOLD_PERCENT" ] 2>/dev/null; then
+            echo "  ⚠ WARNING: Wear exceeds ${THRESHOLD_PERCENT}% — migrate data!"
+        fi
+        if [ -n "$temp" ] && [ "$temp" -gt "$THRESHOLD_TEMP" ] 2>/dev/null; then
+            echo "  ⚠ WARNING: Temp exceeds ${THRESHOLD_TEMP}°C"
+        fi
+    else
+        echo "  No SMART data available"
+    fi
+done

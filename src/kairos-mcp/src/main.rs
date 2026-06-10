@@ -1,0 +1,37 @@
+use std::path::PathBuf;
+use clap::Parser;
+use tracing_subscriber::EnvFilter;
+use tracing::info;
+
+#[derive(Parser)]
+#[command(name = "kairos-mcp", version = "1.0.0", about = "MCP protocol router and service registry")]
+struct Cli {
+    #[arg(short, long, default_value = "/etc/kairos/mcp.toml")]
+    config: PathBuf,
+
+    #[arg(long)]
+    metrics: bool,
+}
+
+#[tokio::main]
+async fn main() -> anyhow::Result<()> {
+    let cli = Cli::parse();
+    let cfg = kairos_mcp::config::Config::load(&cli.config)?;
+
+    tracing_subscriber::fmt()
+        .with_env_filter(EnvFilter::new(&cfg.general.log_level))
+        .init();
+
+    info!("kairos-mcp v{} starting", env!("CARGO_PKG_VERSION"));
+
+    let app_state = kairos_mcp::AppState::new(cfg).await?;
+
+    app_state.server.register_method("ping", |_| serde_json::json!("pong")).await;
+    app_state.server.register_method("health", |_| serde_json::json!({"status": "ok"})).await;
+    app_state.server.register_method("list_services", |_| {
+        serde_json::json!({"services": [], "count": 0})
+    }).await;
+
+    info!("Standard MCP methods registered");
+    kairos_mcp::run(app_state).await
+}

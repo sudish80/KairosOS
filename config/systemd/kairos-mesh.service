@@ -1,0 +1,10 @@
+[Unit]
+Description=WireGuard mesh networking and consensus
+After=network.target
+[Service]
+ExecStart=/usr/bin/kairos-mesh
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

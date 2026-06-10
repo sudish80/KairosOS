@@ -1,0 +1,32 @@
+╔══════════════════════════════════════════════════════════╗
+║                                                          ║
+║   ██╗  ██╗ █████╗ ██╗██████╗  ██████╗ ███████╗          ║
+║   ██║ ██╔╝██╔══██╗██║██╔══██╗██╔═══██╗██╔════╝          ║
+║   █████╔╝ ███████║██║██████╔╝██║   ██║███████╗          ║
+║   ██╔═██╗ ██╔══██║██║██╔══██╗██║   ██║╚════██║          ║
+║   ██║  ██╗██║  ██║██║██║  ██║╚██████╔╝███████║          ║
+║   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═╝ ╚═════╝ ╚══════╝          ║
+║                                                          ║
+║   ██████╗ ███████╗                                      ║
+║   ██╔══██╗██╔════╝                                      ║
+║   ██████╔╝███████╗                                      ║
+║   ██╔══██╗╚════██║                                      ║
+║   ██║  ██║███████║                                      ║
+║   ╚═╝  ╚═╝╚══════╝                                      ║
+║                                                          ║
+║   The AI Operating System                                ║
+║                                                          ║
+║   Built with:                                            ║
+║   › Linux Kernel — torvalds/linux                       ║
+║   › Hermes Agent — NousResearch/hermes-agent            ║
+║   › OpenClaw  — openclaw/openclaw                       ║
+║                                                          ║
+║   Quick commands:                                        ║
+║   › hermes            Start the AI agent                 ║
+║   › hermes gateway    Start multi-channel gateway        ║
+║   › kairos-help       Show KairosOS help                 ║
+║   › kairos-status     System status dashboard            ║
+║                                                          ║
+║   Web dashboard: http://localhost:8080                   ║
+║                                                          ║
+╚══════════════════════════════════════════════════════════╝

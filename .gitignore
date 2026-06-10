@@ -1,0 +1,52 @@
+# Rust
+target/
+**/*.rs.bk
+Cargo.lock
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+*.whl
+.venv/
+venv/
+
+# Kernel
+*.o
+*.ko
+*.mod.c
+*.mod
+*.order
+*.symvers
+Module.symvers
+Module.markers
+
+# Build
+output/
+buildroot-src/
+*.img
+*.iso
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+/var/
+
+# Secrets
+*.key
+*.pem
+*.crt
+*.sig
+!config/apparmor/

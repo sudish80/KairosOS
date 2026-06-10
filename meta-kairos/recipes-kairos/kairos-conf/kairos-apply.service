@@ -1,0 +1,22 @@
+[Unit]
+Description=KairosOS Declarative Config Engine
+Documentation=https://kairosos.org/docs/daemons/apply
+Wants=kairos-git-logger.service
+After=kairos-git-logger.service
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/kairos-apply daemon --watch /etc/kairos/configuration.nix
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=10
+CapabilityBoundingSet=CAP_DAC_OVERRIDE CAP_SYS_ADMIN CAP_SYS_BOOT
+AmbientCapabilities=CAP_DAC_OVERRIDE CAP_SYS_ADMIN CAP_SYS_BOOT
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths=/run/kairos /var/lib/kairos/generations /var/log/kairos
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

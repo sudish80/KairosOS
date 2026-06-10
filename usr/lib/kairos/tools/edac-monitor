@@ -1,0 +1,31 @@
+#!/bin/bash
+# 254: Hardware ECC Defect Isolation Mapper / 030: DRAM Thermal Spreader
+set -euo pipefail
+
+ACTION="${1:-status}"
+
+case "$ACTION" in
+    status)
+        echo "=== ECC Status ==="
+        if [ -d /sys/devices/system/edac ]; then
+            for mc in /sys/devices/system/edac/mc*; do
+                echo "  $(basename $mc):"
+                [ -f "$mc/ce_count" ] && echo "    CE: $(cat $mc/ce_count)"
+                [ -f "$mc/ue_count" ] && echo "    UE: $(cat $mc/ue_count)"
+                [ -f "$mc/sd_ce_count" ] && echo "    SD_CE: $(cat $mc/sd_ce_count)"
+            done
+        else
+            echo "  EDAC not available"
+        fi
+        echo "=== DRAM Thermal ==="
+        for zone in /sys/class/thermal/thermal_zone*; do
+            if [ -f "$zone/type" ] && grep -qi "dimm\|memory\|dram" "$zone/type" 2>/dev/null; then
+                echo "  $(cat $zone/type): $(cat $zone/temp 2>/dev/null)°C"
+            fi
+        done
+        ;;
+    inject)
+        # Software injection test (if CONFIG_HWPOISON_INJECT)
+        echo "HWPoison inject not enabled in user space (requires kernel support)"
+        ;;
+esac

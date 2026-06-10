@@ -1,0 +1,22 @@
+# vim:syntax=apparmor
+# KairosOS WireGuard mesh networking — UDP tunnels, key management
+profile kairos-mesh /usr/bin/kairos-mesh {
+  capability dac_override,
+  capability net_bind_service,   # UDP listen :51820, :51821
+  capability net_admin,          # WireGuard interface management
+  capability net_raw,            # raw socket for discovery beacons
+  capability sys_admin,
+
+  # Config
+  /etc/kairos/mesh.toml r,
+
+  # WireGuard keys
+  /etc/kairos/wg/key r,
+
+  # wg-quick execution
+  /usr/bin/wg-quick ix,
+  /usr/bin/wg ix,
+
+  # Binary
+  /usr/bin/kairos-mesh ix,
+}

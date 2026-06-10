@@ -1,0 +1,17 @@
+[Unit]
+Description=KairosOS First Boot Initialization
+Documentation=https://kairosos.org/docs/first-boot
+ConditionPathExists=!/var/lib/kairos/.first-boot-complete
+After=network-online.target local-fs.target systemd-journald.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/kairos-firstboot
+RemainAfterExit=yes
+StandardOutput=journal+console
+StandardError=journal+console
+TimeoutStartSec=600
+
+[Install]
+WantedBy=multi-user.target

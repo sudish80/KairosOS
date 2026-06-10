@@ -1,0 +1,10 @@
+[Unit]
+Description=Buildroot/Yocto compiler and image pipeline
+After=network.target
+[Service]
+ExecStart=/usr/bin/kairos-build
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

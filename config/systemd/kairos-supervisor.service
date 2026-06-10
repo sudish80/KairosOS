@@ -1,0 +1,11 @@
+[Unit]
+Description=Supervisor watchdog for AI subsystems
+After=network.target
+[Service]
+ExecStart=/usr/bin/python3 -m ai.supervisor
+WorkingDirectory=/opt/kairos/ai
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

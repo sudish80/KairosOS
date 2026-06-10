@@ -1,0 +1,11 @@
+[Unit]
+Description=Telemetry collector aggregator
+After=network.target
+[Service]
+ExecStart=/usr/bin/python3 -m ai.telemetry-collector
+WorkingDirectory=/opt/kairos/ai
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

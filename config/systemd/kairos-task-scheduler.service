@@ -1,0 +1,11 @@
+[Unit]
+Description=Task scheduler DAG engine
+After=network.target
+[Service]
+ExecStart=/usr/bin/python3 -m ai.task-scheduler
+WorkingDirectory=/opt/kairos/ai
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

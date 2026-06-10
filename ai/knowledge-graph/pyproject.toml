@@ -1,0 +1,6 @@
+[project]
+name = "kairos-knowledge-graph"
+version = "1.0.0"
+description = "Entity-relation knowledge graph"
+requires-python = ">=3.11"
+dependencies = []

@@ -1,0 +1,24 @@
+[Unit]
+Description=KairosOS Terminal Agent Session
+Documentation=https://kairosos.org/docs
+BindsTo=kairos-agent.service
+After=kairos-agent.service
+
+[Service]
+Type=simple
+User=kairos
+Group=kairos
+WorkingDirectory=/home/kairos
+Environment=TERM=xterm-256color
+Environment=HOME=/home/kairos
+Environment=HERMES_CONFIG=/etc/kairos/hermes.yaml
+ExecStart=/usr/bin/kairos-terminal-session
+Restart=no
+StandardInput=tty
+StandardOutput=tty
+TTYPath=/dev/tty1
+TTYReset=yes
+TTYVHangup=yes
+
+[Install]
+WantedBy=multi-user.target

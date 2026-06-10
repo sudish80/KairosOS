@@ -1,0 +1,21 @@
+# vim:syntax=apparmor
+# KairosOS multi-agent task DAG scheduler — subprocess execution, resource limits
+profile kairos-orchestrator /usr/bin/kairos-orchestrator {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,
+
+  # Config
+  /etc/kairos/orchestrator.toml r,
+
+  # Workspace
+  /var/lib/kairos/orchestrator/** rw,
+
+  # Subprocess execution (sh -c)
+  /bin/sh ix,
+  /bin/bash ix,
+  /usr/bin/** ix,
+
+  # Binary
+  /usr/bin/kairos-orchestrator ix,
+}

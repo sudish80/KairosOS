@@ -1,0 +1,27 @@
+# vim:syntax=apparmor
+# KairosOS speculative inference pipeline — llama-cli subprocess, model files
+profile kairos-inference-hub /usr/bin/kairos-inference-hub {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,
+  capability sys_ptrace,         # subprocess management
+
+  # Config
+  /etc/kairos/inference-hub.toml r,
+
+  # Model storage
+  /var/lib/kairos/models/** r,
+
+  # Subprocess binaries
+  /usr/lib/kairos/bin/llama-cli ix,
+  /usr/lib/kairos/bin/llama-server ix,
+
+  # llama server socket
+  /var/run/kairos/llama.sock rw,
+
+  # Runtime
+  /var/run/kairos/inference-hub.pid rw,
+
+  # Binary
+  /usr/bin/kairos-inference-hub ix,
+}

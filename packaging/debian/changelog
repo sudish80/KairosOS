@@ -1,0 +1,11 @@
+kairosos (1.0.0-1) unstable; urgency=medium
+
+  * Initial release.
+  * 20 Rust daemons for BPF, MCP, apply, recovery, inference, TUI, etc.
+  * 8 Python AI microservices (confidence, context, supervisor, etc.)
+  * 7 C kernel modules (dm-verity, TPM, EDAC, PTP, fb, IOMMU, PROCHOT)
+  * 74 production-hardened shell scripts
+  * 35 systemd service units
+  * 22 AppArmor profiles
+
+ -- KairosOS Team <dev@kairosos.org>  Wed, 10 Jun 2026 00:00:00 +0000

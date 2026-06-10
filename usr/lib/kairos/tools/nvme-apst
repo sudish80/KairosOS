@@ -1,0 +1,28 @@
+#!/bin/bash
+# 012: NVMe Controller Power State Shifter
+# Commands NVMe drives into APST during in-memory inference periods.
+set -euo pipefail
+
+ACTION="${1:-status}"
+
+case "$ACTION" in
+    power_save)
+        for dev in /sys/class/nvme/nvme*/device/power/control; do
+            echo "auto" > "$dev" 2>/dev/null || true
+        done
+        echo "NVMe APST: power save enabled"
+        ;;
+    performance)
+        for dev in /sys/class/nvme/nvme*/device/power/control; do
+            echo "on" > "$dev" 2>/dev/null || true
+        done
+        echo "NVMe APST: performance mode"
+        ;;
+    status)
+        for nvme in /sys/class/nvme/nvme*; do
+            if [ -f "$nvme/device/power/control" ]; then
+                echo "$(basename $nvme): $(cat $nvme/device/power/control)"
+            fi
+        done
+        ;;
+esac

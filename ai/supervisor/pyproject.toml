@@ -1,0 +1,6 @@
+[project]
+name = "kairos-supervisor"
+version = "1.0.0"
+description = "Supervisor watchdog"
+requires-python = ">=3.11"
+dependencies = []

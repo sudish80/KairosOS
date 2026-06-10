@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "release": "production",
+  "endpoints": {
+    "bpf": "/var/run/kairos/bpf.sock",
+    "mcp": "/var/run/kairos/mcp.sock",
+    "db": "/var/run/kairos/db.sock",
+    "tui": "/var/run/kairos/tui.sock"
+  },
+  "logging": {
+    "level": "info",
+    "format": "json"
+  },
+  "security": {
+    "apparmor": true,
+    "selinux": "permissive"
+  }
+}

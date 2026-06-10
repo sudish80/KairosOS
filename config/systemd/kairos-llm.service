@@ -1,0 +1,10 @@
+[Unit]
+Description=Local LLM runtime orchestrator and quantizer
+After=network.target
+[Service]
+ExecStart=/usr/bin/kairos-llm
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

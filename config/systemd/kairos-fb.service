@@ -1,0 +1,10 @@
+[Unit]
+Description=Framebuffer canvas and DRM/KMS engine
+After=network.target
+[Service]
+ExecStart=/usr/bin/kairos-fb
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

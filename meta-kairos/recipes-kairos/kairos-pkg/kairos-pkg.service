@@ -1,0 +1,21 @@
+[Unit]
+Description=KairosOS Personal Knowledge Graph Service
+Documentation=https://kairosos.org/docs/services/pkg
+Wants=network.target
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/kairos-pkg serve --mcp-socket /run/kairos/pkg.sock --db /var/lib/kairos/pkg/graph.db
+Restart=on-failure
+RestartSec=10
+CapabilityBoundingSet=CAP_DAC_OVERRIDE
+AmbientCapabilities=CAP_DAC_OVERRIDE
+ProtectSystem=strict
+ReadWritePaths=/var/lib/kairos/pkg /var/log/kairos
+ReadOnlyPaths=/run/kairos
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

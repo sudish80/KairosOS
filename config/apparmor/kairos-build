@@ -1,0 +1,14 @@
+# vim:syntax=apparmor
+profile kairos-build /usr/bin/kairos-build {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,
+
+  /etc/kairos/build.toml r,
+  /etc/kairos/buildroot.config r,
+  /opt/buildroot/** r,
+  /var/lib/kairos/build/** rw,
+  /bin/make ix,
+  /bin/bash ix,
+  /usr/bin/kairos-build ix,
+}

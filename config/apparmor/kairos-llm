@@ -1,0 +1,12 @@
+# vim:syntax=apparmor
+profile kairos-llm /usr/bin/kairos-llm {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,
+
+  /etc/kairos/llm.toml r,
+  /var/lib/kairos/models/** r,
+  /var/lib/kairos/models/calibration/** r,
+  /usr/lib/kairos/bin/llama-server ix,
+  /usr/bin/kairos-llm ix,
+}

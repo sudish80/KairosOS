@@ -1,0 +1,10 @@
+[Unit]
+Description=Git-backed /etc version tracker
+After=network.target
+[Service]
+ExecStart=/usr/bin/kairos-git-logger
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

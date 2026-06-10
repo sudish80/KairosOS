@@ -1,0 +1,10 @@
+[Unit]
+Description=Declarative config engine with atomic generations
+After=network.target
+[Service]
+ExecStart=/usr/bin/kairos-apply
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

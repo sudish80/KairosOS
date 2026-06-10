@@ -1,0 +1,12 @@
+# vim:syntax=apparmor
+profile kairos-fb /usr/bin/kairos-fb {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,
+  capability sys_rawio,
+
+  /etc/kairos/fb.toml r,
+  /dev/fb0 rw,
+  /dev/dri/card0 rw,
+  /usr/bin/kairos-fb ix,
+}

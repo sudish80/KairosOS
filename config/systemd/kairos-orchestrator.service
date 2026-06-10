@@ -1,0 +1,10 @@
+[Unit]
+Description=Multi-agent task DAG scheduler
+After=network.target
+[Service]
+ExecStart=/usr/bin/kairos-orchestrator
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

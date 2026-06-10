@@ -1,0 +1,10 @@
+[Unit]
+Description=Climate model data assimilation engine
+After=network.target
+[Service]
+ExecStart=/usr/bin/kairos-climate
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

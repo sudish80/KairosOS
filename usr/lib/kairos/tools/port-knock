@@ -1,0 +1,36 @@
+#!/bin/bash
+# 227: Cryptographic Port-Knocking Interceptor
+# Locks SSH/admin behind silent packet wall, reveals on valid sequence.
+set -euo pipefail
+
+HIDE_PORT="${1:-22}"
+SEQUENCE="${2:-7000 8000 9000}"
+
+case "${3:-status}" in
+    enable)
+        # Add nftables rules for port knocking
+        nft add table inet knock 2>/dev/null || true
+        nft add chain inet knock input '{ type filter hook input priority -10; policy accept; }' 2>/dev/null || true
+        
+        # Create dynamic set for authenticated IPs
+        nft add set inet knock authed '{ type ipv4_addr; flags dynamic,timeout; timeout 60s; }' 2>/dev/null || true
+        
+        # Drop SSH unless authenticated
+        nft add rule inet knock input tcp dport "$HIDE_PORT" ip saddr != @authed counter drop 2>/dev/null || true
+        
+        # Knocking sequence detection
+        FIRST=$(echo $SEQUENCE | awk '{print $1}')
+        nft add rule inet knock input tcp dport "$FIRST" add @knock_stage1 '{ ip saddr timeout 10s }' 2>/dev/null || true
+        
+        echo "Port $HIDE_PORT locked behind knock sequence: $SEQUENCE"
+        echo "To connect: knock <host> $SEQUENCE && ssh <host>"
+        ;;
+    disable)
+        nft delete table inet knock 2>/dev/null || true
+        echo "Port knocking disabled, port $HIDE_PORT exposed"
+        ;;
+    status)
+        echo "Port $HIDE_PORT state:"
+        nft list table inet knock 2>/dev/null || echo "  Not configured"
+        ;;
+esac

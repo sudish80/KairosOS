@@ -1,0 +1,19 @@
+[Unit]
+Description=KairosOS Systemd MCP Server
+Documentation=https://kairosos.org/docs/mcp/systemd
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/kairos-systemd-mcp
+Restart=on-failure
+RestartSec=5
+CapabilityBoundingSet=CAP_DAC_READ_SEARCH CAP_SYS_ADMIN
+AmbientCapabilities=CAP_DAC_READ_SEARCH CAP_SYS_ADMIN
+ProtectSystem=strict
+ReadWritePaths=/run/systemd /tmp
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

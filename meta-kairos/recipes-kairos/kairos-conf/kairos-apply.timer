@@ -1,0 +1,11 @@
+[Unit]
+Description=KairosOS periodic config reconciliation
+Documentation=https://kairosos.org/docs/daemons/apply
+
+[Timer]
+OnCalendar=hourly
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target

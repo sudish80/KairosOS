@@ -1,0 +1,11 @@
+# Device table for KairosOS
+# Format: <path> <type> <mode> <uid> <gid> <major> <minor> <start> <inc> <count>
+/home/kairos d 750 1000 1000 - - - - -
+/home/kairos/.hermes d 750 1000 1000 - - - - -
+/home/kairos/.hermes/skills d 750 1000 1000 - - - - -
+/home/kairos/.hermes/tools d 750 1000 1000 - - - - -
+/home/kairos/.hermes/memory d 750 1000 1000 - - - - -
+/home/kairos/.config d 750 1000 1000 - - - - -
+/opt/kairos d 755 0 0 - - - - -
+/opt/kairos/web d 755 0 0 - - - - -
+/var/log/kairos d 755 0 0 - - - - -

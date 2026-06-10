@@ -1,0 +1,178 @@
+# =============================================================================
+# KairosOS CI Pipeline — Build, Test, Lint, Security Scan
+# =============================================================================
+name: KairosOS CI
+
+on:
+  push:
+    branches: [main, develop, release/**]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: "-D warnings"
+  PYTHON_VERSION: "3.12"
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Rust: build, test, clippy, fmt
+  # ---------------------------------------------------------------------------
+  rust:
+    name: Rust (${{ matrix.target }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - x86_64-unknown-linux-gnu
+          - aarch64-unknown-linux-gnu
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install cross toolchain
+        if: matrix.target == 'aarch64-unknown-linux-gnu'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu libc6-dev-arm64-cross
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src
+      - name: Check format
+        run: cargo fmt --all --check
+        working-directory: src
+      - name: Clippy (deny warnings)
+        run: cargo clippy --workspace --all-targets -- -D warnings
+        working-directory: src
+      - name: Build (release)
+        run: cargo build --release --workspace
+        working-directory: src
+      - name: Test (unstable only on native)
+        if: matrix.target == 'x86_64-unknown-linux-gnu'
+        run: cargo test --workspace
+        working-directory: src
+      - name: MCP servers build
+        working-directory: src/mcp-servers
+        run: |
+          for dir in */; do
+            if [ -f "${dir}Cargo.toml" ]; then
+              cargo build --release --manifest-path "${dir}Cargo.toml" --target "${{ matrix.target }}"
+            fi
+          done
+
+  # ---------------------------------------------------------------------------
+  # Python: lint, type-check, test
+  # ---------------------------------------------------------------------------
+  python:
+    name: Python
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install deps
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install ruff mypy pytest pytest-asyncio
+      - name: Ruff lint
+        run: ruff check ai/ tests/ scripts/
+      - name: MyPy type check
+        run: mypy ai/ --ignore-missing-imports --strict-optional
+      - name: Pytest
+        run: python3 -m pytest tests/ ai/*/tests/ -v --timeout=30
+
+  # ---------------------------------------------------------------------------
+  # Shell: lint with shellcheck
+  # ---------------------------------------------------------------------------
+  shell:
+    name: Shell scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install shellcheck
+        run: sudo apt-get install -y shellcheck
+      - name: Shellcheck all scripts
+        run: shellcheck scripts/**/*.sh
+      - name: Check executability
+        run: |
+          for f in scripts/**/*.sh; do
+            test -x "$f" || { echo "NOT EXECUTABLE: $f"; exit 1; }
+          done
+
+  # ---------------------------------------------------------------------------
+  # Kernel modules: build-test for native arch
+  # ---------------------------------------------------------------------------
+  kernel:
+    name: Kernel modules
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install kernel headers
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y linux-headers-$(uname -r) build-essential
+      - name: Build all kernel modules
+        run: |
+          for d in kernel/*/; do
+            echo "=== Building $d ==="
+            make -C "$d" KDIR=/lib/modules/$(uname -r)/build
+          done
+
+  # ---------------------------------------------------------------------------
+  # Security: vulnerability scan and SAST
+  # ---------------------------------------------------------------------------
+  security:
+    name: Security scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: cargo-audit (Rust deps)
+        run: |
+          cargo install cargo-audit
+          cargo audit
+        working-directory: src
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-results.sarif
+          severity: HIGH,CRITICAL
+      - name: Upload Trivy results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+      - name: Check for secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ---------------------------------------------------------------------------
+  # SBOM generation
+  # ---------------------------------------------------------------------------
+  sbom:
+    name: SBOM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Generate Rust SBOM
+        run: |
+          cargo install cargo-cyclonedx
+          cargo cyclonedx --workspace --output-format json
+        working-directory: src
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: src/*.cdx.json

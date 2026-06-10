@@ -1,0 +1,27 @@
+# vim:syntax=apparmor
+# KairosOS BPF telemetry daemon — eBPF program load/attach, thermal monitoring
+profile kairos-bpf /usr/bin/kairos-bpf {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,          # bpf() syscall, perf_event_open
+  capability sys_rawio,          # perf events for tracepoints
+  capability sys_ptrace,         # kprobe attachment
+  capability bpf,                # ambient BPF capability
+
+  # Config and runtime
+  /etc/kairos/bpf.toml r,
+  /var/run/kairos/bpf.sock rw,
+  /var/run/kairos/bpf.pid rw,
+
+  # Thermal monitoring
+  /sys/class/thermal/**/temp r,
+
+  # BPF filesystem
+  /sys/fs/bpf/** rw,
+
+  # cgroup access for scheduling
+  /sys/fs/cgroup/** rw,
+
+  # Binary
+  /usr/bin/kairos-bpf ix,
+}

@@ -1,0 +1,30 @@
+#!/bin/bash
+# 018: CPU C-State Latency Overrider
+# Prevents deep C-states during high-priority compilation via /dev/cpu_dma_latency.
+set -euo pipefail
+
+ACTION="${1:-status}"
+LATENCY="${2:-0}"
+
+case "$ACTION" in
+    lock)
+        echo "$LATENCY" > /dev/cpu_dma_latency 2>/dev/null || {
+            echo "Writing PM_QOS latency override"
+            echo "$LATENCY" > /sys/devices/system/cpu/cpu*/cpuidle/state*/disable 2>/dev/null || true
+        }
+        echo "C-state latency locked to ${LATENCY}us"
+        ;;
+    unlock)
+        echo "1000000000" > /dev/cpu_dma_latency 2>/dev/null || true
+        echo "C-state latency unlocked"
+        ;;
+    status)
+        echo "CPU idle states:"
+        for cpu in /sys/devices/system/cpu/cpu*/cpuidle; do
+            for state in "$cpu"/state*; do
+                [ -f "$state/name" ] && echo "  $(basename $(dirname $state))/$(basename $state): $(cat $state/name 2>/dev/null) latency=$(cat $state/latency 2>/dev/null)us"
+            done
+            break
+        done
+        ;;
+esac

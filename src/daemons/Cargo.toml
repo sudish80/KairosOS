@@ -1,0 +1,10 @@
+[workspace]
+
+members = [
+    "kairos-bpf",
+    "kairos-mcp",
+    "kairos-apply",
+    "kairos-git-logger",
+]
+
+resolver = "2"

@@ -1,0 +1,25 @@
+# vim:syntax=apparmor
+# KairosOS Terminal UI daemon — DRM/KMS, framebuffer, input devices
+profile kairos-tui /usr/bin/kairos-tui {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,          # DRM mode setting
+  capability sys_rawio,          # /dev/fb0 mmap
+  capability dac_read_search,    # input device access
+
+  # Config
+  /etc/kairos/tui.toml r,
+
+  # Display devices
+  /dev/fb0 rw,
+  /dev/dri/card0 rw,
+
+  # Input devices
+  /dev/input/event* r,
+
+  # Console font
+  /usr/share/fonts/kairos/** r,
+
+  # Binary
+  /usr/bin/kairos-tui ix,
+}

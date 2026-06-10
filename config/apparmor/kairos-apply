@@ -1,0 +1,19 @@
+# vim:syntax=apparmor
+# KairosOS declarative config state applier — generation snapshots, rollback
+profile kairos-apply /usr/bin/kairos-apply {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,          # symlink management
+
+  # Config
+  /etc/kairos/apply.toml r,
+  /etc/kairos/apply.d/** rw,
+  /etc/kairos/active rw,
+  /etc/kairos/schemas/** r,
+
+  # State directory
+  /var/lib/kairos/apply/** rw,
+
+  # Binary
+  /usr/bin/kairos-apply ix,
+}

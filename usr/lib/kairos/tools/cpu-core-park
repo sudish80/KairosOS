@@ -1,0 +1,32 @@
+#!/bin/bash
+# 010: CPU Core Parking Optimizer
+# Shuts down idle efficiency cores when compute tasks are single-threaded.
+set -euo pipefail
+
+ACTION="${1:-status}"
+TARGET_CORES="${2:-4-7}"  # Cores to offline during compute
+
+case "$ACTION" in
+    park)
+        for cpu in /sys/devices/system/cpu/cpu*/online; do
+            core=$(basename $(dirname "$cpu") | sed 's/cpu//')
+            if [ "$core" -ge "${TARGET_CORES%-*}" ] 2>/dev/null && [ "$core" -le "${TARGET_CORES#*-}" ] 2>/dev/null; then
+                echo 0 > "$cpu" 2>/dev/null || true
+            fi
+        done
+        echo "Cores $TARGET_CORES parked"
+        ;;
+    unpark)
+        for cpu in /sys/devices/system/cpu/cpu*/online; do
+            echo 1 > "$cpu" 2>/dev/null || true
+        done
+        echo "All cores unparked"
+        ;;
+    status)
+        echo "=== CPU Core Status ==="
+        for cpu in /sys/devices/system/cpu/cpu*/online; do
+            core=$(basename $(dirname "$cpu"))
+            echo "$core: $(cat "$cpu" 2>/dev/null || echo 'N/A')"
+        done
+        ;;
+esac

@@ -1,0 +1,10 @@
+[Unit]
+Description=eBPF telemetry and policy daemon
+After=network.target
+[Service]
+ExecStart=/usr/bin/kairos-bpf
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

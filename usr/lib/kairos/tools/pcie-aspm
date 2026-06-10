@@ -1,0 +1,32 @@
+#!/bin/bash
+# 002: Dynamic PCIe Link State Management
+# Forces idle PCIe slots into deep L0s/L1 ASPM power-saving states.
+set -euo pipefail
+
+ACTION="${1:-status}"
+
+case "$ACTION" in
+    power_save)
+        for dev in /sys/bus/pci/devices/*/power/control; do
+            echo "auto" > "$dev" 2>/dev/null || true
+        done
+        for dev in /sys/bus/pci/devices/*/power_state; do
+            echo "1" > "$dev" 2>/dev/null || true
+        done
+        echo "PCIe ASPM: power save mode enabled"
+        ;;
+    performance)
+        for dev in /sys/bus/pci/devices/*/power/control; do
+            echo "on" > "$dev" 2>/dev/null || true
+        done
+        echo "PCIe ASPM: performance mode enabled"
+        ;;
+    status)
+        echo "=== PCIe Power States ==="
+        for dev in /sys/bus/pci/devices/*/power; do
+            if [ -f "$dev/control" ]; then
+                echo "$(basename $(dirname $dev)): $(cat $dev/control 2>/dev/null)"
+            fi
+        done
+        ;;
+esac

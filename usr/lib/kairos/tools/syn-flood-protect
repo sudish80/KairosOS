@@ -1,0 +1,33 @@
+#!/bin/bash
+# 205: SYN Flood Mitigation Governor
+set -euo pipefail
+
+THRESHOLD="${1:-1000}"
+ACTION="${2:-auto}"
+
+CURRENT_SYN=$(netstat -s 2>/dev/null | grep 'SYN to SYN+ACK' | awk '{print $1}' || echo 0)
+
+case "$ACTION" in
+    enable)
+        echo 1 > /proc/sys/net/ipv4/tcp_syncookies 2>/dev/null || true
+        echo "$THRESHOLD" > /proc/sys/net/ipv4/tcp_max_syn_backlog 2>/dev/null || true
+        echo "SYN flood protection enabled (backlog=$THRESHOLD)"
+        ;;
+    disable)
+        echo 0 > /proc/sys/net/ipv4/tcp_syncookies 2>/dev/null || true
+        echo "SYN flood protection disabled"
+        ;;
+    auto)
+        if [ "$CURRENT_SYN" -gt "$THRESHOLD" ]; then
+            echo 1 > /proc/sys/net/ipv4/tcp_syncookies 2>/dev/null || true
+            echo "SYN flood detected ($CURRENT_SYN half-open) — syncookies enabled"
+        else
+            echo "No SYN flood detected ($CURRENT_SYN half-open)"
+        fi
+        ;;
+    status)
+        echo "Syncookies: $(cat /proc/sys/net/ipv4/tcp_syncookies 2>/dev/null)"
+        echo "Backlog: $(cat /proc/sys/net/ipv4/tcp_max_syn_backlog 2>/dev/null)"
+        echo "Half-open: $CURRENT_SYN"
+        ;;
+esac

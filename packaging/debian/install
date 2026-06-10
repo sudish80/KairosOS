@@ -1,0 +1,8 @@
+kairosos-daemons usr/bin
+kairosos-mcp-servers usr/sbin
+kairosos-ai-services opt/kairos/ai
+kairosos-full etc/kairos
+kairosos-full lib/systemd/system
+kairosos-full etc/apparmor.d
+kairosos-scripts usr/lib/kairos/scripts
+kairosos-kernel-modules lib/modules/*/kairos

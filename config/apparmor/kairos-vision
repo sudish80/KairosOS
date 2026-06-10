@@ -1,0 +1,13 @@
+# vim:syntax=apparmor
+profile kairos-vision /usr/bin/kairos-vision {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,
+  capability sys_rawio,
+
+  /etc/kairos/vision.toml r,
+  /dev/video0 rw,
+  /var/lib/kairos/models/yolov8n.gguf r,
+  /etc/kairos/vision/coco.txt r,
+  /usr/bin/kairos-vision ix,
+}

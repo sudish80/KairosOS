@@ -1,0 +1,29 @@
+[package]
+name = "kairos-recovery"
+version = "1.0.0"
+edition = "2021"
+description = "A/B partition management, dm-verity, and recovery shell daemon — production-hardened"
+
+[dependencies]
+tokio = { version = "1", features = ["full", "rt-multi-thread", "macros", "fs", "process", "sync", "signal", "net"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+anyhow = "1"
+thiserror = "1"
+clap = { version = "4", features = ["derive"] }
+toml = "0.8"
+chrono = { version = "0.4", features = ["serde"] }
+fs2 = "0.4"
+reqwest = { version = "0.12", features = ["json", "stream"], default-features = false }
+sha2 = "0.10"
+uuid = { version = "1", features = ["v4"] }
+
+[lib]
+name = "kairos_recovery"
+path = "src/lib.rs"
+
+[[bin]]
+name = "kairos-recovery"
+path = "src/main.rs"

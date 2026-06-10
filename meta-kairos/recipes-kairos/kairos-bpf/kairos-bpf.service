@@ -1,0 +1,26 @@
+[Unit]
+Description=KairosOS eBPF Telemetry & Control Daemon
+Documentation=https://kairosos.org/docs/daemons/bpf
+Wants=network.target
+After=network.target
+
+[Service]
+Type=simple
+ExecStartPre=/sbin/modprobe bpf
+ExecStartPre=/sbin/sysctl -w kernel.bpf_stats_enabled=1
+ExecStart=/usr/sbin/kairos-bpf --mcp-socket /run/kairos/bpf.sock
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+LimitMEMLOCK=infinity
+CapabilityBoundingSet=CAP_BPF CAP_PERFMON CAP_SYS_ADMIN CAP_NET_ADMIN CAP_NET_RAW
+AmbientCapabilities=CAP_BPF CAP_PERFMON CAP_SYS_ADMIN CAP_NET_ADMIN CAP_NET_RAW
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/run/kairos /var/lib/kairos/bpf /var/log/kairos
+ReadOnlyPaths=/sys/fs/bpf /sys/kernel/debug/tracing /sys/kernel/btf /proc/kallsyms
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

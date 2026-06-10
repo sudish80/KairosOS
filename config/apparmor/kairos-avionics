@@ -1,0 +1,12 @@
+# vim:syntax=apparmor
+profile kairos-avionics /usr/bin/kairos-avionics {
+  capability dac_override,
+  capability net_bind_service,
+  capability sys_admin,
+  capability sys_tty_config,
+
+  /etc/kairos/avionics.toml r,
+  /dev/ttyS0 rw,
+  /dev/ttyS1 rw,
+  /usr/bin/kairos-avionics ix,
+}

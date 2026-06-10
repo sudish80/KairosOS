@@ -1,0 +1,54 @@
+#!/bin/bash
+# KairosOS Agent Tool Executor — Hermes-invokable hardware/network/security tools
+set -euo pipefail
+
+TOOL_DIR="/usr/lib/kairos/tools"
+LOG_DIR="/var/log/kairos/tools"
+mkdir -p "$LOG_DIR"
+
+list_tools() {
+    echo "Available KairosOS agent tools:"
+    echo ""
+    echo "  Hardware:"
+    echo "    interrupt-affinity   - Bind IRQs to performance cores (001)"
+    echo "    pcie-aspm            - PCIe power state management (002)"
+    echo "    cpu-core-park        - Park idle CPU cores (010)"
+    echo "    nvme-apst            - NVMe power state shifter (012)"
+    echo "    thp-defrag           - THP defragmentation (044)"
+    echo "    cpu-cstate-latency   - C-state latency override (018)"
+    echo "    edac-monitor         - ECC/DRAM thermal status (254)"
+    echo "    pstate-governor      - CPUFreq governor switcher (011)"
+    echo ""
+    echo "  Security:"
+    echo "    panic-switch         - RAM-evaporating key shred (052)"
+    echo "    seccomp-gen          - Seccomp profile generator (076)"
+    echo "    typing-cadence       - Typing biometric auth stub (054)"
+    echo "    mac-shifter          - Dynamic MAC randomization (069)"
+    echo ""
+    echo "  Network:"
+    echo "    dns-leak-eliminator  - DNS leak protection (208)"
+    echo "    port-knock           - Port knocking auth (227)"
+    echo "    bbr-switcher         - TCP BBR/Cubic switch (214)"
+    echo "    syn-flood-protect    - SYN flood mitigation (205)"
+    echo ""
+    echo "  Self-Heal:"
+    echo "    orphan-reaper        - Zombie process cleanup (256)"
+    echo "    socket-teardown      - Stuck socket recovery (272)"
+    echo "    service-backoff      - Broken service restart (266)"
+    echo "    symlink-repair       - Dangling symlink fix (258)"
+    echo "    smart-predict        - SSD wear prediction (265)"
+    echo ""
+    echo "  Storage:"
+    echo "    io-scheduler         - IO scheduler hot-swap (034)"
+    echo "    zswap-tuner          - Zswap compression algo (027)"
+}
+
+if [ $# -eq 0 ]; then
+    list_tools
+    exit 0
+fi
+
+TOOL="$1"
+shift
+
+"$TOOL_DIR/$TOOL" "$@" 2>&1 | tee -a "$LOG_DIR/$TOOL.log"

@@ -1,0 +1,15 @@
+[Unit]
+Description=KairosOS OTA update check
+Documentation=https://kairosos.org/docs/ota
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/kairos-recovery --check-update
+User=kairos
+Nice=19
+IOSchedulingClass=idle
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,19 @@
+[Unit]
+Description=KairosOS Process MCP Server
+Documentation=https://kairosos.org/docs/mcp/process
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/sbin/kairos-process-mcp
+Restart=on-failure
+RestartSec=5
+CapabilityBoundingSet=CAP_KILL CAP_DAC_READ_SEARCH CAP_SYS_PTRACE
+AmbientCapabilities=CAP_KILL CAP_DAC_READ_SEARCH CAP_SYS_PTRACE
+ProtectSystem=strict
+ReadWritePaths=/tmp
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

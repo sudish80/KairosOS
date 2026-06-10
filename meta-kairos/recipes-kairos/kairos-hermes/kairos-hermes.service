@@ -1,0 +1,22 @@
+[Unit]
+Description=KairosOS Hermes AI Agent
+Documentation=https://kairosos.org/docs/agent/hermes
+Wants=kairos-mcp.service ollama.service
+After=kairos-mcp.service ollama.service
+
+[Service]
+Type=simple
+ExecStartPre=/bin/sleep 5
+ExecStart=/usr/bin/hermes --config /etc/kairos/agent/config.yaml --mcp-socket /run/kairos/mcp.sock
+Restart=on-failure
+RestartSec=10
+CapabilityBoundingSet=CAP_DAC_READ_SEARCH CAP_NET_BIND_SERVICE
+AmbientCapabilities=CAP_DAC_READ_SEARCH CAP_NET_BIND_SERVICE
+ProtectSystem=strict
+ReadWritePaths=/var/lib/kairos/hermes /var/log/kairos /tmp
+ReadOnlyPaths=/etc/kairos /run/kairos
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

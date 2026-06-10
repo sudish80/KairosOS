@@ -1,0 +1,10 @@
+[Unit]
+Description=Market data feed handler and algo trading
+After=network.target
+[Service]
+ExecStart=/usr/bin/kairos-finance
+Restart=always
+RestartSec=5
+User=kairos
+[Install]
+WantedBy=multi-user.target

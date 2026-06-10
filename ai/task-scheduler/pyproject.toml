@@ -1,0 +1,6 @@
+[project]
+name = "kairos-task-scheduler"
+version = "1.0.0"
+description = "DAG task scheduler"
+requires-python = ">=3.11"
+dependencies = []
