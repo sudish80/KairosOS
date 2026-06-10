@@ -50,16 +50,14 @@ jobs:
         working-directory: src
       - name: Build (release)
         run: |
-          cargo build --release --workspace 2> build_output.txt || (echo "=== BUILD ERRORS ==="; cat build_output.txt; exit 1)
+          cargo build --release --workspace 2> build_output.txt || (echo "=== BUILD ERRORS ===" | cat - build_output.txt; exit 1)
         working-directory: src
-      - name: Post build errors as commit comment
+      - name: Annotate build errors
         if: failure()
         run: |
-          gh api repos/${{ github.repository }}/commits/${{ github.sha }}/comments \
-            --field body="$(echo '### Rust build errors'; echo '```'; cat build_output.txt; echo '```')"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_HOST: github.com
+          grep -E "(error|Error|aborting|not found)" build_output.txt | head -40 | while IFS= read -r line; do
+            echo "::error file=build.log,title=Rust Build Error::${line}"
+          done
         working-directory: src
       - name: Clippy (deny warnings)
         continue-on-error: true
