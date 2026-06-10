@@ -1,0 +1,7 @@
+name = "kairos-metrics-collector"
+version = "1.0.0"
+author = "KairosOS"
+description = "Collects system metrics and forwards to the MCP registry"
+entry = "metrics_collector.wasm"
+capabilities = ["metrics:collect", "metrics:query", "event:tick"]
+permissions = ["log", "http:fetch"]

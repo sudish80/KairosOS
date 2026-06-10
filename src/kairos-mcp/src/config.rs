@@ -9,6 +9,16 @@ pub struct Config {
     pub auth: AuthConfig,
     pub rate_limit: RateLimitConfig,
     pub audit: AuditConfig,
+    pub plugin: PluginConfig,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PluginConfig {
+    pub enabled: bool,
+    pub directory: String,
+    pub max_plugins: u32,
+    pub sandbox: bool,
+    pub memory_limit_mb: u32,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -87,6 +97,13 @@ impl Default for Config {
                 log_auth_events: true,
                 log_api_calls: true,
                 log_config_changes: true,
+            },
+            plugin: PluginConfig {
+                enabled: true,
+                directory: "/usr/lib/kairos/plugins".into(),
+                max_plugins: 50,
+                sandbox: true,
+                memory_limit_mb: 64,
             },
         }
     }

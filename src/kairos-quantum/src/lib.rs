@@ -1,6 +1,6 @@
 ﻿#![deny(unsafe_code)]
 pub mod config; pub mod error; pub mod telemetry; pub mod worker;
-pub mod gate; pub mod simulator; pub struct AppState {
+pub mod gate; pub mod simulator; pub mod pqc; pub struct AppState {
     pub config: std::sync::Arc<tokio::sync::RwLock<config::Config>>,
     pub telemetry: std::sync::Arc<telemetry::Telemetry>,
     pub gate_engine: std::sync::Arc<gate::GateEngine>,

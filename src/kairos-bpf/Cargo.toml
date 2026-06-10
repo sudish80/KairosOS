@@ -16,6 +16,7 @@ clap = { version = "4", features = ["derive"] }
 libbpf-rs = "1.3"
 plain = "1"
 toml = "0.8"
+uuid = { version = "1", features = ["v4"] }
 libbpf-cargo = { version = "0.22", optional = true }
 
 [build-dependencies]

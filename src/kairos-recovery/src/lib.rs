@@ -11,6 +11,8 @@ pub mod recovery;
 pub mod boot;
 pub mod update;
 pub mod health;
+pub mod predict;
+pub mod digtwin;
 
 use std::sync::Arc;
 use tokio::sync::RwLock;

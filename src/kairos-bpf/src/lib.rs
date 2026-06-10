@@ -16,6 +16,7 @@ pub mod remediation;
 pub mod anomaly;
 pub mod scheduler;
 pub mod thermal;
+pub mod heal;
 
 use std::sync::Arc;
 use tokio::sync::RwLock;

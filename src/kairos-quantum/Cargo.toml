@@ -16,6 +16,9 @@ clap = { version = "4", features = ["derive"] }
 toml = "0.8"
 chrono = { version = "0.4", features = ["serde"] }
 num-complex = "0.4"
+pqcrypto-kyber = "0.9"
+pqcrypto-dilithium = "0.5"
+pqcrypto-traits = "0.5"
 
 [lib]
 name = "kairos_quantum"

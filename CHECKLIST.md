@@ -739,6 +739,18 @@
 - [x] Self-Healing Hardware — MCE + RAS → auto-bad-page-offline
 - [x] Intergenerational Learning — pass optimized configs to new builds
 
+## 10-Step Unique Roadmap Implementation
+- [x] Step 1: WebAssembly Plugin Runtime — kairos-mcp/src/plugin.rs (PluginEngine, wasmtime linker, plugin discovery)
+- [x] Step 2: Autonomous Healing Loop — kairos-bpf/src/heal.rs (HealingEngine, anomaly ingestion, auto-remediation) + ai/healing-loop/main.py
+- [x] Step 3: P2P OTA Update Mesh — kairos-mesh/src/p2p/mod.rs (P2pSwarm, block exchange over TCP, SwarmManifest)
+- [x] Step 4: Natural Language Sysadmin — ai/nl-sysadmin/main.py (MCP query → LLM → command execution loop)
+- [x] Step 5: Predictive Hardware Failure — kairos-recovery/src/predict.rs (cross-correlation EDAC/TPM/PROCHOT/BPF)
+- [x] Step 6: On-Device Digital Twin — kairos-recovery/src/digtwin/mod.rs (bubblewrap sandbox OTA pre-test, snapshots)
+- [x] Step 7: Post-Quantum Key Exchange — kairos-quantum/src/pqc/mod.rs (Kyber768 KEM + Dilithium3 signing, hybrid mode)
+- [x] Step 8: Self-Documenting Live Architecture — kairos-mcp/src/arch.rs (LiveArchitecture, JSON/Mermaid/PlantUML export)
+- [x] Step 9: Gamified Chaos Engineering — kairos-chaos/ (ChaosEngine, 8 fault types, auto-rollback, score system)
+- [x] Step 10: Immutable State Timeline — git-logger/src/timeline.rs (git-backed generations, vector diff, enforcement)
+
 ## OpenClaw (Multi-Channel Gateway)
 - [x] OpenClaw as secondary agent
 - [x] Telegram channel gateway
