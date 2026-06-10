@@ -1,4 +1,4 @@
-﻿use std::sync::Arc; use std::sync::atomic::{AtomicU64, Ordering}; use tokio::sync::RwLock; use crate::config;
+use std::sync::Arc; use std::sync::atomic::{AtomicU64, Ordering}; use tokio::sync::RwLock; use crate::config;
 pub struct Telemetry { c: Arc<RwLock<config::Config>>, msgs_rx: AtomicU64, msgs_tx: AtomicU64, errors: AtomicU64 }
 impl Telemetry { pub fn new(c: Arc<RwLock<config::Config>>) -> Self { Self{c, msgs_rx: AtomicU64::new(0), msgs_tx: AtomicU64::new(0), errors: AtomicU64::new(0)} }
     pub fn record_rx(&self) { self.msgs_rx.fetch_add(1, Ordering::Relaxed); } pub fn record_tx(&self) { self.msgs_tx.fetch_add(1, Ordering::Relaxed); }

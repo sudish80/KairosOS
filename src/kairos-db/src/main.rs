@@ -1,4 +1,4 @@
-﻿use std::path::PathBuf; use clap::Parser; use tracing_subscriber::EnvFilter; use tracing::info;
+use std::path::PathBuf; use clap::Parser; use tracing_subscriber::EnvFilter; use tracing::info;
 #[derive(Parser)]
 #[command(name = "kairos-db", version = "1.0.0", about = "SQLite vector database and memory bus daemon")]
 struct Cli { #[arg(short, long, default_value = "/etc/kairos/db.toml")] config: PathBuf }

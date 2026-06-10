@@ -1,4 +1,4 @@
-﻿use std::sync::Arc; use tokio::sync::RwLock; use tracing::info; use crate::config; use crate::model::ClimateModel;
+use std::sync::Arc; use tokio::sync::RwLock; use tracing::info; use crate::config; use crate::model::ClimateModel;
 pub struct ForecastEngine { config: Arc<RwLock<config::Config>>, model: Arc<ClimateModel> }
 impl ForecastEngine {
     pub fn new(config: Arc<RwLock<config::Config>>, model: Arc<ClimateModel>) -> Self { Self { config, model } }

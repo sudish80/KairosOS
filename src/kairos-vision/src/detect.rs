@@ -1,4 +1,4 @@
-﻿use std::sync::Arc; use tokio::sync::RwLock; use crate::config;
+use std::sync::Arc; use tokio::sync::RwLock; use crate::config;
 pub struct ObjectDetector { config: Arc<RwLock<config::Config>> }
 impl ObjectDetector {
     pub fn new(config: Arc<RwLock<config::Config>>) -> Self { Self { config } }

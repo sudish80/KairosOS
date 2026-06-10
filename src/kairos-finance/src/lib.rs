@@ -1,4 +1,4 @@
-﻿#![deny(unsafe_code)]
+#![deny(unsafe_code)]
 pub mod config; pub mod error; pub mod telemetry; pub mod worker;
 pub mod market; pub mod trading; pub mod risk;
 pub struct AppState {

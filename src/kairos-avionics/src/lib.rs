@@ -1,4 +1,4 @@
-﻿#![deny(unsafe_code)]
+#![deny(unsafe_code)]
 pub mod config; pub mod error; pub mod telemetry; pub mod worker;
 pub mod arinc; pub mod mavlink; pub struct AppState {
     pub config: std::sync::Arc<tokio::sync::RwLock<config::Config>>,

@@ -1,4 +1,4 @@
-﻿#![deny(unsafe_code)]
+#![deny(unsafe_code)]
 pub mod config; pub mod error; pub mod telemetry; pub mod worker;
 pub mod storage; pub mod vector; pub mod query; pub mod mem_bus;
 pub struct AppState {

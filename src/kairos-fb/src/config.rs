@@ -1,4 +1,4 @@
-﻿use serde::{Deserialize, Serialize}; use std::path::Path;
+use serde::{Deserialize, Serialize}; use std::path::Path;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config { pub general: GeneralConfig, pub display: DisplayConfig, pub drm: DrmConfig }
 #[derive(Debug, Clone, Serialize, Deserialize)]

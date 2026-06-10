@@ -1,4 +1,4 @@
-﻿use std::sync::Arc; use tokio::sync::RwLock; use tokio::process::Command;
+use std::sync::Arc; use tokio::sync::RwLock; use tokio::process::Command;
 use tracing::info; use crate::config;
 pub struct Quantizer { config: Arc<RwLock<config::Config>> }
 impl Quantizer {

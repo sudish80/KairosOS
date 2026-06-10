@@ -1,4 +1,4 @@
-﻿use thiserror::Error;
+use thiserror::Error;
 #[derive(Error, Debug)]
 pub enum MeshError {
     #[error("WireGuard error: {0}")] Wg(String),

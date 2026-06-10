@@ -1,4 +1,4 @@
-﻿use std::path::PathBuf; use clap::Parser; use tracing_subscriber::EnvFilter; use tracing::info;
+use std::path::PathBuf; use clap::Parser; use tracing_subscriber::EnvFilter; use tracing::info;
 #[derive(Parser)]
 #[command(name = "kairos-build", version = "1.0.0", about = "Buildroot/Yocto compiler and image pipeline daemon")]
 struct Cli { #[arg(short, long, default_value = "/etc/kairos/build.toml")] config: PathBuf, #[arg(long)] build: bool }

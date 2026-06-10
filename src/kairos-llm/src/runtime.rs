@@ -1,4 +1,4 @@
-﻿use std::sync::Arc; use tokio::sync::RwLock; use tokio::process::Command;
+use std::sync::Arc; use tokio::sync::RwLock; use tokio::process::Command;
 use tracing::{info, error}; use crate::config; use crate::model::ModelRegistry;
 pub struct LlmRuntime { config: Arc<RwLock<config::Config>>, model_registry: Arc<ModelRegistry> }
 impl LlmRuntime {

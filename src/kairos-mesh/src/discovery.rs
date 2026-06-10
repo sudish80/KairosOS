@@ -1,4 +1,4 @@
-﻿use std::sync::Arc; use tokio::sync::RwLock; use tokio::net::UdpSocket;
+use std::sync::Arc; use tokio::sync::RwLock; use tokio::net::UdpSocket;
 use tracing::{info, error, debug}; use crate::config;
 pub struct NodeDiscovery { config: Arc<RwLock<config::Config>> }
 impl NodeDiscovery {

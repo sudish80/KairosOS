@@ -1,4 +1,4 @@
-﻿use std::path::PathBuf; use clap::Parser; use tracing_subscriber::EnvFilter; use tracing::info;
+use std::path::PathBuf; use clap::Parser; use tracing_subscriber::EnvFilter; use tracing::info;
 #[derive(Parser)]
 #[command(name = "kairos-llm", version = "1.0.0", about = "Local LLM runtime orchestrator and quantizer daemon")]
 struct Cli { #[arg(short, long, default_value = "/etc/kairos/llm.toml")] config: PathBuf, #[arg(long)] infer: Option<String>, #[arg(long)] model: Option<String>, #[arg(long)] scan: bool }

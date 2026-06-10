@@ -1,4 +1,4 @@
-﻿use serde::{Deserialize, Serialize}; use std::path::Path;
+use serde::{Deserialize, Serialize}; use std::path::Path;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config { pub general: GeneralConfig, pub market: MarketConfig, pub trading: TradingConfig, pub risk: RiskConfig }
 #[derive(Debug, Clone, Serialize, Deserialize)]

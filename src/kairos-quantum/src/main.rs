@@ -1,4 +1,4 @@
-﻿use std::path::PathBuf; use clap::Parser; use tracing_subscriber::EnvFilter; use tracing::info;
+use std::path::PathBuf; use clap::Parser; use tracing_subscriber::EnvFilter; use tracing::info;
 #[derive(Parser)] #[command(name="kairos-quantum", version="1.0.0", about="Quantum gate emulation and simulator daemon")]
 struct Cli { #[arg(short, long, default_value="/etc/kairos/quantum.toml")] config: PathBuf }
 #[tokio::main] async fn main() -> anyhow::Result<()> {

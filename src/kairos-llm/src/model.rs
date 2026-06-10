@@ -1,4 +1,4 @@
-﻿use std::collections::HashMap; use std::path::PathBuf; use std::sync::Arc;
+use std::collections::HashMap; use std::path::PathBuf; use std::sync::Arc;
 use tokio::sync::RwLock; use tokio::fs; use tracing::{info, debug}; use crate::config;
 pub struct ModelRegistry { config: Arc<RwLock<config::Config>>, models: Arc<RwLock<HashMap<String, ModelInfo>>> }
 #[derive(Debug, Clone)]

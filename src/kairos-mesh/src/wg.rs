@@ -1,4 +1,4 @@
-﻿use std::sync::Arc; use tokio::sync::RwLock; use tokio::process::Command;
+use std::sync::Arc; use tokio::sync::RwLock; use tokio::process::Command;
 use tracing::{info, error}; use crate::config;
 static WG_QUICK: &str = "/usr/bin/wg-quick";
 pub struct WireGuardManager { config: Arc<RwLock<config::Config>> }

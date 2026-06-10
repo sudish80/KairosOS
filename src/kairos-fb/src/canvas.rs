@@ -1,4 +1,4 @@
-﻿use std::sync::Arc; use tokio::sync::RwLock; use crate::config;
+use std::sync::Arc; use tokio::sync::RwLock; use crate::config;
 pub struct Canvas { config: Arc<RwLock<config::Config>>, width: u32, height: u32, bpp: u32, buffer: Arc<RwLock<Vec<u8>>> }
 impl Canvas {
     pub fn new(config: Arc<RwLock<config::Config>>) -> Self {

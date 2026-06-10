@@ -1,4 +1,4 @@
-﻿#![deny(unsafe_code)]
+#![deny(unsafe_code)]
 pub mod config; pub mod error; pub mod telemetry; pub mod worker;
 pub mod canvas; pub mod drm; pub mod compositor;
 pub struct AppState {

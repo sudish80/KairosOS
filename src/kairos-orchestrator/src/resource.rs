@@ -1,4 +1,4 @@
-﻿use std::sync::Arc; use tokio::sync::RwLock;
+use std::sync::Arc; use tokio::sync::RwLock;
 use tracing::info; use crate::config;
 pub struct ResourceManager { config: Arc<RwLock<config::Config>>, allocated_cpu: Arc<RwLock<f64>>, allocated_mem: Arc<RwLock<u64>> }
 impl ResourceManager {

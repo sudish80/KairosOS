@@ -1,4 +1,4 @@
-﻿use std::sync::Arc; use std::cmp; use tokio::sync::RwLock; use crate::config;
+use std::sync::Arc; use std::cmp; use tokio::sync::RwLock; use crate::config;
 pub struct SequenceAligner { config: Arc<RwLock<config::Config>> }
 impl SequenceAligner {
     pub fn new(config: Arc<RwLock<config::Config>>) -> Self { Self { config } }

@@ -1,4 +1,4 @@
-﻿use std::path::PathBuf; use clap::Parser; use tracing_subscriber::EnvFilter; use tracing::info;
+use std::path::PathBuf; use clap::Parser; use tracing_subscriber::EnvFilter; use tracing::info;
 #[derive(Parser)] #[command(name="kairos-bio", version="1.0.0", about="DNA/RNA sequence analysis and genomics pipeline daemon")]
 struct Cli { #[arg(short, long, default_value="/etc/kairos/bio.toml")] config: PathBuf, #[arg(long)] gc: Option<String> }
 #[tokio::main] async fn main() -> anyhow::Result<()> {

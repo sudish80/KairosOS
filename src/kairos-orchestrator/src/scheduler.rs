@@ -1,4 +1,4 @@
-﻿use std::sync::Arc; use tokio::sync::RwLock;
+use std::sync::Arc; use tokio::sync::RwLock;
 use tracing::info; use crate::config; use crate::dag::{DagEngine, DagNode};
 pub struct TaskScheduler { config: Arc<RwLock<config::Config>>, dag: Arc<DagEngine> }
 impl TaskScheduler {

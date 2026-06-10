@@ -1,4 +1,4 @@
-﻿use std::sync::Arc; use tokio::sync::RwLock; use crate::config;
+use std::sync::Arc; use tokio::sync::RwLock; use crate::config;
 pub struct DataAssimilation { config: Arc<RwLock<config::Config>> }
 impl DataAssimilation {
     pub fn new(config: Arc<RwLock<config::Config>>) -> Self { Self { config } }

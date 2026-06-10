@@ -1,4 +1,4 @@
-﻿use std::sync::Arc; use tokio::sync::RwLock; use crate::config;
+use std::sync::Arc; use tokio::sync::RwLock; use crate::config;
 pub struct RiskManager { config: Arc<RwLock<config::Config>> }
 impl RiskManager {
     pub fn new(config: Arc<RwLock<config::Config>>) -> Self { Self { config } }

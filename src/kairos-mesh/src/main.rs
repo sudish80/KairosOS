@@ -1,4 +1,4 @@
-﻿use std::path::PathBuf; use clap::Parser; use tracing_subscriber::EnvFilter; use tracing::info;
+use std::path::PathBuf; use clap::Parser; use tracing_subscriber::EnvFilter; use tracing::info;
 #[derive(Parser)]
 #[command(name = "kairos-mesh", version = "1.0.0", about = "WireGuard mesh networking and consensus daemon")]
 struct Cli { #[arg(short, long, default_value = "/etc/kairos/mesh.toml")] config: PathBuf, #[arg(long)] up: bool, #[arg(long)] down: bool }

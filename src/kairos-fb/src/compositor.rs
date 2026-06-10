@@ -1,4 +1,4 @@
-﻿use std::sync::Arc; use tokio::sync::RwLock; use tracing::info; use crate::config; use crate::canvas::Canvas;
+use std::sync::Arc; use tokio::sync::RwLock; use tracing::info; use crate::config; use crate::canvas::Canvas;
 pub struct Compositor { config: Arc<RwLock<config::Config>>, canvas: Arc<Canvas> }
 impl Compositor {
     pub fn new(config: Arc<RwLock<config::Config>>, canvas: Arc<Canvas>) -> Self { Self { config, canvas } }

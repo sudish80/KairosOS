@@ -1,4 +1,4 @@
-﻿use std::sync::Arc; use tokio::sync::RwLock; use tokio::fs; use crate::config;
+use std::sync::Arc; use tokio::sync::RwLock; use tokio::fs; use crate::config;
 pub struct SequenceEngine { config: Arc<RwLock<config::Config>> }
 impl SequenceEngine {
     pub fn new(config: Arc<RwLock<config::Config>>) -> Self { Self { config } }

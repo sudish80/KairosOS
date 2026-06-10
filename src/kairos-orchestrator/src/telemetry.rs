@@ -1,4 +1,4 @@
-﻿use std::sync::Arc; use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::Arc; use std::sync::atomic::{AtomicU64, Ordering};
 use tokio::sync::RwLock; use crate::config;
 pub struct Telemetry {
     config: Arc<RwLock<config::Config>>,

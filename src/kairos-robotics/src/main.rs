@@ -1,4 +1,4 @@
-﻿use std::path::PathBuf; use clap::Parser; use tracing_subscriber::EnvFilter; use tracing::info;
+use std::path::PathBuf; use clap::Parser; use tracing_subscriber::EnvFilter; use tracing::info;
 #[derive(Parser)] #[command(name="kairos-robotics", version="1.0.0", about="Robotic control loops and motor drivers daemon")]
 struct Cli { #[arg(short, long, default_value="/etc/kairos/robotics.toml")] config: PathBuf }
 #[tokio::main] async fn main() -> anyhow::Result<()> {

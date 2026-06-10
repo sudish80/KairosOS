@@ -1,4 +1,4 @@
-﻿use std::sync::Arc; use tokio::sync::RwLock; use crate::config; use crate::market::MarketFeed;
+use std::sync::Arc; use tokio::sync::RwLock; use crate::config; use crate::market::MarketFeed;
 pub struct TradingEngine { config: Arc<RwLock<config::Config>>, _market: Arc<MarketFeed> }
 impl TradingEngine {
     pub fn new(config: Arc<RwLock<config::Config>>, market: Arc<MarketFeed>) -> Self { Self { config, _market: market } }
