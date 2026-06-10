@@ -23,8 +23,13 @@ RUN apt-get update && apt-get install -y \
 # Rust toolchain (stable)
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path \
     --default-toolchain stable --profile minimal
-RUN rustup target add x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu
+RUN rustup target add x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu wasm32-wasi
 RUN rustup component add clippy rustfmt
+RUN wget -q https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-24/wasi-sdk-24.0-x86_64-linux.tar.gz \
+    && tar xzf wasi-sdk-24.0-x86_64-linux.tar.gz -C /opt \
+    && rm wasi-sdk-24.0-x86_64-linux.tar.gz
+ENV WASI_SDK=/opt/wasi-sdk-24.0-x86_64-linux
+ENV WASI_CC=${WASI_SDK}/bin/clang
 
 # Python virtualenv with test deps
 RUN python3 -m venv /opt/venv

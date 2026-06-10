@@ -127,6 +127,33 @@ jobs:
           done
 
   # ---------------------------------------------------------------------------
+  # WASM plugins: compile example plugins with wasi-sdk
+  # ---------------------------------------------------------------------------
+  wasm:
+    name: WASM plugins
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install wasi-sdk
+        run: |
+          wget -q https://github.com/WebAssembly/wasi-sdk/releases/download/wasi-sdk-24/wasi-sdk-24.0-x86_64-linux.tar.gz
+          sudo tar xzf wasi-sdk-24.0-x86_64-linux.tar.gz -C /opt
+          echo "CC=/opt/wasi-sdk-24.0-x86_64-linux/bin/clang" >> $GITHUB_ENV
+          echo "SYSROOT=/opt/wasi-sdk-24.0-x86_64-linux/share/wasi-sysroot" >> $GITHUB_ENV
+      - name: Compile WASM plugins
+        run: |
+          for f in plugins/example-metrics/*.c; do
+            echo "=== Compiling $f ==="
+            /opt/wasi-sdk-24.0-x86_64-linux/bin/clang \
+              --sysroot=/opt/wasi-sdk-24.0-x86_64-linux/share/wasi-sysroot \
+              -O3 -o "${f%.c}.wasm" "$f"
+          done
+      - name: Verify WASM modules
+        run: |
+          file plugins/example-metrics/*.wasm
+          ls -lh plugins/example-metrics/*.wasm
+
+  # ---------------------------------------------------------------------------
   # Security: vulnerability scan and SAST
   # ---------------------------------------------------------------------------
   security:

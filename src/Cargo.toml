@@ -5,7 +5,7 @@ members = [
     "kairos-orchestrator", "kairos-mesh", "kairos-db",
     "kairos-fb", "kairos-llm", "kairos-build", "kairos-climate",
     "kairos-finance", "kairos-vision", "kairos-avionics",
-    "kairos-quantum", "kairos-robotics", "kairos-bio",
+    "kairos-quantum", "kairos-robotics", "kairos-bio", "kairos-chaos",
     "mcp-servers/filesystem-server",
     "mcp-servers/ollama-server",
     "mcp-servers/process-server",

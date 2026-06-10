@@ -5,6 +5,7 @@ use tokio::sync::RwLock;
 use tokio::process::Command;
 use tracing::{info, warn};
 use serde::{Deserialize, Serialize};
+use sha2::{Sha256, Digest};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StateSnapshot {
@@ -65,7 +66,6 @@ impl ImmutableTimeline {
                 .status()
                 .await?;
 
-            // Configure for deterministic hashes
             Command::new("git")
                 .args(["config", "user.name", "kairos-timeline"])
                 .current_dir(&self.repo_path)
@@ -88,14 +88,12 @@ impl ImmutableTimeline {
     }
 
     pub async fn snapshot_repo(&self) -> anyhow::Result<TimelineEntry> {
-        // Stage all changes
         Command::new("git")
             .args(["add", "-A"])
             .current_dir(&self.repo_path)
             .status()
             .await?;
 
-        // Check if there are actual changes
         let status = Command::new("git")
             .args(["status", "--porcelain"])
             .current_dir(&self.repo_path)
@@ -121,7 +119,6 @@ impl ImmutableTimeline {
             .status()
             .await?;
 
-        // Get root hash
         let hash_output = Command::new("git")
             .args(["rev-parse", "HEAD"])
             .current_dir(&self.repo_path)
@@ -129,7 +126,6 @@ impl ImmutableTimeline {
             .await?;
         let root_hash = String::from_utf8_lossy(&hash_output.stdout).trim().to_string();
 
-        // Get diff from previous commit
         let diff_output = Command::new("git")
             .args(["diff", "--staged", "--stat"])
             .current_dir(&self.repo_path)
@@ -142,7 +138,6 @@ impl ImmutableTimeline {
             .map(|s| s.trim().chars().filter(|&c| c == '+').count())
             .sum();
 
-        // Parse file diffs
         let diffs = self.get_file_diffs().await;
 
         let snapshot = StateSnapshot {
@@ -164,7 +159,6 @@ impl ImmutableTimeline {
 
         self.snapshots.write().await.push(entry.clone());
 
-        // Enforce immutability with git notes
         Command::new("git")
             .args(["notes", "add", "-m", format!("immutable-generation-{}", gen).as_str()])
             .current_dir(&self.repo_path)
@@ -226,21 +220,13 @@ impl ImmutableTimeline {
 
         match (from, to) {
             (Some(f), Some(t)) => {
-                // Merge and de-duplicate diffs
                 let mut all_diffs: HashMap<String, FileDiff> = HashMap::new();
                 for diff in f.diffs {
                     all_diffs.insert(diff.path.to_string_lossy().to_string(), diff);
                 }
                 for diff in t.diffs {
                     let key = diff.path.to_string_lossy().to_string();
-                    match all_diffs.get(&key) {
-                        Some(existing) if existing.change_type == ChangeType::Deleted => {
-                            // Was deleted, now modified = was recreated
-                        }
-                        _ => {
-                            all_diffs.insert(key, diff);
-                        }
-                    }
+                    all_diffs.insert(key, diff);
                 }
                 Ok(all_diffs.into_values().collect())
             }
@@ -282,7 +268,6 @@ mod tests {
         let timeline = ImmutableTimeline::new(tmp.path());
         timeline.init_repo().await.unwrap();
 
-        // Create a file and track it
         std::fs::write(tmp.path().join("test.txt"), b"hello").unwrap();
 
         let result = timeline.snapshot_repo().await;
@@ -298,11 +283,9 @@ mod tests {
         let timeline = ImmutableTimeline::new(tmp.path());
         timeline.init_repo().await.unwrap();
 
-        // Set up an initial commit first
         std::fs::write(tmp.path().join("initial.txt"), b"initial").unwrap();
         timeline.snapshot_repo().await.unwrap();
 
-        // Try snapshot with no changes
         let result = timeline.snapshot_repo().await;
         assert!(result.is_err());
     }

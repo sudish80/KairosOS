@@ -11,6 +11,7 @@ pub mod committer;
 pub mod diff;
 pub mod history;
 pub mod snapshot;
+pub mod timeline;
 
 use std::sync::Arc;
 use tokio::sync::RwLock;
