@@ -1,11 +1,11 @@
 //! Background worker — periodic health checks and boot count management
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use tracing::{info, error};
+use crate::boot::BootManager;
 use crate::config;
 use crate::health::HealthChecker;
-use crate::boot::BootManager;
 use crate::telemetry::Telemetry;
+use std::sync::Arc;
+use tokio::sync::RwLock;
+use tracing::{error, info};
 
 pub struct RecoveryWorker {
     config: Arc<RwLock<config::Config>>,
@@ -21,7 +21,12 @@ impl RecoveryWorker {
         boot_manager: Arc<BootManager>,
         telemetry: Arc<Telemetry>,
     ) -> Self {
-        Self { config, health_checker, boot_manager, telemetry }
+        Self {
+            config,
+            health_checker,
+            boot_manager,
+            telemetry,
+        }
     }
 
     pub async fn start(&self) -> anyhow::Result<()> {

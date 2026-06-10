@@ -62,7 +62,11 @@ pub struct SchedulerConfig {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            general: GeneralConfig { daemonize: true, log_level: "info".into(), max_concurrent: 4 },
+            general: GeneralConfig {
+                daemonize: true,
+                log_level: "info".into(),
+                max_concurrent: 4,
+            },
             models: ModelsConfig {
                 models_dir: "/var/lib/kairos/models".into(),
                 draft_model: "draft-small".into(),
@@ -70,10 +74,35 @@ impl Default for Config {
                 fallback_model: "fallback-medium".into(),
                 load_all_at_start: false,
             },
-            kv_cache: KVCacheConfig { max_entries: 1024, entry_ttl_secs: 3600, enable_compression: true, page_size: 4096 },
-            speculative: SpeculativeConfig { enabled: true, draft_length: 64, max_speculations: 5, acceptance_threshold: 0.9, fallback_on_reject: true },
-            quantizer: QuantizerConfig { default_precision: "fp16".into(), supported_precisions: vec!["fp32".into(), "fp16".into(), "int8".into(), "int4".into()], calibration_size: 100 },
-            scheduler: SchedulerConfig { strategy: "fifo".into(), max_batch_size: 8, max_wait_ms: 100, priority_levels: 3 },
+            kv_cache: KVCacheConfig {
+                max_entries: 1024,
+                entry_ttl_secs: 3600,
+                enable_compression: true,
+                page_size: 4096,
+            },
+            speculative: SpeculativeConfig {
+                enabled: true,
+                draft_length: 64,
+                max_speculations: 5,
+                acceptance_threshold: 0.9,
+                fallback_on_reject: true,
+            },
+            quantizer: QuantizerConfig {
+                default_precision: "fp16".into(),
+                supported_precisions: vec![
+                    "fp32".into(),
+                    "fp16".into(),
+                    "int8".into(),
+                    "int4".into(),
+                ],
+                calibration_size: 100,
+            },
+            scheduler: SchedulerConfig {
+                strategy: "fifo".into(),
+                max_batch_size: 8,
+                max_wait_ms: 100,
+                priority_levels: 3,
+            },
         }
     }
 }

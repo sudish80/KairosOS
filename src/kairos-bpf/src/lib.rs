@@ -5,22 +5,22 @@
 #![deny(clippy::all)]
 #![deny(clippy::pedantic)]
 
+pub mod anomaly;
 pub mod config;
 pub mod error;
-pub mod telemetry;
-pub mod worker;
-pub mod programs;
+pub mod heal;
 pub mod maps;
 pub mod policy;
+pub mod programs;
 pub mod remediation;
-pub mod anomaly;
 pub mod scheduler;
+pub mod telemetry;
 pub mod thermal;
-pub mod heal;
+pub mod worker;
 
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use tracing::{info, warn, error, debug, instrument};
+use tracing::{debug, error, info, instrument, warn};
 
 /// Core application state for eBPF daemon
 pub struct AppState {
@@ -38,13 +38,30 @@ impl AppState {
         let config = Arc::new(RwLock::new(cfg));
         let telemetry = Arc::new(telemetry::TelemetryStore::new()?);
         let policy_engine = Arc::new(policy::PolicyEngine::new(Arc::clone(&telemetry)));
-        let remediation = Arc::new(remediation::RemediationEngine::new(Arc::clone(&telemetry), Arc::clone(&config)).await?);
-        let anomaly_detector = Arc::new(anomaly::AnomalyDetector::new(Arc::clone(&telemetry), Arc::clone(&config)));
+        let remediation = Arc::new(
+            remediation::RemediationEngine::new(Arc::clone(&telemetry), Arc::clone(&config))
+                .await?,
+        );
+        let anomaly_detector = Arc::new(anomaly::AnomalyDetector::new(
+            Arc::clone(&telemetry),
+            Arc::clone(&config),
+        ));
         let scheduler = Arc::new(scheduler::Scheduler::new(Arc::clone(&config)));
-        let thermal_governor = Arc::new(thermal::ThermalGovernor::new(Arc::clone(&config), Arc::clone(&telemetry)));
+        let thermal_governor = Arc::new(thermal::ThermalGovernor::new(
+            Arc::clone(&config),
+            Arc::clone(&telemetry),
+        ));
 
         info!("kairos-bpf AppState initialized");
-        Ok(Self { config, telemetry, policy_engine, remediation, anomaly_detector, scheduler, thermal_governor })
+        Ok(Self {
+            config,
+            telemetry,
+            policy_engine,
+            remediation,
+            anomaly_detector,
+            scheduler,
+            thermal_governor,
+        })
     }
 
     /// Start all background loops

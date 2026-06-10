@@ -1,5 +1,8 @@
 """Handler for telemetry-collector."""
-import sys, os, json, time, logging
+import sys
+import os
+import time
+import logging
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from .config import Config
@@ -27,7 +30,7 @@ class Handler:
         if method == "record":  # params: source,metrics
             return (lambda s=params.get('source','unknown'), m=params.get('metrics',{}): (self.metrics_store.setdefault(s, []).append({'ts': time.time(), 'metrics': m}), self.metrics_store.__setitem__(s, self.metrics_store[s][-1000:]), {'ok': True})[2])()
         if method == "query":  # params: source,limit
-            return (lambda s=params.get('source'), l=params.get('limit',100): {s: self.metrics_store.get(s, [])[-l:]} if s else {k: v[-l:] for k,v in self.metrics_store.items()})()
+            return (lambda s=params.get('source'), limit=params.get('limit',100): {s: self.metrics_store.get(s, [])[-limit:]} if s else {k: v[-limit:] for k,v in self.metrics_store.items()})()
         if method == "stats":
             return {s: len(v) for s,v in self.metrics_store.items()}
         raise NotImplementedError(method)

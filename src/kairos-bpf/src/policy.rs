@@ -3,7 +3,7 @@ use crate::error::Result;
 use crate::telemetry::TelemetryStore;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use tracing::{info, debug, warn};
+use tracing::{debug, info, warn};
 
 pub struct PolicyEngine {
     telemetry: Arc<TelemetryStore>,

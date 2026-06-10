@@ -1,6 +1,6 @@
 //! Worker command processing for kairos-bpf
 use tokio::sync::mpsc;
-use tracing::{debug, info, warn, error};
+use tracing::{debug, error, info, warn};
 
 #[derive(Debug, Clone)]
 pub enum Command {

@@ -1,16 +1,19 @@
 //! Config validation with schema checking and rule enforcement
+use crate::config;
+use crate::error::ApplyError;
+use crate::parser::DeclarativeConfig;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use crate::config;
-use crate::parser::DeclarativeConfig;
-use crate::error::ApplyError;
 
 pub struct ConfigValidator {
     config: Arc<RwLock<config::Config>>,
     rules: Vec<ValidationRule>,
 }
 
-pub enum Severity { Error, Warning }
+pub enum Severity {
+    Error,
+    Warning,
+}
 
 pub struct ValidationRule {
     pub name: &'static str,
@@ -20,7 +23,10 @@ pub struct ValidationRule {
 
 impl ConfigValidator {
     pub fn new(config: Arc<RwLock<config::Config>>) -> Self {
-        let mut v = Self { config, rules: Vec::new() };
+        let mut v = Self {
+            config,
+            rules: Vec::new(),
+        };
         v.register_default_rules();
         v
     }
@@ -29,16 +35,22 @@ impl ConfigValidator {
         self.rules.push(ValidationRule {
             name: "version_check",
             check: Box::new(|c| {
-                if c.version.is_empty() { Err("Config version must not be empty".into()) }
-                else { Ok(()) }
+                if c.version.is_empty() {
+                    Err("Config version must not be empty".into())
+                } else {
+                    Ok(())
+                }
             }),
             severity: Severity::Error,
         });
         self.rules.push(ValidationRule {
             name: "metadata_check",
             check: Box::new(|c| {
-                if c.metadata.name.is_empty() { Err("Config name must not be empty".into()) }
-                else { Ok(()) }
+                if c.metadata.name.is_empty() {
+                    Err("Config name must not be empty".into())
+                } else {
+                    Ok(())
+                }
             }),
             severity: Severity::Error,
         });
@@ -67,6 +79,10 @@ impl ConfigValidator {
                 errors.push(format!("[Validation] {}: {}", rule.name, msg));
             }
         }
-        if errors.is_empty() { Ok(()) } else { Err(errors) }
+        if errors.is_empty() {
+            Ok(())
+        } else {
+            Err(errors)
+        }
     }
 }

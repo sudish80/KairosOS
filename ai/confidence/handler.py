@@ -1,5 +1,7 @@
 """Handler for confidence."""
-import sys, os, json, time, logging
+import sys
+import os
+import logging
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 from ai.confidence import ConfidenceScorer
 from .config import Config

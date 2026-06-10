@@ -1,12 +1,12 @@
 //! Health checker — real filesystem checks, mount verification, partition integrity
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use tokio::process::Command;
-use tokio::fs;
-use tracing::{info, error, warn};
 use crate::config;
 use crate::partitions::PartitionManager;
 use crate::Slot;
+use std::sync::Arc;
+use tokio::fs;
+use tokio::process::Command;
+use tokio::sync::RwLock;
+use tracing::{error, info, warn};
 
 static FSCK_PATH: &str = "/sbin/fsck";
 static MOUNT_PATH: &str = "/bin/mount";
@@ -35,13 +35,22 @@ pub struct HealthReport {
 }
 
 impl HealthChecker {
-    pub fn new(config: Arc<RwLock<config::Config>>, partition_manager: Arc<PartitionManager>) -> Self {
-        Self { config, partition_manager }
+    pub fn new(
+        config: Arc<RwLock<config::Config>>,
+        partition_manager: Arc<PartitionManager>,
+    ) -> Self {
+        Self {
+            config,
+            partition_manager,
+        }
     }
 
     pub async fn check_health(&self) -> anyhow::Result<HealthReport> {
         let active = self.partition_manager.get_active_slot().await;
-        let active_name = match active { Slot::A => "A", Slot::B => "B" };
+        let active_name = match active {
+            Slot::A => "A",
+            Slot::B => "B",
+        };
         let mut details = Vec::new();
 
         // 1. Check if active partition device exists
@@ -76,13 +85,25 @@ impl HealthChecker {
 
         // 4. Check free space on active slot
         let min_free = self.config.read().await.partitions.min_free_bytes;
-        let free_space = self.partition_manager.check_free_space(&active).await.unwrap_or(0);
+        let free_space = self
+            .partition_manager
+            .check_free_space(&active)
+            .await
+            .unwrap_or(0);
         let free_space_ok = free_space >= min_free;
-        details.push(format!("Free space: {} MB (min: {} MB)", free_space / 1024 / 1024, min_free / 1024 / 1024));
+        details.push(format!(
+            "Free space: {} MB (min: {} MB)",
+            free_space / 1024 / 1024,
+            min_free / 1024 / 1024
+        ));
 
         // 5. Filesystem integrity check (read-only)
         let filesystem_ok = if active_dev_exists {
-            match Command::new(FSCK_PATH).args(["-n", "-q", &active_dev]).output().await {
+            match Command::new(FSCK_PATH)
+                .args(["-n", "-q", &active_dev])
+                .output()
+                .await
+            {
                 Ok(out) => {
                     let ok = out.status.success();
                     if !ok {
@@ -120,8 +141,15 @@ impl HealthChecker {
         let verity_enabled = std::path::Path::new(verity_dev).exists();
 
         // Overall assessment
-        let all_ok = active_dev_exists && active_mounted && filesystem_ok && free_space_ok && boot_count_ok;
-        let overall = if all_ok { "healthy" } else if active_dev_exists && active_mounted { "degraded" } else { "critical" };
+        let all_ok =
+            active_dev_exists && active_mounted && filesystem_ok && free_space_ok && boot_count_ok;
+        let overall = if all_ok {
+            "healthy"
+        } else if active_dev_exists && active_mounted {
+            "degraded"
+        } else {
+            "critical"
+        };
 
         info!("Health check complete: overall={}", overall);
 

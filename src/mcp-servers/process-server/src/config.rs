@@ -14,7 +14,13 @@ impl Default for Config {
             ps_path: "/usr/bin/ps".into(),
             kill_path: "/usr/bin/kill".into(),
             max_processes_returned: 500,
-            allowed_signals: vec!["TERM".into(), "KILL".into(), "HUP".into(), "USR1".into(), "USR2".into()],
+            allowed_signals: vec![
+                "TERM".into(),
+                "KILL".into(),
+                "HUP".into(),
+                "USR1".into(),
+                "USR2".into(),
+            ],
         }
     }
 }

@@ -4,8 +4,6 @@ Bridges eBPF anomaly events -> MCP -> knowledge graph -> skill-evolver -> superv
 import asyncio
 import json
 import logging
-import os
-import socket
 import time
 from pathlib import Path
 

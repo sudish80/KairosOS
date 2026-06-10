@@ -2,8 +2,6 @@
 
 import asyncio
 import logging
-import os
-import signal
 import time
 
 logger = logging.getLogger("kairos.supervisor")

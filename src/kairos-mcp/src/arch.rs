@@ -1,8 +1,8 @@
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Arc;
-use tokio::sync::RwLock;
 use tokio::fs;
-use serde::{Deserialize, Serialize};
+use tokio::sync::RwLock;
 use tracing::info;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -91,13 +91,14 @@ impl LiveArchitecture {
         let daemons = self.daemons.read().await.clone();
         let data_flows = self.data_flows.read().await.clone();
 
-        let dependencies: Vec<DependencyEdge> = data_flows.iter().map(|f| {
-            DependencyEdge {
+        let dependencies: Vec<DependencyEdge> = data_flows
+            .iter()
+            .map(|f| DependencyEdge {
                 from: f.source.clone(),
                 to: f.target.clone(),
                 kind: format!("{}/{}", f.protocol, f.data_type),
-            }
-        }).collect();
+            })
+            .collect();
 
         ArchitectureDocument {
             version: env!("CARGO_PKG_VERSION").to_string(),
@@ -139,13 +140,19 @@ impl LiveArchitecture {
 
         let mut plant = String::from("@startuml\nskinparam componentStyle rectangle\n");
         for daemon in daemons.keys() {
-            plant.push_str(&format!("component \"{}\" as {}\n", daemon, daemon.replace("-", "")));
+            plant.push_str(&format!(
+                "component \"{}\" as {}\n",
+                daemon,
+                daemon.replace("-", "")
+            ));
         }
         for flow in flows.iter() {
             let src = flow.source.replace("-", "");
             let tgt = flow.target.replace("-", "");
-            plant.push_str(&format!("{} -->> {} : {}/{} ({}ms)\n",
-                src, tgt, flow.protocol, flow.data_type, flow.frequency_ms));
+            plant.push_str(&format!(
+                "{} -->> {} : {}/{} ({}ms)\n",
+                src, tgt, flow.protocol, flow.data_type, flow.frequency_ms
+            ));
         }
         plant.push_str("@enduml\n");
         plant
@@ -160,7 +167,12 @@ impl LiveArchitecture {
         let output = tokio::process::Command::new("npx")
             .args(["-y", "@mermaid-js/mermaid-cli", "-i"])
             .arg(&tmpfile)
-            .args(["-o", &std::env::temp_dir().join("kairos-arch.svg").to_string_lossy()])
+            .args([
+                "-o",
+                &std::env::temp_dir()
+                    .join("kairos-arch.svg")
+                    .to_string_lossy(),
+            ])
             .output()
             .await?;
 
@@ -202,21 +214,28 @@ impl LiveArchitecture {
                 let doc = ArchitectureDocument {
                     version: env!("CARGO_PKG_VERSION").to_string(),
                     generated_at: std::time::SystemTime::now()
-                        .duration_since(std::time::UNIX_EPOCH).unwrap().as_secs_f64(),
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .unwrap()
+                        .as_secs_f64(),
                     daemons: daemons.clone(),
                     data_flows: data_flows.clone(),
-                    dependencies: data_flows.iter().map(|f| DependencyEdge {
-                        from: f.source.clone(), to: f.target.clone(),
-                        kind: format!("{}/{}", f.protocol, f.data_type),
-                    }).collect(),
+                    dependencies: data_flows
+                        .iter()
+                        .map(|f| DependencyEdge {
+                            from: f.source.clone(),
+                            to: f.target.clone(),
+                            kind: format!("{}/{}", f.protocol, f.data_type),
+                        })
+                        .collect(),
                 };
                 warp::reply::json(&doc)
             });
 
-        info!("Live architecture docs on http://0.0.0.0:{}/api/v1/architecture/json", self.listen_port);
-        warp::serve(app)
-            .run(([0, 0, 0, 0], self.listen_port))
-            .await;
+        info!(
+            "Live architecture docs on http://0.0.0.0:{}/api/v1/architecture/json",
+            self.listen_port
+        );
+        warp::serve(app).run(([0, 0, 0, 0], self.listen_port)).await;
 
         Ok(())
     }
@@ -263,7 +282,8 @@ mod tests {
             protocol: "unix-socket".into(),
             data_type: "binary".into(),
             frequency_ms: 1000,
-        }).await;
+        })
+        .await;
 
         let doc = arch.generate_architecture_doc().await;
         assert!(doc.daemons.contains_key("kairos-bpf"));
@@ -274,18 +294,23 @@ mod tests {
     async fn test_mermaid_export() {
         let arch = LiveArchitecture::new("/tmp", 0);
         arch.register_daemon(DaemonSpec {
-            name: "kairos-mcp".into(), ..Default::default()
-        }).await;
+            name: "kairos-mcp".into(),
+            ..Default::default()
+        })
+        .await;
         arch.register_daemon(DaemonSpec {
-            name: "kairos-db".into(), ..Default::default()
-        }).await;
+            name: "kairos-db".into(),
+            ..Default::default()
+        })
+        .await;
         arch.register_flow(DataFlow {
             source: "kairos-mcp".into(),
             target: "kairos-db".into(),
             protocol: "tcp".into(),
             data_type: "json".into(),
             frequency_ms: 500,
-        }).await;
+        })
+        .await;
 
         let mermaid = arch.export_mermaid().await;
         assert!(mermaid.contains("kairosmcp[kairos-mcp]"));
@@ -296,15 +321,18 @@ mod tests {
     async fn test_plantuml_export() {
         let arch = LiveArchitecture::new("/tmp", 0);
         arch.register_daemon(DaemonSpec {
-            name: "kairos-llm".into(), ..Default::default()
-        }).await;
+            name: "kairos-llm".into(),
+            ..Default::default()
+        })
+        .await;
         arch.register_flow(DataFlow {
             source: "kairos-llm".into(),
             target: "kairos-orchestrator".into(),
             protocol: "unix".into(),
             data_type: "proto".into(),
             frequency_ms: 100,
-        }).await;
+        })
+        .await;
 
         let plant = arch.export_plantuml().await;
         assert!(plant.contains("kairos-llm"));

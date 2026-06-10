@@ -69,7 +69,11 @@ pub struct RecoveryConfig {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            general: GeneralConfig { daemonize: true, log_level: "info".into(), data_dir: "/var/lib/kairos/recovery".into() },
+            general: GeneralConfig {
+                daemonize: true,
+                log_level: "info".into(),
+                data_dir: "/var/lib/kairos/recovery".into(),
+            },
             partitions: PartitionConfig {
                 slot_a: "/dev/disk/by-label/KAIROS_A".into(),
                 slot_b: "/dev/disk/by-label/KAIROS_B".into(),
@@ -82,7 +86,11 @@ impl Default for Config {
                 root_hash_file: "/etc/kairos/root_hash.sig".into(),
                 verify_on_boot: true,
             },
-            boot: BootConfig { timeout_secs: 5, default_slot: "a".into(), max_boot_attempts: 3 },
+            boot: BootConfig {
+                timeout_secs: 5,
+                default_slot: "a".into(),
+                max_boot_attempts: 3,
+            },
             update: UpdateConfig {
                 download_dir: "/var/lib/kairos/updates".into(),
                 verify_signatures: true,

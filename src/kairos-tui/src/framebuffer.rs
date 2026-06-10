@@ -1,8 +1,8 @@
 //! Framebuffer — double-buffered pixel buffer with blitting and composition
-use std::sync::Arc;
-use tokio::sync::RwLock;
 use crate::config;
 use crate::error::TuiError;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 pub struct Framebuffer {
     config: Arc<RwLock<config::Config>>,
@@ -33,7 +33,9 @@ impl Framebuffer {
     }
 
     pub async fn draw_pixel(&self, x: u32, y: u32, color: u32) {
-        if x >= self.width || y >= self.height { return; }
+        if x >= self.width || y >= self.height {
+            return;
+        }
         let idx = (y * self.width + x) as usize;
         let mut back = self.back_buffer.write().await;
         if idx < back.len() {
@@ -53,10 +55,20 @@ impl Framebuffer {
         }
     }
 
-    pub async fn draw_text(&self, x: u32, y: u32, text: &str, color: u32, font_width: u32, font_height: u32) {
+    pub async fn draw_text(
+        &self,
+        x: u32,
+        y: u32,
+        text: &str,
+        color: u32,
+        font_width: u32,
+        font_height: u32,
+    ) {
         for (i, ch) in text.chars().enumerate() {
             let chx = x + (i as u32 * font_width);
-            if chx + font_width > self.width { break; }
+            if chx + font_width > self.width {
+                break;
+            }
             // In production: blit glyph bitmap from font
             self.draw_rect(chx, y, font_width, font_height, color).await;
         }

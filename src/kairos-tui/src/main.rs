@@ -1,10 +1,14 @@
-use std::path::PathBuf;
 use clap::Parser;
+use std::path::PathBuf;
+use tracing::{error, info};
 use tracing_subscriber::EnvFilter;
-use tracing::{info, error};
 
 #[derive(Parser)]
-#[command(name = "kairos-tui", version = "1.0.0", about = "Terminal UI daemon with framebuffer and gesture input")]
+#[command(
+    name = "kairos-tui",
+    version = "1.0.0",
+    about = "Terminal UI daemon with framebuffer and gesture input"
+)]
 struct Cli {
     #[arg(short, long, default_value = "/etc/kairos/tui.toml")]
     config: PathBuf,
@@ -39,11 +43,10 @@ async fn main() -> anyhow::Result<()> {
 
     // Open DRM/KMS display
     state.drm_manager.open().await?;
-    state.drm_manager.set_mode(
-        state.fb.dimensions().0,
-        state.fb.dimensions().1,
-        32,
-    ).await?;
+    state
+        .drm_manager
+        .set_mode(state.fb.dimensions().0, state.fb.dimensions().1, 32)
+        .await?;
 
     // Start render worker
     let render_worker = kairos_tui::worker::TuiWorker::new(
@@ -59,7 +62,10 @@ async fn main() -> anyhow::Result<()> {
 
     // Create default terminal tab
     let tab_id = state.multiplexer.create_tab("main").await;
-    state.multiplexer.write_to_active("KairosOS Terminal v1.0\n").await;
+    state
+        .multiplexer
+        .write_to_active("KairosOS Terminal v1.0\n")
+        .await;
     info!("Created default tab id={}", tab_id);
 
     // Initial render
@@ -67,7 +73,11 @@ async fn main() -> anyhow::Result<()> {
         error!("Initial render failed: {}", e);
     }
 
-    info!("TUI daemon running on {}x{}", state.fb.dimensions().0, state.fb.dimensions().1);
+    info!(
+        "TUI daemon running on {}x{}",
+        state.fb.dimensions().0,
+        state.fb.dimensions().1
+    );
     tokio::signal::ctrl_c().await?;
     info!("Shutdown signal received");
     Ok(())

@@ -1,6 +1,10 @@
 """JSON-RPC 2.0 MCP server over Unix socket."""
-import asyncio, json, logging, signal, traceback, os
-from .config import Config
+import asyncio
+import json
+import logging
+import signal
+import traceback
+import os
 from .handler import Handler
 
 logger = logging.getLogger(__name__)

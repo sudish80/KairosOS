@@ -1,6 +1,6 @@
 use kairos_recovery::config::Config;
 use kairos_recovery::telemetry::Telemetry;
-use kairos_recovery::update::{UpdateManifest, ImageEntry, DeltaEntry, UpdateCheckResult};
+use kairos_recovery::update::{DeltaEntry, ImageEntry, UpdateCheckResult, UpdateManifest};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 

@@ -1,12 +1,12 @@
 //! Transport layer — Unix sockets, TCP with full request routing through McpServer
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use tokio::net::{UnixListener, TcpListener};
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use std::path::Path;
-use tracing::{info, debug, error, warn};
 use crate::config;
 use crate::server::McpServer;
+use std::path::Path;
+use std::sync::Arc;
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::net::{TcpListener, UnixListener};
+use tokio::sync::RwLock;
+use tracing::{debug, error, info, warn};
 
 pub struct TransportManager {
     config: Arc<RwLock<config::Config>>,
@@ -37,7 +37,8 @@ impl TransportManager {
                 #[cfg(unix)]
                 {
                     use std::os::unix::fs::PermissionsExt;
-                    std::fs::set_permissions(unix_path, std::fs::Permissions::from_mode(0o700)).ok();
+                    std::fs::set_permissions(unix_path, std::fs::Permissions::from_mode(0o700))
+                        .ok();
                 }
                 let server = Arc::clone(&self.server);
                 let max_conn = cfg.transport.max_connections as usize;

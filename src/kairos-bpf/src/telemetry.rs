@@ -1,9 +1,9 @@
 //! Telemetry ring buffer store for eBPF events
+use crate::error::Result;
 use std::collections::VecDeque;
 use std::sync::Arc;
-use tokio::sync::{Mutex, mpsc};
+use tokio::sync::{mpsc, Mutex};
 use tracing::{debug, info, warn};
-use crate::error::Result;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct ExecEvent {
@@ -41,7 +41,14 @@ pub struct FileEvent {
 }
 
 #[derive(Debug, Clone, Copy, serde::Serialize, serde::Deserialize)]
-pub enum FileOp { Open, Read, Write, Close, Unlink, Create }
+pub enum FileOp {
+    Open,
+    Read,
+    Write,
+    Close,
+    Unlink,
+    Create,
+}
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct AnomalyEvent {
@@ -55,7 +62,13 @@ pub struct AnomalyEvent {
 }
 
 #[derive(Debug, Clone, Copy, serde::Serialize, serde::Deserialize)]
-pub enum AnomalyType { SyscallFreq, MemoryGrowth, CpuSpike, NetworkBurst, FileStorm }
+pub enum AnomalyType {
+    SyscallFreq,
+    MemoryGrowth,
+    CpuSpike,
+    NetworkBurst,
+    FileStorm,
+}
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct SchedEvent {
@@ -111,68 +124,124 @@ impl TelemetryStore {
             anomaly_events: Arc::new(Mutex::new(VecDeque::with_capacity(capacity / 6))),
             sched_events: Arc::new(Mutex::new(VecDeque::with_capacity(capacity / 6))),
             oom_events: Arc::new(Mutex::new(VecDeque::with_capacity(capacity / 6))),
-            tx, rx: Mutex::new(rx), capacity,
+            tx,
+            rx: Mutex::new(rx),
+            capacity,
         })
     }
 
     pub async fn push_exec(&self, event: ExecEvent) {
         let mut q = self.exec_events.lock().await;
-        if q.len() >= self.capacity / 6 { q.pop_front(); }
+        if q.len() >= self.capacity / 6 {
+            q.pop_front();
+        }
         q.push_back(event);
     }
 
     pub async fn push_tcp(&self, event: TcpEvent) {
         let mut q = self.tcp_events.lock().await;
-        if q.len() >= self.capacity / 6 { q.pop_front(); }
+        if q.len() >= self.capacity / 6 {
+            q.pop_front();
+        }
         q.push_back(event);
     }
 
     pub async fn push_file(&self, event: FileEvent) {
         let mut q = self.file_events.lock().await;
-        if q.len() >= self.capacity / 6 { q.pop_front(); }
+        if q.len() >= self.capacity / 6 {
+            q.pop_front();
+        }
         q.push_back(event);
     }
 
     pub async fn push_anomaly(&self, event: AnomalyEvent) {
         let mut q = self.anomaly_events.lock().await;
-        if q.len() >= self.capacity / 6 { q.pop_front(); }
+        if q.len() >= self.capacity / 6 {
+            q.pop_front();
+        }
         q.push_back(event);
     }
 
     pub async fn push_sched(&self, event: SchedEvent) {
         let mut q = self.sched_events.lock().await;
-        if q.len() >= self.capacity / 6 { q.pop_front(); }
+        if q.len() >= self.capacity / 6 {
+            q.pop_front();
+        }
         q.push_back(event);
     }
 
     pub async fn push_oom(&self, event: OomEvent) {
         let mut q = self.oom_events.lock().await;
-        if q.len() >= self.capacity / 6 { q.pop_front(); }
+        if q.len() >= self.capacity / 6 {
+            q.pop_front();
+        }
         q.push_back(event);
     }
 
     pub async fn get_recent_exec(&self, limit: usize) -> Vec<ExecEvent> {
-        self.exec_events.lock().await.iter().rev().take(limit).cloned().collect()
+        self.exec_events
+            .lock()
+            .await
+            .iter()
+            .rev()
+            .take(limit)
+            .cloned()
+            .collect()
     }
 
     pub async fn get_recent_tcp(&self, limit: usize) -> Vec<TcpEvent> {
-        self.tcp_events.lock().await.iter().rev().take(limit).cloned().collect()
+        self.tcp_events
+            .lock()
+            .await
+            .iter()
+            .rev()
+            .take(limit)
+            .cloned()
+            .collect()
     }
 
     pub async fn get_recent_file(&self, limit: usize) -> Vec<FileEvent> {
-        self.file_events.lock().await.iter().rev().take(limit).cloned().collect()
+        self.file_events
+            .lock()
+            .await
+            .iter()
+            .rev()
+            .take(limit)
+            .cloned()
+            .collect()
     }
 
     pub async fn get_recent_anomaly(&self, limit: usize) -> Vec<AnomalyEvent> {
-        self.anomaly_events.lock().await.iter().rev().take(limit).cloned().collect()
+        self.anomaly_events
+            .lock()
+            .await
+            .iter()
+            .rev()
+            .take(limit)
+            .cloned()
+            .collect()
     }
 
     pub async fn get_recent_sched(&self, limit: usize) -> Vec<SchedEvent> {
-        self.sched_events.lock().await.iter().rev().take(limit).cloned().collect()
+        self.sched_events
+            .lock()
+            .await
+            .iter()
+            .rev()
+            .take(limit)
+            .cloned()
+            .collect()
     }
 
     pub async fn get_recent_oom(&self, limit: usize) -> Vec<OomEvent> {
-        self.oom_events.lock().await.iter().rev().take(limit).cloned().collect()
+        self.oom_events
+            .lock()
+            .await
+            .iter()
+            .rev()
+            .take(limit)
+            .cloned()
+            .collect()
     }
 
     pub fn is_healthy(&self) -> bool {

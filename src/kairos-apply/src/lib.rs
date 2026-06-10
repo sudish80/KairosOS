@@ -1,16 +1,16 @@
 //! kairos-apply: Declarative configuration state applier — production-hardened
 #![deny(unsafe_code)]
 
+pub mod applier;
 pub mod config;
+pub mod diff;
 pub mod error;
-pub mod telemetry;
-pub mod worker;
 pub mod generation;
 pub mod parser;
-pub mod validator;
 pub mod rollback;
-pub mod diff;
-pub mod applier;
+pub mod telemetry;
+pub mod validator;
+pub mod worker;
 
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -31,7 +31,8 @@ impl AppState {
     pub async fn new(cfg: config::Config) -> anyhow::Result<Self> {
         let config = Arc::new(RwLock::new(cfg));
         let telemetry = Arc::new(telemetry::Telemetry::new(Arc::clone(&config)));
-        let generation_store = Arc::new(generation::GenerationStore::new(Arc::clone(&config)).await?);
+        let generation_store =
+            Arc::new(generation::GenerationStore::new(Arc::clone(&config)).await?);
         let parser = Arc::new(parser::DeclarativeParser::new(Arc::clone(&config)));
         let validator = Arc::new(validator::ConfigValidator::new(Arc::clone(&config)));
         let diff_engine = Arc::new(diff::DiffEngine::new(Arc::clone(&config)));
@@ -46,6 +47,15 @@ impl AppState {
         ));
 
         info!("kairos-apply AppState initialized");
-        Ok(Self { config, telemetry, generation_store, parser, validator, diff_engine, rollback_manager, applier })
+        Ok(Self {
+            config,
+            telemetry,
+            generation_store,
+            parser,
+            validator,
+            diff_engine,
+            rollback_manager,
+            applier,
+        })
     }
 }

@@ -1,12 +1,12 @@
 //! Background worker — render loop with fixed refresh rate
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use std::time::{Duration, Instant};
-use tracing::{info, debug, error};
 use crate::config;
-use crate::layout::LayoutEngine;
 use crate::framebuffer::Framebuffer;
+use crate::layout::LayoutEngine;
 use crate::telemetry::Telemetry;
+use std::sync::Arc;
+use std::time::{Duration, Instant};
+use tokio::sync::RwLock;
+use tracing::{debug, error, info};
 
 pub struct TuiWorker {
     config: Arc<RwLock<config::Config>>,
@@ -22,13 +22,22 @@ impl TuiWorker {
         framebuffer: Arc<Framebuffer>,
         telemetry: Arc<Telemetry>,
     ) -> Self {
-        Self { config, layout_engine, framebuffer, telemetry }
+        Self {
+            config,
+            layout_engine,
+            framebuffer,
+            telemetry,
+        }
     }
 
     pub async fn start(&self) -> anyhow::Result<()> {
         let refresh_hz = self.config.read().await.general.refresh_rate_hz;
         let frame_duration = Duration::from_secs_f64(1.0 / refresh_hz as f64);
-        info!("TuiWorker started at {} Hz ({} ms per frame)", refresh_hz, frame_duration.as_millis());
+        info!(
+            "TuiWorker started at {} Hz ({} ms per frame)",
+            refresh_hz,
+            frame_duration.as_millis()
+        );
 
         let layout_engine = Arc::clone(&self.layout_engine);
         let framebuffer = Arc::clone(&self.framebuffer);
@@ -68,7 +77,11 @@ impl TuiWorker {
 
                 // Warn if frame exceeds budget
                 if frame_time > frame_duration && frame_time.as_millis() > 50 {
-                    debug!("Frame took {} ms (budget: {} ms)", frame_time.as_millis(), frame_duration.as_millis());
+                    debug!(
+                        "Frame took {} ms (budget: {} ms)",
+                        frame_time.as_millis(),
+                        frame_duration.as_millis()
+                    );
                 }
             }
         });

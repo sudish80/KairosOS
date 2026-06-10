@@ -1,20 +1,20 @@
 //! Update engine — OTA downloads, manifest parsing, staged rollouts, delta updates, scheduling
+use crate::boot::BootManager;
+use crate::config;
+use crate::partitions::PartitionManager;
+use crate::telemetry::Telemetry;
+use crate::verity::VerityManager;
+use crate::Slot;
+use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 use std::path::PathBuf;
 use std::sync::Arc;
-use tokio::sync::RwLock;
 use tokio::fs::{self, OpenOptions};
 use tokio::io::AsyncWriteExt;
 use tokio::process::Command;
+use tokio::sync::RwLock;
 use tokio::time::{interval, Duration};
-use tracing::{info, error, warn};
-use serde::{Deserialize, Serialize};
-use sha2::{Sha256, Digest};
-use crate::config;
-use crate::partitions::PartitionManager;
-use crate::verity::VerityManager;
-use crate::boot::BootManager;
-use crate::telemetry::Telemetry;
-use crate::Slot;
+use tracing::{error, info, warn};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct UpdateManifest {
@@ -83,7 +83,14 @@ impl UpdateEngine {
             .user_agent("kairos-updater/1.0")
             .build()
             .expect("Failed to create HTTP client");
-        Self { config, partition_manager, verity_manager, boot_manager, telemetry, http_client }
+        Self {
+            config,
+            partition_manager,
+            verity_manager,
+            boot_manager,
+            telemetry,
+            http_client,
+        }
     }
 
     /// Check for updates from the OTA server
@@ -94,19 +101,29 @@ impl UpdateEngine {
         } else {
             cfg.update.device_id.clone()
         };
-        let url = format!("{}/check?device_id={}&channel={}&version={}",
-            cfg.update.server_url, device_id, cfg.update.channel, env!("CARGO_PKG_VERSION"));
+        let url = format!(
+            "{}/check?device_id={}&channel={}&version={}",
+            cfg.update.server_url,
+            device_id,
+            cfg.update.channel,
+            env!("CARGO_PKG_VERSION")
+        );
 
         info!("Checking for update at {}", url);
 
-        let resp = self.http_client.get(&url).send().await.map_err(|e| {
-            anyhow::anyhow!("Update check request failed: {}", e)
-        })?;
+        let resp = self
+            .http_client
+            .get(&url)
+            .send()
+            .await
+            .map_err(|e| anyhow::anyhow!("Update check request failed: {}", e))?;
 
         if !resp.status().is_success() {
             return Ok(UpdateCheckResult {
-                update_available: false, manifest: None,
-                eligible: false, reason: format!("HTTP {}", resp.status()),
+                update_available: false,
+                manifest: None,
+                eligible: false,
+                reason: format!("HTTP {}", resp.status()),
             });
         }
 
@@ -117,7 +134,11 @@ impl UpdateEngine {
             update_available: true,
             manifest: Some(manifest),
             eligible,
-            reason: if eligible { "eligible".into() } else { "not in staged rollout group".into() },
+            reason: if eligible {
+                "eligible".into()
+            } else {
+                "not in staged rollout group".into()
+            },
         })
     }
 
@@ -141,14 +162,27 @@ impl UpdateEngine {
         let actual_hash = hex_encode(&hasher.finalize());
 
         if actual_hash != image_entry.sha256 {
-            return Err(anyhow::anyhow!("SHA256 mismatch: expected {}, got {}", image_entry.sha256, actual_hash));
+            return Err(anyhow::anyhow!(
+                "SHA256 mismatch: expected {}, got {}",
+                image_entry.sha256,
+                actual_hash
+            ));
         }
 
-        let mut file = OpenOptions::new().write(true).create(true).truncate(true).open(&dest_path).await?;
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .open(&dest_path)
+            .await?;
         file.write_all(&bytes).await?;
         file.flush().await?;
 
-        info!("Download verified, SHA256 match: {} ({} bytes)", actual_hash, bytes.len());
+        info!(
+            "Download verified, SHA256 match: {} ({} bytes)",
+            actual_hash,
+            bytes.len()
+        );
         self.telemetry.record_update_check(true);
         Ok(dest_path)
     }
@@ -157,15 +191,21 @@ impl UpdateEngine {
     pub async fn prepare_update(&self, image_path: &str) -> anyhow::Result<()> {
         let inactive = self.partition_manager.get_inactive_slot().await;
         let device = self.partition_manager.get_slot_device(&inactive).await;
-        info!("Preparing update to slot {:?} (device: {})", inactive, device);
+        info!(
+            "Preparing update to slot {:?} (device: {})",
+            inactive, device
+        );
 
         if self.config.read().await.update.verify_signatures {
             self.verify_signature(image_path).await?;
         }
 
         let status = Command::new("dd")
-            .args(["if", image_path, "of", &device, "bs", "4M", "status", "progress"])
-            .status().await?;
+            .args([
+                "if", image_path, "of", &device, "bs", "4M", "status", "progress",
+            ])
+            .status()
+            .await?;
 
         if !status.success() {
             return Err(anyhow::anyhow!("Failed to write image to {}", device));
@@ -177,7 +217,11 @@ impl UpdateEngine {
     }
 
     /// Apply a delta patch using bspatch
-    pub async fn apply_delta_update(&self, delta: &DeltaEntry, base_path: &str) -> anyhow::Result<String> {
+    pub async fn apply_delta_update(
+        &self,
+        delta: &DeltaEntry,
+        base_path: &str,
+    ) -> anyhow::Result<String> {
         let cfg = self.config.read().await;
         let delta_dir = &cfg.update.delta_cache_dir;
         fs::create_dir_all(delta_dir).await?;
@@ -195,10 +239,19 @@ impl UpdateEngine {
         let actual_hash = hex_encode(&hasher.finalize());
 
         if actual_hash != delta.sha256 {
-            return Err(anyhow::anyhow!("Delta SHA256 mismatch: expected {}, got {}", delta.sha256, actual_hash));
+            return Err(anyhow::anyhow!(
+                "Delta SHA256 mismatch: expected {}, got {}",
+                delta.sha256,
+                actual_hash
+            ));
         }
 
-        let mut file = OpenOptions::new().write(true).create(true).truncate(true).open(&delta_path).await?;
+        let mut file = OpenOptions::new()
+            .write(true)
+            .create(true)
+            .truncate(true)
+            .open(&delta_path)
+            .await?;
         file.write_all(&bytes).await?;
         file.flush().await?;
 
@@ -206,7 +259,8 @@ impl UpdateEngine {
         info!("Applying delta patch: {} -> {}", base_path, output_path);
         let status = Command::new("bspatch")
             .args([base_path, &output_path, &delta_path])
-            .status().await?;
+            .status()
+            .await?;
 
         if !status.success() {
             return Err(anyhow::anyhow!("bspatch failed"));
@@ -224,7 +278,10 @@ impl UpdateEngine {
         self.telemetry.record_verity_check(verified);
 
         if !verified {
-            return Err(anyhow::anyhow!("Verity check failed for slot {:?}", inactive));
+            return Err(anyhow::anyhow!(
+                "Verity check failed for slot {:?}",
+                inactive
+            ));
         }
 
         self.boot_manager.switch_slot(&inactive).await?;
@@ -257,8 +314,14 @@ impl UpdateEngine {
             match self.check_for_update().await {
                 Ok(result) => {
                     if result.update_available && result.eligible {
-                        info!("Update available: {}",
-                            result.manifest.as_ref().map(|m| &m.version[..]).unwrap_or("unknown"));
+                        info!(
+                            "Update available: {}",
+                            result
+                                .manifest
+                                .as_ref()
+                                .map(|m| &m.version[..])
+                                .unwrap_or("unknown")
+                        );
                         if self.config.read().await.update.auto_apply {
                             if let Some(manifest) = result.manifest {
                                 if let Err(e) = self.apply_update_from_manifest(&manifest).await {
@@ -274,27 +337,47 @@ impl UpdateEngine {
     }
 
     /// Full update from manifest: download -> prepare -> finalize
-    pub async fn apply_update_from_manifest(&self, manifest: &UpdateManifest) -> anyhow::Result<()> {
+    pub async fn apply_update_from_manifest(
+        &self,
+        manifest: &UpdateManifest,
+    ) -> anyhow::Result<()> {
         info!("Applying update {}", manifest.release_id);
 
         let current_version = env!("CARGO_PKG_VERSION");
-        let delta = manifest.deltas.iter()
+        let delta = manifest
+            .deltas
+            .iter()
             .find(|d| d.from_version == current_version && d.to_version == manifest.version);
 
         let image_path = if let Some(d) = delta {
-            let base_path = format!("{}/slot_{}.img", self.config.read().await.update.download_dir,
-                match self.partition_manager.get_active_slot().await { Slot::A => "a", Slot::B => "b" });
+            let base_path = format!(
+                "{}/slot_{}.img",
+                self.config.read().await.update.download_dir,
+                match self.partition_manager.get_active_slot().await {
+                    Slot::A => "a",
+                    Slot::B => "b",
+                }
+            );
 
             if PathBuf::from(&base_path).exists() {
-                info!("Applying delta update from {} to {}", d.from_version, d.to_version);
+                info!(
+                    "Applying delta update from {} to {}",
+                    d.from_version, d.to_version
+                );
                 self.apply_delta_update(d, &base_path).await?
             } else {
                 info!("No base image for delta, falling back to full download");
-                let image = manifest.images.first().ok_or_else(|| anyhow::anyhow!("No images in manifest"))?;
+                let image = manifest
+                    .images
+                    .first()
+                    .ok_or_else(|| anyhow::anyhow!("No images in manifest"))?;
                 self.download_update(image).await?
             }
         } else {
-            let image = manifest.images.first().ok_or_else(|| anyhow::anyhow!("No images in manifest"))?;
+            let image = manifest
+                .images
+                .first()
+                .ok_or_else(|| anyhow::anyhow!("No images in manifest"))?;
             self.download_update(image).await?
         };
 
@@ -332,20 +415,26 @@ impl UpdateEngine {
         if !PathBuf::from(&sig_path).exists() {
             warn!("Signature file not found: {}", sig_path);
             if cfg.update.verify_signatures {
-                return Err(anyhow::anyhow!("Signature verification required but no signature found"));
+                return Err(anyhow::anyhow!(
+                    "Signature verification required but no signature found"
+                ));
             }
             return Ok(());
         }
 
         let status = Command::new("gpgv")
             .args(["--keyring", &cfg.update.gpg_keyring, &sig_path, image_path])
-            .status().await?;
+            .status()
+            .await?;
 
         if status.success() {
             info!("Signature verified for {}", image_path);
             Ok(())
         } else {
-            Err(anyhow::anyhow!("Signature verification failed for {}", image_path))
+            Err(anyhow::anyhow!(
+                "Signature verification failed for {}",
+                image_path
+            ))
         }
     }
 

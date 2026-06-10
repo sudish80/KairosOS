@@ -1,8 +1,8 @@
 //! Diff engine for git log comparisons
-use std::sync::Arc;
-use tokio::sync::RwLock;
 use crate::config;
 use crate::repo::RepoManager;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 pub struct DiffEngine {
     config: Arc<RwLock<config::Config>>,
@@ -39,6 +39,10 @@ impl DiffEngine {
             }
         }
 
-        DiffSummary { files_changed, insertions, deletions }
+        DiffSummary {
+            files_changed,
+            insertions,
+            deletions,
+        }
     }
 }

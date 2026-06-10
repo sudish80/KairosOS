@@ -1,10 +1,10 @@
 //! Layout engine — composites panes, status bar, tabs into final framebuffer
-use std::sync::Arc;
-use tokio::sync::RwLock;
 use crate::config;
 use crate::framebuffer::Framebuffer;
-use crate::terminal::TerminalEmulator;
 use crate::multiplexer::Multiplexer;
+use crate::terminal::TerminalEmulator;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 pub struct LayoutEngine {
     config: Arc<RwLock<config::Config>>,
@@ -13,7 +13,10 @@ pub struct LayoutEngine {
 
 impl LayoutEngine {
     pub fn new(config: Arc<RwLock<config::Config>>, multiplexer: Arc<Multiplexer>) -> Self {
-        Self { config, multiplexer }
+        Self {
+            config,
+            multiplexer,
+        }
     }
 
     pub async fn render(&self) -> anyhow::Result<Vec<u32>> {

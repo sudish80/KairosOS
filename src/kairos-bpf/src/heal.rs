@@ -1,9 +1,9 @@
+use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use tokio::time::{interval, Duration};
-use tracing::{info, debug};
-use serde::{Deserialize, Serialize};
+use tracing::{debug, info};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AnomalyEvent {
@@ -86,7 +86,10 @@ impl HealingEngine {
     }
 
     pub async fn ingest_event(&self, event: AnomalyEvent) -> anyhow::Result<Option<HealingAction>> {
-        info!("Healing engine received anomaly: {} (severity: {})", event.id, event.severity);
+        info!(
+            "Healing engine received anomaly: {} (severity: {})",
+            event.id, event.severity
+        );
 
         let mut events = self.events.write().await;
         events.push_back(event.clone());
@@ -96,7 +99,10 @@ impl HealingEngine {
         drop(events);
 
         if event.severity < 5 {
-            info!("Severity {} below threshold 5, logging only", event.severity);
+            info!(
+                "Severity {} below threshold 5, logging only",
+                event.severity
+            );
             return Ok(None);
         }
 
@@ -112,12 +118,18 @@ impl HealingEngine {
                     status: "pending".into(),
                     result: None,
                 };
-                info!("Generated healing action: {} via {}", action.id, action.action_type);
+                info!(
+                    "Generated healing action: {} via {}",
+                    action.id, action.action_type
+                );
                 self.actions.write().await.push(action.clone());
                 Ok(Some(action))
             }
             None => {
-                info!("No remediation script matched for event category: {}", event.category);
+                info!(
+                    "No remediation script matched for event category: {}",
+                    event.category
+                );
                 Ok(None)
             }
         }
@@ -126,20 +138,24 @@ impl HealingEngine {
     async fn select_script(&self, event: &AnomalyEvent) -> Option<RemediationScript> {
         let scripts = self.scripts.read().await;
         match event.category.as_str() {
-            "process:crash" => scripts.iter()
-                .find(|s| s.name == "restart-daemon").cloned(),
-            "memory:oom" => scripts.iter()
-                .find(|s| s.name == "oom-remediate").cloned(),
-            "network:drop" | "network:latency" => scripts.iter()
-                .find(|s| s.name == "network-reset").cloned(),
+            "process:crash" => scripts.iter().find(|s| s.name == "restart-daemon").cloned(),
+            "memory:oom" => scripts.iter().find(|s| s.name == "oom-remediate").cloned(),
+            "network:drop" | "network:latency" => {
+                scripts.iter().find(|s| s.name == "network-reset").cloned()
+            }
             _ => scripts.first().cloned(),
         }
     }
 
     pub async fn execute_action(&self, action: &HealingAction) -> anyhow::Result<String> {
         info!("Executing healing action: {}", action.id);
-        let commands = action.params["commands"].as_array()
-            .map(|arr| arr.iter().map(|v| v.as_str().unwrap_or("").to_string()).collect::<Vec<_>>())
+        let commands = action.params["commands"]
+            .as_array()
+            .map(|arr| {
+                arr.iter()
+                    .map(|v| v.as_str().unwrap_or("").to_string())
+                    .collect::<Vec<_>>()
+            })
             .unwrap_or_default();
 
         let mut results = Vec::new();
@@ -164,9 +180,13 @@ impl HealingEngine {
     }
 
     pub async fn get_pending_actions(&self) -> Vec<HealingAction> {
-        self.actions.read().await.iter()
+        self.actions
+            .read()
+            .await
+            .iter()
             .filter(|a| a.status == "pending")
-            .cloned().collect()
+            .cloned()
+            .collect()
     }
 
     pub async fn start_loop(&self) {
@@ -178,14 +198,18 @@ impl HealingEngine {
             let mut ticker = interval(Duration::from_secs(5));
             loop {
                 ticker.tick().await;
-                if !*enabled.read().await { continue; }
+                if !*enabled.read().await {
+                    continue;
+                }
 
                 let pending: Vec<HealingAction>;
                 {
                     let acts = actions.read().await;
-                    pending = acts.iter()
+                    pending = acts
+                        .iter()
                         .filter(|a| a.status == "pending")
-                        .cloned().collect();
+                        .cloned()
+                        .collect();
                 }
 
                 for action in pending {
@@ -199,7 +223,11 @@ impl HealingEngine {
 
                 let event_count = events.read().await.len();
                 if event_count > 0 {
-                    debug!("Healing loop: {} events in queue, {} pending actions", event_count, pending.len());
+                    debug!(
+                        "Healing loop: {} events in queue, {} pending actions",
+                        event_count,
+                        pending.len()
+                    );
                 }
             }
         });

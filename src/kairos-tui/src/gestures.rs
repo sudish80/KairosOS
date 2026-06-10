@@ -1,8 +1,8 @@
 //! Gesture recognition — tap, swipe, pinch, long-press detection
+use crate::config;
 use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::RwLock;
-use crate::config;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum GestureType {
@@ -53,7 +53,12 @@ impl GestureEngine {
 
     pub async fn handle_touch_down(&self, x: f64, y: f64) {
         let mut touches = self.touches.write().await;
-        touches.push(TouchPoint { x, y, time: Instant::now(), active: true });
+        touches.push(TouchPoint {
+            x,
+            y,
+            time: Instant::now(),
+            active: true,
+        });
     }
 
     pub async fn handle_touch_move(&self, x: f64, y: f64) {
@@ -77,11 +82,26 @@ impl GestureEngine {
             // Detect gesture
             if dx.abs() > swipe_threshold || dy.abs() > swipe_threshold {
                 let gesture_type = if dx.abs() > dy.abs() {
-                    if dx > 0 { GestureType::SwipeRight } else { GestureType::SwipeLeft }
+                    if dx > 0 {
+                        GestureType::SwipeRight
+                    } else {
+                        GestureType::SwipeLeft
+                    }
                 } else {
-                    if dy > 0 { GestureType::SwipeDown } else { GestureType::SwipeUp }
+                    if dy > 0 {
+                        GestureType::SwipeDown
+                    } else {
+                        GestureType::SwipeUp
+                    }
                 };
-                let gesture = Gesture { gesture_type, x, y, dx, dy, scale: 1.0 };
+                let gesture = Gesture {
+                    gesture_type,
+                    x,
+                    y,
+                    dx,
+                    dy,
+                    scale: 1.0,
+                };
                 self.gesture_queue.write().await.push(gesture.clone());
                 return Some(gesture);
             }
@@ -90,14 +110,31 @@ impl GestureEngine {
                 // Check for double tap
                 let mut last_tap = self.last_tap.write().await;
                 if let Some((lx, ly, lt)) = *last_tap {
-                    if (x - lx).abs() < tap_threshold && (y - ly).abs() < tap_threshold && lt.elapsed().as_millis() < 300 {
+                    if (x - lx).abs() < tap_threshold
+                        && (y - ly).abs() < tap_threshold
+                        && lt.elapsed().as_millis() < 300
+                    {
                         *last_tap = None;
-                        let gesture = Gesture { gesture_type: GestureType::DoubleTap, x, y, dx: 0.0, dy: 0.0, scale: 1.0 };
+                        let gesture = Gesture {
+                            gesture_type: GestureType::DoubleTap,
+                            x,
+                            y,
+                            dx: 0.0,
+                            dy: 0.0,
+                            scale: 1.0,
+                        };
                         return Some(gesture);
                     }
                 }
                 *last_tap = Some((x, y, Instant::now()));
-                let gesture = Gesture { gesture_type: GestureType::Tap, x, y, dx: 0.0, dy: 0.0, scale: 1.0 };
+                let gesture = Gesture {
+                    gesture_type: GestureType::Tap,
+                    x,
+                    y,
+                    dx: 0.0,
+                    dy: 0.0,
+                    scale: 1.0,
+                };
                 return Some(gesture);
             }
         }

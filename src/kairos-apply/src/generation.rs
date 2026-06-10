@@ -1,11 +1,11 @@
 //! Generation store with atomic symlink swap
-use std::path::{Path, PathBuf};
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use tokio::fs;
-use tracing::{info, debug, error};
 use crate::config;
 use crate::error::ApplyError;
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
+use tokio::fs;
+use tokio::sync::RwLock;
+use tracing::{debug, error, info};
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct GenerationMetadata {
@@ -39,7 +39,11 @@ impl GenerationStore {
         Ok(store)
     }
 
-    pub async fn create_generation(&self, desc: &str, files: &[(String, Vec<u8>)]) -> anyhow::Result<String> {
+    pub async fn create_generation(
+        &self,
+        desc: &str,
+        files: &[(String, Vec<u8>)],
+    ) -> anyhow::Result<String> {
         let id = format!("gen-{}", chrono::Utc::now().format("%Y%m%d-%H%M%S-%3f"));
         let gen_dir = self.pending_dir.join(&id);
         fs::create_dir_all(&gen_dir).await?;
@@ -61,7 +65,11 @@ impl GenerationStore {
             checksum,
             file_count: files.len(),
         };
-        fs::write(gen_dir.join("gen.json"), serde_json::to_string_pretty(&meta)?).await?;
+        fs::write(
+            gen_dir.join("gen.json"),
+            serde_json::to_string_pretty(&meta)?,
+        )
+        .await?;
 
         info!("Creation generation: {} ({} files)", id, files.len());
         Ok(id)
@@ -83,7 +91,9 @@ impl GenerationStore {
         }
         #[cfg(not(unix))]
         {
-            return Err(anyhow::anyhow!("Symlink-based apply only supported on Unix"));
+            return Err(anyhow::anyhow!(
+                "Symlink-based apply only supported on Unix"
+            ));
         }
 
         // Move to history
@@ -119,7 +129,7 @@ impl GenerationStore {
     }
 
     async fn compute_checksum(&self, dir: &Path) -> anyhow::Result<String> {
-        use sha2::{Sha256, Digest};
+        use sha2::{Digest, Sha256};
         let mut hasher = Sha256::new();
         let mut entries: Vec<_> = Vec::new();
 

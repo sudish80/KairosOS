@@ -1,11 +1,11 @@
 //! Rollback management — health-checked, bounded-retry state recovery
-use std::path::PathBuf;
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use tokio::fs;
-use tracing::{info, error, warn};
 use crate::config;
 use crate::error::ApplyError;
+use std::path::PathBuf;
+use std::sync::Arc;
+use tokio::fs;
+use tokio::sync::RwLock;
+use tracing::{error, info, warn};
 
 pub struct RollbackManager {
     config: Arc<RwLock<config::Config>>,
@@ -37,7 +37,9 @@ impl RollbackManager {
         // Verify target exists in history
         let target_path = self.history_dir.join(&target);
         if !target_path.exists() {
-            return Err(ApplyError::Rollback(format!("Target generation not found: {}", target)).into());
+            return Err(
+                ApplyError::Rollback(format!("Target generation not found: {}", target)).into(),
+            );
         }
 
         // Atomic swap
@@ -91,7 +93,9 @@ impl RollbackManager {
             let meta_path = entry.path().join("gen.json");
             if meta_path.exists() {
                 let content = fs::read_to_string(&meta_path).await?;
-                if let Ok(meta) = serde_json::from_str::<super::generation::GenerationMetadata>(&content) {
+                if let Ok(meta) =
+                    serde_json::from_str::<super::generation::GenerationMetadata>(&content)
+                {
                     result.push(meta);
                 }
             }

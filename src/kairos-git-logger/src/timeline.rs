@@ -1,10 +1,10 @@
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
-use tokio::sync::RwLock;
 use tokio::process::Command;
+use tokio::sync::RwLock;
 use tracing::info;
-use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StateSnapshot {
@@ -123,7 +123,9 @@ impl ImmutableTimeline {
             .current_dir(&self.repo_path)
             .output()
             .await?;
-        let root_hash = String::from_utf8_lossy(&hash_output.stdout).trim().to_string();
+        let root_hash = String::from_utf8_lossy(&hash_output.stdout)
+            .trim()
+            .to_string();
 
         let diff_output = Command::new("git")
             .args(["diff", "--staged", "--stat"])
@@ -132,7 +134,8 @@ impl ImmutableTimeline {
             .await?;
         let diff_stat = String::from_utf8_lossy(&diff_output.stdout);
         let file_count = diff_stat.lines().count();
-        let total_changes: usize = diff_stat.lines()
+        let total_changes: usize = diff_stat
+            .lines()
             .filter_map(|l| l.split('|').nth(1))
             .map(|s| s.trim().chars().filter(|&c| c == '+').count())
             .sum();
@@ -142,7 +145,8 @@ impl ImmutableTimeline {
         let snapshot = StateSnapshot {
             id: root_hash.clone(),
             timestamp: std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)?.as_secs_f64(),
+                .duration_since(std::time::UNIX_EPOCH)?
+                .as_secs_f64(),
             generation: gen,
             root_hash,
             file_count,
@@ -159,12 +163,20 @@ impl ImmutableTimeline {
         self.snapshots.write().await.push(entry.clone());
 
         Command::new("git")
-            .args(["notes", "add", "-m", format!("immutable-generation-{}", gen).as_str()])
+            .args([
+                "notes",
+                "add",
+                "-m",
+                format!("immutable-generation-{}", gen).as_str(),
+            ])
             .current_dir(&self.repo_path)
             .status()
             .await?;
 
-        info!("Snapshot generation {}: {} files, {} changes", gen, file_count, total_changes);
+        info!(
+            "Snapshot generation {}: {} files, {} changes",
+            gen, file_count, total_changes
+        );
         Ok(entry)
     }
 
@@ -210,7 +222,10 @@ impl ImmutableTimeline {
 
     pub async fn get_snapshot(&self, generation: u64) -> Option<TimelineEntry> {
         let snapshots = self.snapshots.read().await;
-        snapshots.iter().find(|e| e.snapshot.generation == generation).cloned()
+        snapshots
+            .iter()
+            .find(|e| e.snapshot.generation == generation)
+            .cloned()
     }
 
     pub async fn diff_vectors(&self, from_gen: u64, to_gen: u64) -> anyhow::Result<Vec<FileDiff>> {
@@ -296,7 +311,11 @@ mod tests {
         timeline.init_repo().await.unwrap();
 
         for i in 1..=3 {
-            std::fs::write(tmp.path().join(format!("file{}.txt", i)), format!("content {}", i)).unwrap();
+            std::fs::write(
+                tmp.path().join(format!("file{}.txt", i)),
+                format!("content {}", i),
+            )
+            .unwrap();
             let entry = timeline.snapshot_repo().await.unwrap();
             assert_eq!(entry.snapshot.generation, i as u64);
         }

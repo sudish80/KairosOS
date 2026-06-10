@@ -1,10 +1,10 @@
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Arc;
-use tokio::sync::RwLock;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, TcpStream};
-use tracing::{info, error, debug};
-use serde::{Deserialize, Serialize};
+use tokio::sync::RwLock;
+use tracing::{debug, error, info};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BlockRequest {
@@ -74,7 +74,11 @@ impl P2pSwarm {
         Ok(())
     }
 
-    pub async fn request_block(&self, peer_addr: &str, request: &BlockRequest) -> anyhow::Result<Option<BlockResponse>> {
+    pub async fn request_block(
+        &self,
+        peer_addr: &str,
+        request: &BlockRequest,
+    ) -> anyhow::Result<Option<BlockResponse>> {
         let mut stream = TcpStream::connect(peer_addr).await?;
         let req_data = serde_json::to_vec(request)?;
 
@@ -106,10 +110,12 @@ impl P2pSwarm {
         let blocks = self.local_blocks.read().await;
         blocks.len() as u32
     }
-
 }
 
-async fn handle_peer(mut stream: TcpStream, blocks: Arc<RwLock<HashMap<u32, Vec<u8>>>>) -> anyhow::Result<()> {
+async fn handle_peer(
+    mut stream: TcpStream,
+    blocks: Arc<RwLock<HashMap<u32, Vec<u8>>>>,
+) -> anyhow::Result<()> {
     let mut len_buf = [0u8; 4];
     stream.read_exact(&mut len_buf).await?;
     let req_len = u32::from_be_bytes(len_buf) as usize;

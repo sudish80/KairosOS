@@ -1,7 +1,7 @@
-use std::sync::Arc;
-use std::sync::atomic::{AtomicU64, Ordering};
-use tokio::sync::RwLock;
 use crate::config;
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 pub struct Telemetry {
     config: Arc<RwLock<config::Config>>,
@@ -37,12 +37,20 @@ impl Telemetry {
         self.tokens_generated.fetch_add(tokens, Ordering::Relaxed);
         self.tokens_draft.fetch_add(draft, Ordering::Relaxed);
         self.tokens_accepted.fetch_add(accepted, Ordering::Relaxed);
-        self.tokens_rejected.fetch_add(draft.saturating_sub(accepted), Ordering::Relaxed);
-        self.latency_total_ns.fetch_add(latency_ns, Ordering::Relaxed);
+        self.tokens_rejected
+            .fetch_add(draft.saturating_sub(accepted), Ordering::Relaxed);
+        self.latency_total_ns
+            .fetch_add(latency_ns, Ordering::Relaxed);
     }
-    pub fn record_cache_hit(&self) { self.cache_hits.fetch_add(1, Ordering::Relaxed); }
-    pub fn record_cache_miss(&self) { self.cache_misses.fetch_add(1, Ordering::Relaxed); }
-    pub fn record_error(&self) { self.errors_total.fetch_add(1, Ordering::Relaxed); }
+    pub fn record_cache_hit(&self) {
+        self.cache_hits.fetch_add(1, Ordering::Relaxed);
+    }
+    pub fn record_cache_miss(&self) {
+        self.cache_misses.fetch_add(1, Ordering::Relaxed);
+    }
+    pub fn record_error(&self) {
+        self.errors_total.fetch_add(1, Ordering::Relaxed);
+    }
 
     pub fn metrics(&self) -> serde_json::Value {
         let hits = self.cache_hits.load(Ordering::Relaxed);

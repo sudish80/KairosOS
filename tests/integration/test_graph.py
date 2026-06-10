@@ -1,6 +1,5 @@
 """Integration tests for KairosOS Knowledge Graph service."""
 
-import json
 import os
 import tempfile
 import pytest

@@ -1,10 +1,10 @@
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use serde::{Deserialize, Serialize};
-use pqcrypto_kyber::kyber768;
 use pqcrypto_dilithium::dilithium3;
+use pqcrypto_kyber::kyber768;
 use pqcrypto_traits::kem::*;
 use pqcrypto_traits::sign::*;
+use serde::{Deserialize, Serialize};
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum QuantumAlgorithm {
@@ -79,7 +79,10 @@ impl PostQuantumCrypto {
                 let pk = kyber768::PublicKey::from_bytes(peer_public_key)
                     .map_err(|e| anyhow::anyhow!("Invalid Kyber768 public key: {:?}", e))?;
                 let (shared_secret, ciphertext) = kyber768::encapsulate(&pk);
-                Ok((shared_secret.as_bytes().to_vec(), ciphertext.as_bytes().to_vec()))
+                Ok((
+                    shared_secret.as_bytes().to_vec(),
+                    ciphertext.as_bytes().to_vec(),
+                ))
             }
             QuantumAlgorithm::Dilithium3 => {
                 Err(anyhow::anyhow!("Dilithium does not support encapsulation"))
@@ -111,13 +114,16 @@ impl PostQuantumCrypto {
                 let signature = dilithium3::detached_sign(message, &sk);
                 Ok(signature.as_bytes().to_vec())
             }
-            QuantumAlgorithm::Kyber768 => {
-                Err(anyhow::anyhow!("Kyber768 does not support signing"))
-            }
+            QuantumAlgorithm::Kyber768 => Err(anyhow::anyhow!("Kyber768 does not support signing")),
         }
     }
 
-    pub fn verify(&self, message: &[u8], signature: &[u8], public_key: &[u8]) -> anyhow::Result<bool> {
+    pub fn verify(
+        &self,
+        message: &[u8],
+        signature: &[u8],
+        public_key: &[u8],
+    ) -> anyhow::Result<bool> {
         match self.config.algorithm {
             QuantumAlgorithm::Dilithium3 | QuantumAlgorithm::Hybrid => {
                 let pk = dilithium3::PublicKey::from_bytes(public_key)
@@ -139,7 +145,11 @@ impl PostQuantumCrypto {
             .as_secs_f64();
         let mut store = self.key_store.write().await;
         store.retain(|(n, _, _)| n != name);
-        store.push((name.to_string(), key, now + self.config.key_ttl_seconds as f64));
+        store.push((
+            name.to_string(),
+            key,
+            now + self.config.key_ttl_seconds as f64,
+        ));
     }
 
     pub async fn get_key(&self, name: &str) -> Option<KeyMaterial> {
@@ -148,7 +158,8 @@ impl PostQuantumCrypto {
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
             .as_secs_f64();
-        store.iter()
+        store
+            .iter()
             .find(|(n, _, expiry)| n == name && *expiry > now)
             .map(|(_, key, _)| key.clone())
     }
@@ -158,7 +169,8 @@ impl PostQuantumCrypto {
         let store = Arc::clone(&self.key_store);
         tokio::spawn(async move {
             loop {
-                tokio::time::sleep(tokio::time::Duration::from_secs(config.key_ttl_seconds / 2)).await;
+                tokio::time::sleep(tokio::time::Duration::from_secs(config.key_ttl_seconds / 2))
+                    .await;
                 let mut ks = store.write().await;
                 let now = std::time::SystemTime::now()
                     .duration_since(std::time::UNIX_EPOCH)

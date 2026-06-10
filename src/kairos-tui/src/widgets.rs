@@ -11,14 +11,31 @@ impl WidgetRenderer {
         Self { config }
     }
 
-    pub async fn draw_button(&self, fb: &Framebuffer, x: u32, y: u32, w: u32, h: u32, label: &str, active: bool) {
+    pub async fn draw_button(
+        &self,
+        fb: &Framebuffer,
+        x: u32,
+        y: u32,
+        w: u32,
+        h: u32,
+        label: &str,
+        active: bool,
+    ) {
         let bg = if active { 0x007ACC } else { 0x3C3C3C };
         let fg = 0xD4D4D4;
         fb.draw_rect(x, y, w, h, bg).await;
         fb.draw_text(x + 10, y + h / 4, label, fg, 8, 16).await;
     }
 
-    pub async fn draw_progress_bar(&self, fb: &Framebuffer, x: u32, y: u32, w: u32, h: u32, progress: f64) {
+    pub async fn draw_progress_bar(
+        &self,
+        fb: &Framebuffer,
+        x: u32,
+        y: u32,
+        w: u32,
+        h: u32,
+        progress: f64,
+    ) {
         let bg = 0x3C3C3C;
         let fill = 0x4EC9B0;
         fb.draw_rect(x, y, w, h, bg).await;
@@ -28,7 +45,16 @@ impl WidgetRenderer {
         }
     }
 
-    pub async fn draw_text_input(&self, fb: &Framebuffer, x: u32, y: u32, w: u32, h: u32, text: &str, focused: bool) {
+    pub async fn draw_text_input(
+        &self,
+        fb: &Framebuffer,
+        x: u32,
+        y: u32,
+        w: u32,
+        h: u32,
+        text: &str,
+        focused: bool,
+    ) {
         let bg = if focused { 0x2D2D2D } else { 0x1E1E1E };
         let border = if focused { 0x007ACC } else { 0x3C3C3C };
         fb.draw_rect(x, y, w, h, border).await;

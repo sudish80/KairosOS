@@ -1,18 +1,18 @@
 //! kairos-recovery: A/B partition management, dm-verity, recovery shell — production-hardened
 #![deny(unsafe_code)]
 
-pub mod config;
-pub mod error;
-pub mod telemetry;
-pub mod worker;
-pub mod partitions;
-pub mod verity;
-pub mod recovery;
 pub mod boot;
-pub mod update;
-pub mod health;
-pub mod predict;
+pub mod config;
 pub mod digtwin;
+pub mod error;
+pub mod health;
+pub mod partitions;
+pub mod predict;
+pub mod recovery;
+pub mod telemetry;
+pub mod update;
+pub mod verity;
+pub mod worker;
 
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -33,23 +33,44 @@ impl AppState {
     pub async fn new(cfg: config::Config) -> anyhow::Result<Self> {
         let config = Arc::new(RwLock::new(cfg));
         let telemetry = Arc::new(telemetry::Telemetry::new(Arc::clone(&config)));
-        let partition_manager = Arc::new(partitions::PartitionManager::new(Arc::clone(&config)).await?);
+        let partition_manager =
+            Arc::new(partitions::PartitionManager::new(Arc::clone(&config)).await?);
         let verity_manager = Arc::new(verity::VerityManager::new(Arc::clone(&config)));
         let recovery_shell = Arc::new(recovery::RecoveryShell::new(Arc::clone(&config)));
-        let boot_manager = Arc::new(boot::BootManager::new(Arc::clone(&config), Arc::clone(&partition_manager)));
+        let boot_manager = Arc::new(boot::BootManager::new(
+            Arc::clone(&config),
+            Arc::clone(&partition_manager),
+        ));
         let update_engine = Arc::new(update::UpdateEngine::new(
-            Arc::clone(&config), Arc::clone(&partition_manager),
-            Arc::clone(&verity_manager), Arc::clone(&boot_manager),
+            Arc::clone(&config),
+            Arc::clone(&partition_manager),
+            Arc::clone(&verity_manager),
+            Arc::clone(&boot_manager),
             Arc::clone(&telemetry),
         ));
-        let health_checker = Arc::new(health::HealthChecker::new(Arc::clone(&config), Arc::clone(&partition_manager)));
+        let health_checker = Arc::new(health::HealthChecker::new(
+            Arc::clone(&config),
+            Arc::clone(&partition_manager),
+        ));
 
         info!("kairos-recovery AppState initialized");
-        Ok(Self { config, telemetry, partition_manager, verity_manager, recovery_shell, boot_manager, update_engine, health_checker })
+        Ok(Self {
+            config,
+            telemetry,
+            partition_manager,
+            verity_manager,
+            recovery_shell,
+            boot_manager,
+            update_engine,
+            health_checker,
+        })
     }
 }
 
-pub enum Slot { A, B }
+pub enum Slot {
+    A,
+    B,
+}
 
 impl Slot {
     pub fn current() -> Self {

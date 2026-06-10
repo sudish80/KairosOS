@@ -1,9 +1,9 @@
-use std::sync::Arc;
-use std::time::Instant;
-use tokio::sync::RwLock;
 use crate::config::Config;
 use crate::error::McpError;
 use crate::telemetry::Telemetry;
+use std::sync::Arc;
+use std::time::Instant;
+use tokio::sync::RwLock;
 
 pub struct OllamaHandler {
     config: Arc<RwLock<Config>>,
@@ -18,7 +18,11 @@ impl OllamaHandler {
             .connection_verbose(true)
             .build()
             .expect("reqwest::Client build");
-        Self { config, telemetry, client }
+        Self {
+            config,
+            telemetry,
+            client,
+        }
     }
 
     pub async fn handle_request(&self, req: &serde_json::Value) -> serde_json::Value {
@@ -39,15 +43,25 @@ impl OllamaHandler {
         }
     }
 
-    async fn handle_generate(&self, req: &serde_json::Value) -> Result<serde_json::Value, McpError> {
+    async fn handle_generate(
+        &self,
+        req: &serde_json::Value,
+    ) -> Result<serde_json::Value, McpError> {
         let cfg = self.config.read().await;
-        let model = req["params"]["model"].as_str().unwrap_or(&cfg.default_model);
-        let prompt = req["params"]["prompt"].as_str().ok_or(McpError::InvalidParams("missing prompt".into()))?;
+        let model = req["params"]["model"]
+            .as_str()
+            .unwrap_or(&cfg.default_model);
+        let prompt = req["params"]["prompt"]
+            .as_str()
+            .ok_or(McpError::InvalidParams("missing prompt".into()))?;
         let stream = req["params"]["stream"].as_bool().unwrap_or(false);
         let start = Instant::now();
-        let resp = self.client.post(format!("{}/api/generate", cfg.ollama_url))
+        let resp = self
+            .client
+            .post(format!("{}/api/generate", cfg.ollama_url))
             .json(&serde_json::json!({ "model": model, "prompt": prompt, "stream": stream }))
-            .send().await?;
+            .send()
+            .await?;
         if !resp.status().is_success() {
             let status = resp.status();
             let body = resp.text().await.unwrap_or_default();
@@ -62,7 +76,11 @@ impl OllamaHandler {
 
     async fn handle_list_models(&self) -> Result<serde_json::Value, McpError> {
         let cfg = self.config.read().await;
-        let resp = self.client.get(format!("{}/api/tags", cfg.ollama_url)).send().await?;
+        let resp = self
+            .client
+            .get(format!("{}/api/tags", cfg.ollama_url))
+            .send()
+            .await?;
         if !resp.status().is_success() {
             let status = resp.status();
             let body = resp.text().await.unwrap_or_default();

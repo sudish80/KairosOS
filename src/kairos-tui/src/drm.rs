@@ -1,9 +1,9 @@
 //! DRM/KMS manager — direct rendering, page flip, mode setting
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use tokio::process::Command;
-use tracing::{info, debug, error};
 use crate::config;
+use std::sync::Arc;
+use tokio::process::Command;
+use tokio::sync::RwLock;
+use tracing::{debug, error, info};
 
 pub struct DrmManager {
     config: Arc<RwLock<config::Config>>,
@@ -15,7 +15,12 @@ pub struct DrmManager {
 impl DrmManager {
     pub async fn new(config: Arc<RwLock<config::Config>>) -> anyhow::Result<Self> {
         info!("DrmManager initialized");
-        Ok(Self { config, drm_fd: None, crtc_id: None, connector_id: None })
+        Ok(Self {
+            config,
+            drm_fd: None,
+            crtc_id: None,
+            connector_id: None,
+        })
     }
 
     pub async fn open(&self) -> anyhow::Result<()> {
@@ -27,8 +32,16 @@ impl DrmManager {
 
     pub async fn set_mode(&self, width: u32, height: u32, bpp: u32) -> anyhow::Result<()> {
         let status = Command::new("fbset")
-            .args(["-xres", &width.to_string(), "-yres", &height.to_string(), "-depth", &bpp.to_string()])
-            .status().await;
+            .args([
+                "-xres",
+                &width.to_string(),
+                "-yres",
+                &height.to_string(),
+                "-depth",
+                &bpp.to_string(),
+            ])
+            .status()
+            .await;
 
         match status {
             Ok(s) if s.success() => info!("Display mode set: {}x{}x{}", width, height, bpp),

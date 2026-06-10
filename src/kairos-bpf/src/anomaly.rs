@@ -1,11 +1,11 @@
 //! Anomaly detector using statistical and ML-based methods
+use crate::config::Config;
 use crate::error::Result;
 use crate::telemetry::TelemetryStore;
-use crate::config::Config;
+use std::collections::VecDeque;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use std::collections::VecDeque;
-use tracing::{info, debug, warn};
+use tracing::{debug, info, warn};
 
 pub struct AnomalyDetector {
     telemetry: Arc<TelemetryStore>,
@@ -88,7 +88,10 @@ impl AnomalyDetector {
         for sample in history.iter().rev().take(10) {
             let zscore = (sample.count as f64 - mean) / stddev.max(1.0);
             if zscore > cfg.anomaly.stddev_threshold {
-                warn!("Syscall anomaly detected: pid={} zscore={:.2}", sample.pid, zscore);
+                warn!(
+                    "Syscall anomaly detected: pid={} zscore={:.2}",
+                    sample.pid, zscore
+                );
                 // Emit anomaly event
             }
         }
@@ -110,7 +113,10 @@ impl AnomalyDetector {
         for sample in history.iter().rev().take(10) {
             let zscore = (sample.bytes as f64 - mean) / stddev.max(1.0);
             if zscore > cfg.anomaly.stddev_threshold {
-                warn!("Memory anomaly detected: pid={} zscore={:.2}", sample.pid, zscore);
+                warn!(
+                    "Memory anomaly detected: pid={} zscore={:.2}",
+                    sample.pid, zscore
+                );
             }
         }
 
@@ -123,18 +129,23 @@ impl AnomalyDetector {
             return Ok(());
         }
 
-        let total_bytes: Vec<f64> = history.iter()
+        let total_bytes: Vec<f64> = history
+            .iter()
             .map(|s| (s.bytes_sent + s.bytes_recv) as f64)
             .collect();
         let mean = total_bytes.iter().sum::<f64>() / total_bytes.len() as f64;
-        let variance = total_bytes.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / total_bytes.len() as f64;
+        let variance =
+            total_bytes.iter().map(|x| (x - mean).powi(2)).sum::<f64>() / total_bytes.len() as f64;
         let stddev = variance.sqrt();
 
         for sample in history.iter().rev().take(10) {
             let total = (sample.bytes_sent + sample.bytes_recv) as f64;
             let zscore = (total - mean) / stddev.max(1.0);
             if zscore > cfg.anomaly.stddev_threshold {
-                warn!("Network anomaly detected: pid={} zscore={:.2}", sample.pid, zscore);
+                warn!(
+                    "Network anomaly detected: pid={} zscore={:.2}",
+                    sample.pid, zscore
+                );
             }
         }
 
@@ -148,7 +159,9 @@ impl AnomalyDetector {
             pid,
             count,
         });
-        if history.len() > 10000 { history.pop_front(); }
+        if history.len() > 10000 {
+            history.pop_front();
+        }
     }
 
     pub async fn record_memory(&self, pid: u32, bytes: u64) {
@@ -158,7 +171,9 @@ impl AnomalyDetector {
             pid,
             bytes,
         });
-        if history.len() > 10000 { history.pop_front(); }
+        if history.len() > 10000 {
+            history.pop_front();
+        }
     }
 
     pub async fn record_network(&self, pid: u32, bytes_sent: u64, bytes_recv: u64) {
@@ -169,6 +184,8 @@ impl AnomalyDetector {
             bytes_sent,
             bytes_recv,
         });
-        if history.len() > 10000 { history.pop_front(); }
+        if history.len() > 10000 {
+            history.pop_front();
+        }
     }
 }

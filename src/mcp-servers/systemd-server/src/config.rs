@@ -14,7 +14,13 @@ impl Default for Config {
             systemctl_path: "/usr/bin/systemctl".into(),
             journalctl_path: "/usr/bin/journalctl".into(),
             default_journal_lines: 50,
-            service_actions: vec!["start".into(), "stop".into(), "restart".into(), "enable".into(), "disable".into()],
+            service_actions: vec![
+                "start".into(),
+                "stop".into(),
+                "restart".into(),
+                "enable".into(),
+                "disable".into(),
+            ],
         }
     }
 }

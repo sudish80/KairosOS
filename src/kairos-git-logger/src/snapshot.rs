@@ -1,11 +1,11 @@
 //! Snapshot manager — point-in-time snapshots with restore capability
-use std::path::PathBuf;
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use tokio::fs;
-use tracing::{info, error};
 use crate::config;
 use crate::repo::RepoManager;
+use std::path::PathBuf;
+use std::sync::Arc;
+use tokio::fs;
+use tokio::sync::RwLock;
+use tracing::{error, info};
 
 pub struct SnapshotManager {
     config: Arc<RwLock<config::Config>>,
@@ -16,14 +16,25 @@ pub struct SnapshotManager {
 impl SnapshotManager {
     pub fn new(config: Arc<RwLock<config::Config>>, repo_manager: Arc<RepoManager>) -> Self {
         let snapshot_dir = PathBuf::from("/var/lib/kairos/snapshots");
-        Self { config, repo_manager, snapshot_dir }
+        Self {
+            config,
+            repo_manager,
+            snapshot_dir,
+        }
     }
 
     pub async fn create_snapshot(&self, name: &str) -> anyhow::Result<String> {
-        let head = self.repo_manager.get_head_hash().await?
+        let head = self
+            .repo_manager
+            .get_head_hash()
+            .await?
             .ok_or_else(|| anyhow::anyhow!("No HEAD commit to snapshot"))?;
 
-        let tag = format!("snapshot/{}/{}", name, chrono::Utc::now().format("%Y%m%d-%H%M%S"));
+        let tag = format!(
+            "snapshot/{}/{}",
+            name,
+            chrono::Utc::now().format("%Y%m%d-%H%M%S")
+        );
         let tag_path = self.snapshot_dir.join(&tag);
         fs::create_dir_all(&tag_path).await?;
         fs::write(tag_path.join("HEAD"), &head).await?;

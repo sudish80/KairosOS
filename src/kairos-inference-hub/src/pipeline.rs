@@ -1,15 +1,15 @@
 //! Inference pipeline — speculative decoding orchestration
+use crate::config;
+use crate::error::InferenceError;
+use crate::kv_cache::KVCache;
+use crate::router::ModelRouter;
+use crate::speculator::SpeculativeEngine;
+use crate::telemetry::Telemetry;
+use crate::InferenceResult;
 use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::RwLock;
-use tracing::{info, debug, error};
-use crate::config;
-use crate::router::ModelRouter;
-use crate::speculator::SpeculativeEngine;
-use crate::kv_cache::KVCache;
-use crate::telemetry::Telemetry;
-use crate::error::InferenceError;
-use crate::InferenceResult;
+use tracing::{debug, error, info};
 
 pub struct InferencePipeline {
     config: Arc<RwLock<config::Config>>,
@@ -27,7 +27,13 @@ impl InferencePipeline {
         kv_cache: Arc<KVCache>,
         telemetry: Arc<Telemetry>,
     ) -> Self {
-        Self { config, router, speculator, kv_cache, telemetry }
+        Self {
+            config,
+            router,
+            speculator,
+            kv_cache,
+            telemetry,
+        }
     }
 
     pub async fn infer(&self, model: &str, prompt: &str) -> anyhow::Result<InferenceResult> {
@@ -72,9 +78,14 @@ impl InferencePipeline {
             (start.elapsed().as_nanos()) as u64,
         );
 
-        info!("Inference complete: {} tokens (draft: {}, accepted: {}, rate: {:.2}) in {:.1}ms",
-            stats.tokens_generated, stats.tokens_draft, stats.tokens_accepted,
-            stats.acceptance_rate, total_latency);
+        info!(
+            "Inference complete: {} tokens (draft: {}, accepted: {}, rate: {:.2}) in {:.1}ms",
+            stats.tokens_generated,
+            stats.tokens_draft,
+            stats.tokens_accepted,
+            stats.acceptance_rate,
+            total_latency
+        );
 
         Ok(InferenceResult {
             model: output.model_name,

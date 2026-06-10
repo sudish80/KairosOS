@@ -1,11 +1,11 @@
+use serde::{Deserialize, Serialize};
+use sha2::{Digest, Sha256};
 use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::sync::Arc;
-use tokio::sync::RwLock;
 use tokio::process::Command as TokioCommand;
+use tokio::sync::RwLock;
 use tracing::info;
-use serde::{Deserialize, Serialize};
-use sha2::{Sha256, Digest};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Snapshot {
@@ -177,9 +177,12 @@ impl DigitalTwin {
     }
 
     pub async fn clone_environment(&self, source: &Path) -> anyhow::Result<PathBuf> {
-        let id = format!("env-{}", std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)?
-            .as_secs());
+        let id = format!(
+            "env-{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)?
+                .as_secs()
+        );
         let target = self.config.sandbox_dir.join(&id);
         std::fs::create_dir_all(&target)?;
 

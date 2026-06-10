@@ -1,10 +1,14 @@
-use std::path::PathBuf;
 use clap::Parser;
-use tracing_subscriber::EnvFilter;
+use std::path::PathBuf;
 use tracing::info;
+use tracing_subscriber::EnvFilter;
 
 #[derive(Parser)]
-#[command(name = "kairos-apply", version = "1.0.0", about = "Declarative configuration state applier")]
+#[command(
+    name = "kairos-apply",
+    version = "1.0.0",
+    about = "Declarative configuration state applier"
+)]
 struct Cli {
     #[arg(short, long, default_value = "/etc/kairos/apply.toml")]
     config: PathBuf,
@@ -51,7 +55,10 @@ async fn main() -> anyhow::Result<()> {
     if cli.list {
         let history = state.generation_store.list_history().await?;
         for gen in &history {
-            println!("{} | {} | {} files | {}", gen.id, gen.created_at, gen.file_count, gen.description);
+            println!(
+                "{} | {} | {} files | {}",
+                gen.id, gen.created_at, gen.file_count, gen.description
+            );
         }
         return Ok(());
     }
@@ -59,7 +66,10 @@ async fn main() -> anyhow::Result<()> {
     if cli.status {
         let active = state.generation_store.get_active_id().await?;
         println!("Active generation: {:?}", active);
-        println!("Rollback health: {:?}", state.rollback_manager.health_check().await?);
+        println!(
+            "Rollback health: {:?}",
+            state.rollback_manager.health_check().await?
+        );
         return Ok(());
     }
 

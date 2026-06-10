@@ -1,9 +1,9 @@
 //! Background worker — periodic GC and health checks
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use tracing::{info, error};
 use crate::config;
 use crate::repo::RepoManager;
+use std::sync::Arc;
+use tokio::sync::RwLock;
+use tracing::{error, info};
 
 pub struct GitLoggerWorker {
     config: Arc<RwLock<config::Config>>,
@@ -12,7 +12,10 @@ pub struct GitLoggerWorker {
 
 impl GitLoggerWorker {
     pub fn new(config: Arc<RwLock<config::Config>>, repo_manager: Arc<RepoManager>) -> Self {
-        Self { config, repo_manager }
+        Self {
+            config,
+            repo_manager,
+        }
     }
 
     pub async fn start(&self) -> anyhow::Result<()> {

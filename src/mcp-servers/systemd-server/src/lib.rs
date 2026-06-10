@@ -1,7 +1,7 @@
 pub mod config;
 pub mod error;
-pub mod telemetry;
 pub mod handler;
+pub mod telemetry;
 
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -17,6 +17,10 @@ impl AppState {
         let config = Arc::new(RwLock::new(cfg));
         let telemetry = Arc::new(telemetry::Telemetry::new());
         let handler = handler::SystemdHandler::new(Arc::clone(&config), Arc::clone(&telemetry));
-        Self { config, telemetry, handler }
+        Self {
+            config,
+            telemetry,
+            handler,
+        }
     }
 }

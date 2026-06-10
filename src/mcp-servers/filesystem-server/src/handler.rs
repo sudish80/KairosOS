@@ -1,10 +1,10 @@
+use crate::config::Config;
+use crate::error::McpError;
+use crate::telemetry::Telemetry;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use std::time::SystemTime;
 use tokio::sync::RwLock;
-use crate::config::Config;
-use crate::error::McpError;
-use crate::telemetry::Telemetry;
 
 pub struct FilesystemHandler {
     config: Arc<RwLock<Config>>,
@@ -17,10 +17,14 @@ impl FilesystemHandler {
     }
 
     fn resolve(&self, raw: &str) -> Result<PathBuf, McpError> {
-        let path = Path::new(raw).canonicalize().map_err(|_| McpError::PathTraversal(raw.into()))?;
+        let path = Path::new(raw)
+            .canonicalize()
+            .map_err(|_| McpError::PathTraversal(raw.into()))?;
         let cfg = self.config.blocking_read();
         let allowed = cfg.allowed_prefixes.iter().any(|p| path.starts_with(p));
-        if !allowed { return Err(McpError::PathTraversal(raw.into())); }
+        if !allowed {
+            return Err(McpError::PathTraversal(raw.into()));
+        }
         Ok(path)
     }
 
@@ -45,19 +49,29 @@ impl FilesystemHandler {
     }
 
     async fn handle_read(&self, req: &serde_json::Value) -> Result<serde_json::Value, McpError> {
-        let path = req["params"]["path"].as_str().ok_or(McpError::InvalidParams("missing path".into()))?;
+        let path = req["params"]["path"]
+            .as_str()
+            .ok_or(McpError::InvalidParams("missing path".into()))?;
         let pb = self.resolve(path)?;
         let meta = std::fs::metadata(&pb).map_err(McpError::Io)?;
         let cfg = self.config.read().await;
-        if meta.len() > cfg.max_file_size { return Err(McpError::FileTooLarge(meta.len())); }
+        if meta.len() > cfg.max_file_size {
+            return Err(McpError::FileTooLarge(meta.len()));
+        }
         let content = tokio::fs::read_to_string(&pb).await?;
         self.telemetry.record_read(meta.len());
-        Ok(serde_json::json!({ "content": content, "size": meta.len(), "path": pb.to_string_lossy() }))
+        Ok(
+            serde_json::json!({ "content": content, "size": meta.len(), "path": pb.to_string_lossy() }),
+        )
     }
 
     async fn handle_write(&self, req: &serde_json::Value) -> Result<serde_json::Value, McpError> {
-        let path = req["params"]["path"].as_str().ok_or(McpError::InvalidParams("missing path".into()))?;
-        let content = req["params"]["content"].as_str().ok_or(McpError::InvalidParams("missing content".into()))?;
+        let path = req["params"]["path"]
+            .as_str()
+            .ok_or(McpError::InvalidParams("missing path".into()))?;
+        let content = req["params"]["content"]
+            .as_str()
+            .ok_or(McpError::InvalidParams("missing content".into()))?;
         let pb = self.resolve(path)?;
         tokio::fs::write(&pb, content).await?;
         self.telemetry.record_write(content.len() as u64);
@@ -83,7 +97,9 @@ impl FilesystemHandler {
     }
 
     async fn handle_stat(&self, req: &serde_json::Value) -> Result<serde_json::Value, McpError> {
-        let path = req["params"]["path"].as_str().ok_or(McpError::InvalidParams("missing path".into()))?;
+        let path = req["params"]["path"]
+            .as_str()
+            .ok_or(McpError::InvalidParams("missing path".into()))?;
         let pb = self.resolve(path)?;
         let m = std::fs::metadata(&pb)?;
         let modified = m.modified().unwrap_or(SystemTime::UNIX_EPOCH);

@@ -11,14 +11,33 @@ pub struct Telemetry {
 
 impl Telemetry {
     pub fn new() -> Self {
-        Self { requests: AtomicU64::new(0), list_ops: AtomicU64::new(0), status_ops: AtomicU64::new(0), action_ops: AtomicU64::new(0), journal_ops: AtomicU64::new(0), errors: AtomicU64::new(0) }
+        Self {
+            requests: AtomicU64::new(0),
+            list_ops: AtomicU64::new(0),
+            status_ops: AtomicU64::new(0),
+            action_ops: AtomicU64::new(0),
+            journal_ops: AtomicU64::new(0),
+            errors: AtomicU64::new(0),
+        }
     }
-    pub fn record_request(&self) { self.requests.fetch_add(1, Ordering::Relaxed); }
-    pub fn record_list(&self) { self.list_ops.fetch_add(1, Ordering::Relaxed); }
-    pub fn record_status(&self) { self.status_ops.fetch_add(1, Ordering::Relaxed); }
-    pub fn record_action(&self) { self.action_ops.fetch_add(1, Ordering::Relaxed); }
-    pub fn record_journal(&self) { self.journal_ops.fetch_add(1, Ordering::Relaxed); }
-    pub fn record_error(&self) { self.errors.fetch_add(1, Ordering::Relaxed); }
+    pub fn record_request(&self) {
+        self.requests.fetch_add(1, Ordering::Relaxed);
+    }
+    pub fn record_list(&self) {
+        self.list_ops.fetch_add(1, Ordering::Relaxed);
+    }
+    pub fn record_status(&self) {
+        self.status_ops.fetch_add(1, Ordering::Relaxed);
+    }
+    pub fn record_action(&self) {
+        self.action_ops.fetch_add(1, Ordering::Relaxed);
+    }
+    pub fn record_journal(&self) {
+        self.journal_ops.fetch_add(1, Ordering::Relaxed);
+    }
+    pub fn record_error(&self) {
+        self.errors.fetch_add(1, Ordering::Relaxed);
+    }
     pub fn metrics(&self) -> serde_json::Value {
         serde_json::json!({
             "total_requests": self.requests.load(Ordering::Relaxed),

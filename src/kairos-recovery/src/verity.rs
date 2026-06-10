@@ -1,11 +1,11 @@
 //! dm-verity manager — hash tree verification, integrity checking
-use std::path::PathBuf;
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use tokio::process::Command;
-use tracing::{info, debug, error, warn};
 use crate::config;
 use crate::error::RecoveryError;
+use std::path::PathBuf;
+use std::sync::Arc;
+use tokio::process::Command;
+use tokio::sync::RwLock;
+use tracing::{debug, error, info, warn};
 
 pub struct VerityManager {
     config: Arc<RwLock<config::Config>>,
@@ -21,13 +21,23 @@ impl VerityManager {
         info!("Verifying dm-verity for {}", device);
 
         let output = Command::new("veritysetup")
-            .args(["verify", device, &cfg.verity.hash_device, &cfg.verity.root_hash_file])
-            .output().await;
+            .args([
+                "verify",
+                device,
+                &cfg.verity.hash_device,
+                &cfg.verity.root_hash_file,
+            ])
+            .output()
+            .await;
 
         match output {
             Ok(out) => {
                 let passed = out.status.success();
-                info!("Verity check for {}: {}", device, if passed { "PASS" } else { "FAIL" });
+                info!(
+                    "Verity check for {}: {}",
+                    device,
+                    if passed { "PASS" } else { "FAIL" }
+                );
                 Ok(passed)
             }
             Err(e) => {
@@ -44,10 +54,14 @@ impl VerityManager {
 
         let status = Command::new("veritysetup")
             .args([
-                "open", device, &verity_name,
-                &cfg.verity.hash_device, &cfg.verity.root_hash_file,
+                "open",
+                device,
+                &verity_name,
+                &cfg.verity.hash_device,
+                &cfg.verity.root_hash_file,
             ])
-            .status().await;
+            .status()
+            .await;
 
         match status {
             Ok(s) if s.success() => {
@@ -62,7 +76,10 @@ impl VerityManager {
     }
 
     pub async fn teardown_verity(&self, name: &str) -> anyhow::Result<()> {
-        let _ = Command::new("veritysetup").args(["close", name]).status().await;
+        let _ = Command::new("veritysetup")
+            .args(["close", name])
+            .status()
+            .await;
         Ok(())
     }
 }

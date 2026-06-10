@@ -1,11 +1,11 @@
 //! MCP client — service discovery, connection pooling, request dispatch
-use std::sync::Arc;
-use tokio::sync::{RwLock, Semaphore};
-use tokio::net::UnixStream;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use std::collections::HashMap;
+use std::sync::Arc;
 use std::time::{Duration, Instant};
-use tracing::{info, debug, error};
+use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::net::UnixStream;
+use tokio::sync::{RwLock, Semaphore};
+use tracing::{debug, error, info};
 
 pub struct McpClient {
     registry: Arc<crate::registry::ServiceRegistry>,
@@ -21,7 +21,11 @@ struct ConnectionPool {
 
 impl ConnectionPool {
     fn new(endpoints: Vec<String>, timeout: Duration) -> Self {
-        Self { endpoints, current: 0, timeout }
+        Self {
+            endpoints,
+            current: 0,
+            timeout,
+        }
     }
 
     fn next_endpoint(&mut self) -> Option<&str> {
@@ -43,10 +47,18 @@ impl McpClient {
         }
     }
 
-    pub async fn call(&self, service: &str, method: &str, params: serde_json::Value) -> anyhow::Result<serde_json::Value> {
+    pub async fn call(
+        &self,
+        service: &str,
+        method: &str,
+        params: serde_json::Value,
+    ) -> anyhow::Result<serde_json::Value> {
         let _permit = self.semaphore.acquire().await?;
 
-        let service_info = self.registry.resolve(method).await
+        let service_info = self
+            .registry
+            .resolve(method)
+            .await
             .ok_or_else(|| anyhow::anyhow!("No service found for method: {}", method))?;
 
         let request = serde_json::json!({
@@ -56,15 +68,19 @@ impl McpClient {
             "params": params,
         });
 
-        let response = self.send_request(&service_info.endpoint, &request.to_string()).await?;
+        let response = self
+            .send_request(&service_info.endpoint, &request.to_string())
+            .await?;
         Ok(response)
     }
 
-    async fn send_request(&self, endpoint: &str, request: &str) -> anyhow::Result<serde_json::Value> {
-        let stream = tokio::time::timeout(
-            Duration::from_secs(5),
-            UnixStream::connect(endpoint),
-        ).await??;
+    async fn send_request(
+        &self,
+        endpoint: &str,
+        request: &str,
+    ) -> anyhow::Result<serde_json::Value> {
+        let stream =
+            tokio::time::timeout(Duration::from_secs(5), UnixStream::connect(endpoint)).await??;
 
         let (mut reader, mut writer) = stream.into_split();
         writer.write_all(request.as_bytes()).await?;
@@ -76,7 +92,12 @@ impl McpClient {
         Ok(response)
     }
 
-    pub async fn notify(&self, service: &str, method: &str, params: serde_json::Value) -> anyhow::Result<()> {
+    pub async fn notify(
+        &self,
+        service: &str,
+        method: &str,
+        params: serde_json::Value,
+    ) -> anyhow::Result<()> {
         let _permit = self.semaphore.acquire().await?;
 
         let notification = serde_json::json!({
@@ -90,10 +111,12 @@ impl McpClient {
             let registry = Arc::clone(&self.registry);
             async move {
                 if let Some(info) = registry.resolve(method).await {
-                    let _ = tokio::net::UnixStream::connect(&info.endpoint).await
-                        .and_then(|mut s| async move {
-                            s.write_all(notification.to_string().as_bytes()).await
-                        }.await);
+                    let _ = tokio::net::UnixStream::connect(&info.endpoint)
+                        .await
+                        .and_then(|mut s| {
+                            async move { s.write_all(notification.to_string().as_bytes()).await }
+                                .await
+                        });
                 }
             }
         });

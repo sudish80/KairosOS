@@ -1,10 +1,10 @@
 //! Remediation engine for autonomous system recovery
+use crate::config::Config;
 use crate::error::Result;
 use crate::telemetry::TelemetryStore;
-use crate::config::Config;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use tracing::{info, warn, error};
+use tracing::{error, info, warn};
 
 pub struct RemediationEngine {
     telemetry: Arc<TelemetryStore>,
@@ -52,10 +52,7 @@ impl RateLimiter {
 }
 
 impl RemediationEngine {
-    pub async fn new(
-        telemetry: Arc<TelemetryStore>,
-        config: Arc<RwLock<Config>>,
-    ) -> Result<Self> {
+    pub async fn new(telemetry: Arc<TelemetryStore>, config: Arc<RwLock<Config>>) -> Result<Self> {
         let cfg = config.read().await;
         Ok(Self {
             telemetry,
@@ -111,7 +108,12 @@ impl RemediationEngine {
         Ok(())
     }
 
-    pub async fn execute_remediation(&self, action_type: &str, target: &str, details: &str) -> Result<bool> {
+    pub async fn execute_remediation(
+        &self,
+        action_type: &str,
+        target: &str,
+        details: &str,
+    ) -> Result<bool> {
         if !self.rate_limiter.lock().await.try_acquire() {
             warn!("Rate limit exceeded for remediation: {}", action_type);
             return Ok(false);
@@ -175,6 +177,13 @@ impl RemediationEngine {
     }
 
     pub async fn get_recent_actions(&self, limit: usize) -> Vec<RemediationAction> {
-        self.actions_taken.read().await.iter().rev().take(limit).cloned().collect()
+        self.actions_taken
+            .read()
+            .await
+            .iter()
+            .rev()
+            .take(limit)
+            .cloned()
+            .collect()
     }
 }

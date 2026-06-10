@@ -1,15 +1,15 @@
 //! Speculative decoding engine — draft model proposes via subprocess, oracle verifies
 //! Uses llama.cpp CLI for draft model, GGML direct for oracle, with statistical acceptance
+use crate::config;
+use crate::error::InferenceError;
+use crate::kv_cache::KVCache;
+use crate::models::{ModelHandle, ModelRegistry, ModelType};
 use std::sync::Arc;
 use std::time::Instant;
-use tokio::sync::RwLock;
-use tokio::process::Command;
 use tokio::io::AsyncWriteExt;
-use tracing::{info, debug, error, warn};
-use crate::config;
-use crate::models::{ModelRegistry, ModelHandle, ModelType};
-use crate::kv_cache::KVCache;
-use crate::error::InferenceError;
+use tokio::process::Command;
+use tokio::sync::RwLock;
+use tracing::{debug, error, info, warn};
 
 pub struct SpeculativeEngine {
     config: Arc<RwLock<config::Config>>,
@@ -45,16 +45,36 @@ impl SpeculativeEngine {
         model_registry: Arc<ModelRegistry>,
         kv_cache: Arc<KVCache>,
     ) -> Self {
-        Self { config, model_registry, kv_cache }
+        Self {
+            config,
+            model_registry,
+            kv_cache,
+        }
     }
 
-    pub async fn speculate(&self, oracle_handle: ModelHandle, prompt: &str) -> anyhow::Result<(SpeculationOutput, SpeculationStats)> {
+    pub async fn speculate(
+        &self,
+        oracle_handle: ModelHandle,
+        prompt: &str,
+    ) -> anyhow::Result<(SpeculationOutput, SpeculationStats)> {
         let cfg = self.config.read().await;
         if !cfg.speculative.enabled {
-            let output = self.run_oracle_inference(&oracle_handle, prompt, 256).await?;
+            let output = self
+                .run_oracle_inference(&oracle_handle, prompt, 256)
+                .await?;
             return Ok((
-                SpeculationOutput { text: output.text, model_name: oracle_handle.name },
-                SpeculationStats { tokens_generated: output.tokens, tokens_draft: 0, tokens_accepted: 0, acceptance_rate: 1.0, draft_latency_ms: 0.0, oracle_latency_ms: output.latency_ms },
+                SpeculationOutput {
+                    text: output.text,
+                    model_name: oracle_handle.name,
+                },
+                SpeculationStats {
+                    tokens_generated: output.tokens,
+                    tokens_draft: 0,
+                    tokens_accepted: 0,
+                    acceptance_rate: 1.0,
+                    draft_latency_ms: 0.0,
+                    oracle_latency_ms: output.latency_ms,
+                },
             ));
         }
 
@@ -69,28 +89,40 @@ impl SpeculativeEngine {
         let mut total_oracle_latency = 0f64;
 
         for round in 0..max_speculations {
-            let current_prompt = if final_text.is_empty() { prompt } else { &final_text };
+            let current_prompt = if final_text.is_empty() {
+                prompt
+            } else {
+                &final_text
+            };
 
             // 1. Draft model generates speculative tokens via llama-cli
             let draft_start = Instant::now();
-            let draft_tokens = self.run_draft_inference(current_prompt, draft_length).await?;
+            let draft_tokens = self
+                .run_draft_inference(current_prompt, draft_length)
+                .await?;
             let draft_latency = draft_start.elapsed().as_secs_f64() * 1000.0;
             total_draft_latency += draft_latency;
             total_draft += draft_tokens.len();
 
             if draft_tokens.is_empty() {
-                debug!("Draft produced no tokens, breaking speculation round {}", round);
+                debug!(
+                    "Draft produced no tokens, breaking speculation round {}",
+                    round
+                );
                 break;
             }
 
             // 2. Oracle verifies by computing acceptance probabilities
             let oracle_start = Instant::now();
-            let oracle_result = self.run_oracle_inference(&oracle_handle, current_prompt, draft_tokens.len()).await?;
+            let oracle_result = self
+                .run_oracle_inference(&oracle_handle, current_prompt, draft_tokens.len())
+                .await?;
             let oracle_latency = oracle_start.elapsed().as_secs_f64() * 1000.0;
             total_oracle_latency += oracle_latency;
 
             // 3. Accept/reject tokens using likelihood-based verification
-            let (accepted, rejected) = self.verify_tokens_likelihood(&draft_tokens, &oracle_result, threshold);
+            let (accepted, rejected) =
+                self.verify_tokens_likelihood(&draft_tokens, &oracle_result, threshold);
             total_accepted += accepted.len();
 
             for token_text in &accepted {
@@ -103,7 +135,13 @@ impl SpeculativeEngine {
                         final_text.push_str(token_text);
                     }
                 }
-                debug!("Speculation round {}: accepted {}/{} tokens, {} rejected", round, accepted.len(), draft_tokens.len(), rejected.len());
+                debug!(
+                    "Speculation round {}: accepted {}/{} tokens, {} rejected",
+                    round,
+                    accepted.len(),
+                    draft_tokens.len(),
+                    rejected.len()
+                );
                 break;
             }
 
@@ -114,7 +152,9 @@ impl SpeculativeEngine {
 
         // Direct oracle fallback if speculation produced nothing useful
         if final_text.trim().len() <= prompt.trim().len() {
-            let oracle_out = self.run_oracle_inference(&oracle_handle, prompt, 256).await?;
+            let oracle_out = self
+                .run_oracle_inference(&oracle_handle, prompt, 256)
+                .await?;
             total_oracle_latency += oracle_out.latency_ms;
             final_text = oracle_out.text;
         }
@@ -131,7 +171,10 @@ impl SpeculativeEngine {
         );
 
         Ok((
-            SpeculationOutput { text: final_text, model_name: oracle_handle.name },
+            SpeculationOutput {
+                text: final_text,
+                model_name: oracle_handle.name,
+            },
             SpeculationStats {
                 tokens_generated: total_accepted.max(1),
                 tokens_draft: total_draft,
@@ -144,7 +187,11 @@ impl SpeculativeEngine {
     }
 
     /// Run draft inference via llama-cli subprocess with speculative temperature
-    async fn run_draft_inference(&self, prompt: &str, max_tokens: usize) -> anyhow::Result<Vec<String>> {
+    async fn run_draft_inference(
+        &self,
+        prompt: &str,
+        max_tokens: usize,
+    ) -> anyhow::Result<Vec<String>> {
         let model = DRAFT_MODEL_PATH;
         if !std::path::Path::new(model).exists() {
             warn!("Draft model not found at {}, returning empty draft", model);
@@ -153,13 +200,20 @@ impl SpeculativeEngine {
 
         let output = Command::new(LLAMA_CLI_PATH)
             .args([
-                "-m", model,
-                "-p", prompt,
-                "-n", &max_tokens.to_string(),
-                "--temp", "0.7",
-                "--top-k", "40",
-                "--top-p", "0.9",
-                "--repeat-penalty", "1.1",
+                "-m",
+                model,
+                "-p",
+                prompt,
+                "-n",
+                &max_tokens.to_string(),
+                "--temp",
+                "0.7",
+                "--top-k",
+                "40",
+                "--top-p",
+                "0.9",
+                "--repeat-penalty",
+                "1.1",
                 "--no-display-prompt",
                 "--simple-output",
             ])
@@ -175,12 +229,21 @@ impl SpeculativeEngine {
             .map(|s| s.to_string() + " ")
             .collect();
 
-        debug!("Draft produced {} tokens from model {}", tokens.len(), model);
+        debug!(
+            "Draft produced {} tokens from model {}",
+            tokens.len(),
+            model
+        );
         Ok(tokens)
     }
 
     /// Run oracle inference via llama-server HTTP API or direct subprocess
-    async fn run_oracle_inference(&self, handle: &ModelHandle, prompt: &str, max_tokens: usize) -> anyhow::Result<OracleResult> {
+    async fn run_oracle_inference(
+        &self,
+        handle: &ModelHandle,
+        prompt: &str,
+        max_tokens: usize,
+    ) -> anyhow::Result<OracleResult> {
         let start = Instant::now();
         let model = if std::path::Path::new(ORACLE_MODEL_PATH).exists() {
             ORACLE_MODEL_PATH
@@ -196,12 +259,18 @@ impl SpeculativeEngine {
 
         let output = Command::new(LLAMA_CLI_PATH)
             .args([
-                "-m", model,
-                "-p", prompt,
-                "-n", &max_tokens.to_string(),
-                "--temp", "0.1",
-                "--top-k", "1",
-                "--repeat-penalty", "1.0",
+                "-m",
+                model,
+                "-p",
+                prompt,
+                "-n",
+                &max_tokens.to_string(),
+                "--temp",
+                "0.1",
+                "--top-k",
+                "1",
+                "--repeat-penalty",
+                "1.0",
                 "--no-display-prompt",
                 "--simple-output",
             ])
@@ -212,7 +281,11 @@ impl SpeculativeEngine {
         let stdout = String::from_utf8_lossy(&output.stdout);
         let oracle_text = stdout.trim().to_string();
 
-        info!("Oracle generated {} chars from model {}", oracle_text.len(), handle.name);
+        info!(
+            "Oracle generated {} chars from model {}",
+            oracle_text.len(),
+            handle.name
+        );
 
         Ok(OracleResult {
             text: oracle_text,
@@ -223,7 +296,12 @@ impl SpeculativeEngine {
     }
 
     /// Verify draft tokens using likelihood scoring against oracle logits
-    fn verify_tokens_likelihood(&self, draft_tokens: &[String], oracle: &OracleResult, threshold: f64) -> (Vec<String>, Vec<String>) {
+    fn verify_tokens_likelihood(
+        &self,
+        draft_tokens: &[String],
+        oracle: &OracleResult,
+        threshold: f64,
+    ) -> (Vec<String>, Vec<String>) {
         let mut accepted = Vec::new();
         let mut rejected = Vec::new();
 

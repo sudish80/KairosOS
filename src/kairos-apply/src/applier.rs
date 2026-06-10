@@ -1,17 +1,17 @@
 //! State applier — orchestration of parser → validate → diff → store → apply → health-check
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use std::collections::HashMap;
-use std::time::Instant;
-use tracing::{info, warn, error};
 use crate::config;
-use crate::generation::GenerationStore;
-use crate::validator::ConfigValidator;
 use crate::diff::DiffEngine;
+use crate::error::ApplyError;
+use crate::generation::GenerationStore;
+use crate::parser::{DeclarativeConfig, DeclarativeParser};
 use crate::rollback::RollbackManager;
 use crate::telemetry::Telemetry;
-use crate::error::ApplyError;
-use crate::parser::{DeclarativeParser, DeclarativeConfig};
+use crate::validator::ConfigValidator;
+use std::collections::HashMap;
+use std::sync::Arc;
+use std::time::Instant;
+use tokio::sync::RwLock;
+use tracing::{error, info, warn};
 
 pub struct StateApplier {
     config: Arc<RwLock<config::Config>>,
@@ -31,14 +31,22 @@ impl StateApplier {
         rollback_manager: Arc<RollbackManager>,
         telemetry: Arc<Telemetry>,
     ) -> Self {
-        Self { config, generation_store, validator, diff_engine, rollback_manager, telemetry }
+        Self {
+            config,
+            generation_store,
+            validator,
+            diff_engine,
+            rollback_manager,
+            telemetry,
+        }
     }
 
     pub async fn apply(&self, decl_config: &DeclarativeConfig) -> anyhow::Result<String> {
         let start = Instant::now();
 
         // 1. Validate
-        self.validator.validate(decl_config)
+        self.validator
+            .validate(decl_config)
             .map_err(|errors| ApplyError::Validation(errors.join("; ")))?;
 
         // 2. Convert to file specs
@@ -47,11 +55,22 @@ impl StateApplier {
 
         // 3. Diff against current state
         let current_files = self.load_current_state().await?;
-        let diff = self.diff_engine.diff_files(&current_files, &files.into_iter().collect::<HashMap<_, _>>());
-        info!("Diff: {} added, {} removed, {} modified", diff.added.len(), diff.removed.len(), diff.modified.len());
+        let diff = self.diff_engine.diff_files(
+            &current_files,
+            &files.into_iter().collect::<HashMap<_, _>>(),
+        );
+        info!(
+            "Diff: {} added, {} removed, {} modified",
+            diff.added.len(),
+            diff.removed.len(),
+            diff.modified.len()
+        );
 
         // 4. Create generation
-        let gen_id = self.generation_store.create_generation(&decl_config.metadata.description, &[]).await?;
+        let gen_id = self
+            .generation_store
+            .create_generation(&decl_config.metadata.description, &[])
+            .await?;
 
         // 5. Apply
         self.generation_store.apply_generation(&gen_id).await?;
@@ -60,7 +79,11 @@ impl StateApplier {
         self.telemetry.record_apply(true, duration);
         self.telemetry.record_generation_created();
 
-        info!("Apply of generation {} completed in {:?}", gen_id, start.elapsed());
+        info!(
+            "Apply of generation {} completed in {:?}",
+            gen_id,
+            start.elapsed()
+        );
         Ok(gen_id)
     }
 
@@ -101,7 +124,8 @@ impl StateApplier {
                 } else {
                     if let Ok(data) = tokio::fs::read(&path).await {
                         // Store relative path from generation root
-                        let relative = path.to_string_lossy()
+                        let relative = path
+                            .to_string_lossy()
                             .replacen(&target.to_string_lossy().to_string(), "", 1)
                             .trim_start_matches('/')
                             .to_string();
@@ -111,7 +135,11 @@ impl StateApplier {
             }
         }
 
-        info!("Loaded {} files from active state at {:?}", files.len(), target);
+        info!(
+            "Loaded {} files from active state at {:?}",
+            files.len(),
+            target
+        );
         Ok(files)
     }
 }

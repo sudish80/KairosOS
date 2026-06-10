@@ -1,7 +1,7 @@
 //! Quantizer — precision conversion (fp32/fp16/int8/int4) with calibration
+use crate::config;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use crate::config;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Precision {

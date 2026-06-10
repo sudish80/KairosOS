@@ -1,20 +1,20 @@
+pub mod arch;
+pub mod audit;
+pub mod auth;
+pub mod client;
 pub mod config;
 pub mod error;
-pub mod protocol;
-pub mod registry;
-pub mod transport;
-pub mod auth;
-pub mod rate_limit;
-pub mod audit;
-pub mod server;
-pub mod client;
 pub mod plugin;
-pub mod arch;
+pub mod protocol;
+pub mod rate_limit;
+pub mod registry;
+pub mod server;
+pub mod transport;
 
 use std::path::Path;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use tracing::{info, debug};
+use tracing::{debug, info};
 
 pub struct AppState {
     pub config: Arc<RwLock<config::Config>>,
@@ -32,14 +32,26 @@ impl AppState {
         let config = Arc::new(RwLock::new(cfg));
         let registry = Arc::new(registry::ServiceRegistry::new());
         let server = Arc::new(server::McpServer::new(Arc::clone(&config)));
-        let transport_manager = Arc::new(transport::TransportManager::new(Arc::clone(&config), Arc::clone(&server)));
+        let transport_manager = Arc::new(transport::TransportManager::new(
+            Arc::clone(&config),
+            Arc::clone(&server),
+        ));
         let auth_manager = Arc::new(auth::AuthManager::new(Arc::clone(&config)));
         let rate_limiter = Arc::new(rate_limit::RateLimiter::new(Arc::clone(&config)));
         let audit_logger = Arc::new(audit::AuditLogger::new(Arc::clone(&config)).await?);
         let plugin_engine = Arc::new(plugin::PluginEngine::new(Arc::clone(&config)));
 
         info!("kairos-mcp AppState initialized");
-        Ok(Self { config, registry, transport_manager, auth_manager, rate_limiter, audit_logger, server, plugin_engine })
+        Ok(Self {
+            config,
+            registry,
+            transport_manager,
+            auth_manager,
+            rate_limiter,
+            audit_logger,
+            server,
+            plugin_engine,
+        })
     }
 
     pub async fn start(&self) -> anyhow::Result<()> {
@@ -57,19 +69,19 @@ impl AppState {
         for p in &plugins {
             let name = p.manifest.name.clone();
             let engine = Arc::clone(&self.plugin_engine);
-            self.server.register_method(
-                &format!("plugin:{}:execute", name),
-                move |params| {
+            self.server
+                .register_method(&format!("plugin:{}:execute", name), move |params| {
                     let engine = Arc::clone(&engine);
                     let n = name.clone();
                     let result = tokio::task::block_in_place(|| {
-                        tokio::runtime::Handle::current().block_on(
-                            engine.execute_plugin(&n, "run", params)
-                        )
+                        tokio::runtime::Handle::current()
+                            .block_on(engine.execute_plugin(&n, "run", params))
                     });
-                    serde_json::json!(result.unwrap_or(serde_json::json!({"error": "plugin execution failed"})))
-                },
-            ).await;
+                    serde_json::json!(
+                        result.unwrap_or(serde_json::json!({"error": "plugin execution failed"}))
+                    )
+                })
+                .await;
         }
         Ok(())
     }

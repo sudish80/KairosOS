@@ -1,20 +1,20 @@
 //! kairos-tui: Terminal UI — framebuffer, DRM/KMS, TUI multiplexer, gesture input
 #![deny(unsafe_code)]
 
+pub mod colors;
 pub mod config;
-pub mod error;
-pub mod telemetry;
-pub mod worker;
-pub mod framebuffer;
 pub mod drm;
-pub mod terminal;
-pub mod multiplexer;
+pub mod error;
+pub mod font;
+pub mod framebuffer;
 pub mod gestures;
 pub mod input;
-pub mod widgets;
 pub mod layout;
-pub mod colors;
-pub mod font;
+pub mod multiplexer;
+pub mod telemetry;
+pub mod terminal;
+pub mod widgets;
+pub mod worker;
 
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -40,16 +40,31 @@ impl AppState {
         let drm_manager = Arc::new(drm::DrmManager::new(Arc::clone(&config)).await?);
         let terminal_emulator = Arc::new(terminal::TerminalEmulator::new(Arc::clone(&config)));
         let multiplexer = Arc::new(multiplexer::Multiplexer::new(
-            Arc::clone(&config), Arc::clone(&terminal_emulator),
+            Arc::clone(&config),
+            Arc::clone(&terminal_emulator),
         ));
         let gesture_engine = Arc::new(gestures::GestureEngine::new(Arc::clone(&config)));
         let input_manager = Arc::new(input::InputManager::new(
-            Arc::clone(&config), Arc::clone(&gesture_engine),
+            Arc::clone(&config),
+            Arc::clone(&gesture_engine),
         ));
-        let layout_engine = Arc::new(layout::LayoutEngine::new(Arc::clone(&config), Arc::clone(&multiplexer)));
+        let layout_engine = Arc::new(layout::LayoutEngine::new(
+            Arc::clone(&config),
+            Arc::clone(&multiplexer),
+        ));
 
         info!("kairos-tui AppState initialized");
-        Ok(Self { config, telemetry, fb, drm_manager, terminal_emulator, multiplexer, gesture_engine, input_manager, layout_engine })
+        Ok(Self {
+            config,
+            telemetry,
+            fb,
+            drm_manager,
+            terminal_emulator,
+            multiplexer,
+            gesture_engine,
+            input_manager,
+            layout_engine,
+        })
     }
 
     pub async fn render(&self) -> anyhow::Result<()> {

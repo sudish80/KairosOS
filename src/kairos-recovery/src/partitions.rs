@@ -1,13 +1,13 @@
 //! Partition manager — A/B slot management, mount/unmount, resize
-use std::path::{Path, PathBuf};
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use tokio::fs;
-use tokio::process::Command;
-use tracing::{info, debug, error, warn};
 use crate::config;
 use crate::error::RecoveryError;
 use crate::Slot;
+use std::path::{Path, PathBuf};
+use std::sync::Arc;
+use tokio::fs;
+use tokio::process::Command;
+use tokio::sync::RwLock;
+use tracing::{debug, error, info, warn};
 
 pub struct PartitionManager {
     config: Arc<RwLock<config::Config>>,
@@ -40,12 +40,19 @@ impl PartitionManager {
 
     pub async fn mount_slot(&self, slot: &Slot) -> anyhow::Result<PathBuf> {
         let device = self.get_slot_device(slot).await;
-        let mount_point = PathBuf::from(format!("/mnt/kairos/{}", match slot { Slot::A => "a", Slot::B => "b" }));
+        let mount_point = PathBuf::from(format!(
+            "/mnt/kairos/{}",
+            match slot {
+                Slot::A => "a",
+                Slot::B => "b",
+            }
+        ));
         fs::create_dir_all(&mount_point).await?;
 
         let status = Command::new("mount")
             .args([&device, &mount_point.to_string_lossy()])
-            .status().await?;
+            .status()
+            .await?;
 
         if status.success() {
             info!("Mounted slot {:?} at {:?}", slot, mount_point);
@@ -56,9 +63,7 @@ impl PartitionManager {
     }
 
     pub async fn unmount_slot(&self, mount_point: &Path) -> anyhow::Result<()> {
-        let status = Command::new("umount")
-            .arg(&mount_point)
-            .status().await?;
+        let status = Command::new("umount").arg(&mount_point).status().await?;
         if status.success() {
             info!("Unmounted {:?}", mount_point);
         }
@@ -68,7 +73,13 @@ impl PartitionManager {
     pub async fn mark_slot_good(&self, slot: &Slot) -> anyhow::Result<()> {
         let device = self.get_slot_device(slot).await;
         // In production: set EFI boot variable or use grub2-reboot
-        let marker = format!("/mnt/kairos/{}/etc/kairos/slot_good", match slot { Slot::A => "a", Slot::B => "b" });
+        let marker = format!(
+            "/mnt/kairos/{}/etc/kairos/slot_good",
+            match slot {
+                Slot::A => "a",
+                Slot::B => "b",
+            }
+        );
         info!("Marked slot {:?} as good", slot);
         Ok(())
     }

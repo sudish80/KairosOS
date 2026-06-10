@@ -1,11 +1,11 @@
 //! Declarative config parser (YAML/HCL/TOML/JSON)
+use crate::config;
+use crate::error::ApplyError;
+use serde_yaml;
 use std::collections::HashMap;
 use std::path::Path;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use serde_yaml;
-use crate::config;
-use crate::error::ApplyError;
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct DeclarativeConfig {
@@ -72,9 +72,13 @@ impl DeclarativeParser {
     }
 
     pub fn to_file_specs(&self, config: &DeclarativeConfig) -> Vec<(String, Vec<u8>)> {
-        config.files.iter().map(|(name, spec)| {
-            let content = spec.content.clone().unwrap_or_default();
-            (spec.path.clone(), content.into_bytes())
-        }).collect()
+        config
+            .files
+            .iter()
+            .map(|(name, spec)| {
+                let content = spec.content.clone().unwrap_or_default();
+                (spec.path.clone(), content.into_bytes())
+            })
+            .collect()
     }
 }

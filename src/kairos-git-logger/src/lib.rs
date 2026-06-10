@@ -1,17 +1,17 @@
 //! kairos-git-logger: Git-backed /etc version tracker — production-hardened
 #![deny(unsafe_code)]
 
-pub mod config;
-pub mod error;
-pub mod telemetry;
-pub mod worker;
-pub mod watcher;
-pub mod repo;
 pub mod committer;
+pub mod config;
 pub mod diff;
+pub mod error;
 pub mod history;
+pub mod repo;
 pub mod snapshot;
+pub mod telemetry;
 pub mod timeline;
+pub mod watcher;
+pub mod worker;
 
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -33,15 +33,35 @@ impl AppState {
         let config = Arc::new(RwLock::new(cfg));
         let telemetry = Arc::new(telemetry::Telemetry::new(Arc::clone(&config)));
         let repo_manager = Arc::new(repo::RepoManager::new(Arc::clone(&config)).await?);
-        let committer = Arc::new(committer::ChangeCommitter::new(Arc::clone(&config), Arc::clone(&repo_manager)));
+        let committer = Arc::new(committer::ChangeCommitter::new(
+            Arc::clone(&config),
+            Arc::clone(&repo_manager),
+        ));
         let diff_engine = Arc::new(diff::DiffEngine::new(Arc::clone(&config)));
-        let history_manager = Arc::new(history::HistoryManager::new(Arc::clone(&config), Arc::clone(&repo_manager)));
-        let snapshot_manager = Arc::new(snapshot::SnapshotManager::new(Arc::clone(&config), Arc::clone(&repo_manager)));
+        let history_manager = Arc::new(history::HistoryManager::new(
+            Arc::clone(&config),
+            Arc::clone(&repo_manager),
+        ));
+        let snapshot_manager = Arc::new(snapshot::SnapshotManager::new(
+            Arc::clone(&config),
+            Arc::clone(&repo_manager),
+        ));
         let watcher_engine = Arc::new(watcher::FileWatcher::new(
-            Arc::clone(&config), Arc::clone(&committer), Arc::clone(&telemetry),
+            Arc::clone(&config),
+            Arc::clone(&committer),
+            Arc::clone(&telemetry),
         ));
 
         info!("kairos-git-logger AppState initialized");
-        Ok(Self { config, telemetry, repo_manager, watcher_engine, committer, diff_engine, history_manager, snapshot_manager })
+        Ok(Self {
+            config,
+            telemetry,
+            repo_manager,
+            watcher_engine,
+            committer,
+            diff_engine,
+            history_manager,
+            snapshot_manager,
+        })
     }
 }

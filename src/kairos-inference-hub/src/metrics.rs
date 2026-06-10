@@ -1,7 +1,7 @@
 //! Metrics collection and exposition for Prometheus
+use crate::telemetry::Telemetry;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use crate::telemetry::Telemetry;
 
 pub struct MetricsExporter {
     telemetry: Arc<Telemetry>,

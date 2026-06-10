@@ -20,10 +20,21 @@ impl Telemetry {
             total_latency_ms: AtomicU64::new(0),
         }
     }
-    pub fn record_request(&self) { self.requests.fetch_add(1, Ordering::Relaxed); }
-    pub fn record_generate(&self, tokens: u64, latency_ms: u64) { self.generate_ops.fetch_add(1, Ordering::Relaxed); self.tokens_generated.fetch_add(tokens, Ordering::Relaxed); self.total_latency_ms.fetch_add(latency_ms, Ordering::Relaxed); }
-    pub fn record_list_models(&self) { self.list_model_ops.fetch_add(1, Ordering::Relaxed); }
-    pub fn record_error(&self) { self.errors.fetch_add(1, Ordering::Relaxed); }
+    pub fn record_request(&self) {
+        self.requests.fetch_add(1, Ordering::Relaxed);
+    }
+    pub fn record_generate(&self, tokens: u64, latency_ms: u64) {
+        self.generate_ops.fetch_add(1, Ordering::Relaxed);
+        self.tokens_generated.fetch_add(tokens, Ordering::Relaxed);
+        self.total_latency_ms
+            .fetch_add(latency_ms, Ordering::Relaxed);
+    }
+    pub fn record_list_models(&self) {
+        self.list_model_ops.fetch_add(1, Ordering::Relaxed);
+    }
+    pub fn record_error(&self) {
+        self.errors.fetch_add(1, Ordering::Relaxed);
+    }
     pub fn metrics(&self) -> serde_json::Value {
         serde_json::json!({
             "total_requests": self.requests.load(Ordering::Relaxed),

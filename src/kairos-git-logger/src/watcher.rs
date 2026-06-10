@@ -1,19 +1,26 @@
 //! File system watcher with debounce, ignore patterns, and change coalescing
 //! Uses inotify on Linux via notify crate, falls back to polling
+use crate::committer::ChangeCommitter;
+use crate::config;
+use crate::telemetry::Telemetry;
+use notify::{Config as NotifyConfig, Event, EventKind, RecursiveMode, Watcher as NotifyWatcher};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 use tokio::sync::RwLock;
-use notify::{Config as NotifyConfig, Event, EventKind, RecursiveMode, Watcher as NotifyWatcher};
-use tracing::{info, debug, error, warn};
-use crate::config;
-use crate::committer::ChangeCommitter;
-use crate::telemetry::Telemetry;
+use tracing::{debug, error, info, warn};
 
 static IGNORE_PATTERNS: &[&str] = &[
-    ".swp", ".tmp", ".lock", "~", ".git", ".git/index",
-    "*.pid", "*.sock", "gen.json",
+    ".swp",
+    ".tmp",
+    ".lock",
+    "~",
+    ".git",
+    ".git/index",
+    "*.pid",
+    "*.sock",
+    "gen.json",
 ];
 
 pub struct FileWatcher {
@@ -29,11 +36,19 @@ impl FileWatcher {
         committer: Arc<ChangeCommitter>,
         telemetry: Arc<Telemetry>,
     ) -> Self {
-        Self { config, committer, telemetry, debounced_changes: Arc::new(RwLock::new(HashMap::new())) }
+        Self {
+            config,
+            committer,
+            telemetry,
+            debounced_changes: Arc::new(RwLock::new(HashMap::new())),
+        }
     }
 
     fn should_ignore(path: &std::path::Path) -> bool {
-        let name = path.file_name().map(|n| n.to_string_lossy()).unwrap_or_default();
+        let name = path
+            .file_name()
+            .map(|n| n.to_string_lossy())
+            .unwrap_or_default();
         let path_str = path.to_string_lossy();
         for pat in IGNORE_PATTERNS {
             if pat.starts_with('*') {
@@ -63,7 +78,8 @@ impl FileWatcher {
         let mut watcher = notify::recommended_watcher(move |res: Result<Event, notify::Error>| {
             if let Ok(event) = res {
                 // Filter to modify/create events only
-                let is_relevant = matches!(event.kind,
+                let is_relevant = matches!(
+                    event.kind,
                     EventKind::Create(_) | EventKind::Modify(_) | EventKind::Remove(_)
                 );
                 if !is_relevant {
@@ -79,11 +95,13 @@ impl FileWatcher {
                     changes.insert(path.clone(), Instant::now());
                 }
             }
-        }).map_err(|e| anyhow::anyhow!("Failed to create file watcher: {}", e))?;
+        })
+        .map_err(|e| anyhow::anyhow!("Failed to create file watcher: {}", e))?;
 
         for path in &watch_paths {
             if path.exists() {
-                watcher.watch(path, RecursiveMode::Recursive)
+                watcher
+                    .watch(path, RecursiveMode::Recursive)
                     .map_err(|e| anyhow::anyhow!("Failed to watch {}: {}", path.display(), e))?;
                 info!("Watching: {}", path.display());
             } else {
@@ -119,7 +137,11 @@ impl FileWatcher {
                     match committer2.commit_changes(&ready).await {
                         Ok(hash) => {
                             if !hash.is_empty() {
-                                info!("Committed {} changed files as {}", ready.len(), &hash[..hash.len().min(12)]);
+                                info!(
+                                    "Committed {} changed files as {}",
+                                    ready.len(),
+                                    &hash[..hash.len().min(12)]
+                                );
                             }
                         }
                         Err(e) => {

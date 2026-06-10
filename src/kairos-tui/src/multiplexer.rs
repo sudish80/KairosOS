@@ -1,10 +1,10 @@
 //! TUI multiplexer — manages multiple terminal sessions, tabs, panes
+use crate::config;
+use crate::terminal::TerminalEmulator;
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use tracing::info;
-use crate::config;
-use crate::terminal::TerminalEmulator;
 
 pub struct Pane {
     pub id: usize,
@@ -46,15 +46,27 @@ impl Multiplexer {
     pub async fn create_tab(&self, title: &str) -> usize {
         let mut tabs = self.tabs.write().await;
         let mut next = self.next_id.write().await;
-        let id = *next; *next += 1;
+        let id = *next;
+        *next += 1;
 
         let screen_id = self.terminal.create_screen(80, 24).await;
         let pane = Pane {
-            id, title: title.into(), screen_id,
-            x: 0, y: 0, width: 80, height: 24, active: true,
+            id,
+            title: title.into(),
+            screen_id,
+            x: 0,
+            y: 0,
+            width: 80,
+            height: 24,
+            active: true,
         };
 
-        tabs.push(Tab { id, title: title.into(), panes: vec![pane], active_pane: 0 });
+        tabs.push(Tab {
+            id,
+            title: title.into(),
+            panes: vec![pane],
+            active_pane: 0,
+        });
         *self.active_tab.write().await = tabs.len() - 1;
         info!("Created tab: {} (id={})", title, id);
         id
@@ -62,7 +74,9 @@ impl Multiplexer {
 
     pub async fn split_horizontal(&self, tab_idx: usize) -> anyhow::Result<()> {
         let mut tabs = self.tabs.write().await;
-        if tab_idx >= tabs.len() { return Ok(()); }
+        if tab_idx >= tabs.len() {
+            return Ok(());
+        }
         let tab = &mut tabs[tab_idx];
         // In production: split pane, create new screen
         Ok(())
@@ -86,7 +100,12 @@ impl Multiplexer {
     }
 
     pub async fn list_tabs(&self) -> Vec<(usize, String)> {
-        self.tabs.read().await.iter().map(|t| (t.id, t.title.clone())).collect()
+        self.tabs
+            .read()
+            .await
+            .iter()
+            .map(|t| (t.id, t.title.clone()))
+            .collect()
     }
 
     pub async fn close_tab(&self, idx: usize) {

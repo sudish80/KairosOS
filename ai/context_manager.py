@@ -1,6 +1,5 @@
 """KairosOS Sliding Context Manager — compresses old terminal/chat history into structured summaries."""
 
-import json
 import time
 from collections import deque
 

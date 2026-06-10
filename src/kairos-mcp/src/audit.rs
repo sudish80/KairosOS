@@ -1,10 +1,10 @@
 //! Audit logging for security and compliance
+use std::path::Path;
 use std::sync::Arc;
-use tokio::sync::RwLock;
 use tokio::fs::OpenOptions;
 use tokio::io::AsyncWriteExt;
-use std::path::Path;
-use tracing::{info, error};
+use tokio::sync::RwLock;
+use tracing::{error, info};
 
 pub struct AuditLogger {
     config: Arc<tokio::sync::RwLock<crate::config::Config>>,
@@ -23,7 +23,9 @@ pub struct AuditEntry {
 }
 
 impl AuditLogger {
-    pub async fn new(config: Arc<tokio::sync::RwLock<crate::config::Config>>) -> anyhow::Result<Self> {
+    pub async fn new(
+        config: Arc<tokio::sync::RwLock<crate::config::Config>>,
+    ) -> anyhow::Result<Self> {
         let log_path = "/var/log/kairos/audit.log";
         if let Some(parent) = Path::new(log_path).parent() {
             tokio::fs::create_dir_all(parent).await?;
@@ -58,10 +60,16 @@ impl AuditLogger {
             resource: "mcp".into(),
             result: if success { "success" } else { "failure" }.into(),
             details: serde_json::json!({}),
-        }).await
+        })
+        .await
     }
 
-    pub async fn log_api_call(&self, method: &str, user: &str, success: bool) -> anyhow::Result<()> {
+    pub async fn log_api_call(
+        &self,
+        method: &str,
+        user: &str,
+        success: bool,
+    ) -> anyhow::Result<()> {
         self.log(AuditEntry {
             timestamp: chrono::Utc::now(),
             event_type: "api".into(),
@@ -70,10 +78,17 @@ impl AuditLogger {
             resource: "mcp".into(),
             result: if success { "success" } else { "failure" }.into(),
             details: serde_json::json!({}),
-        }).await
+        })
+        .await
     }
 
-    pub async fn log_config_change(&self, user: &str, key: &str, old: &str, new: &str) -> anyhow::Result<()> {
+    pub async fn log_config_change(
+        &self,
+        user: &str,
+        key: &str,
+        old: &str,
+        new: &str,
+    ) -> anyhow::Result<()> {
         self.log(AuditEntry {
             timestamp: chrono::Utc::now(),
             event_type: "config".into(),
@@ -82,6 +97,7 @@ impl AuditLogger {
             resource: key.into(),
             result: "success".into(),
             details: serde_json::json!({"old": old, "new": new}),
-        }).await
+        })
+        .await
     }
 }

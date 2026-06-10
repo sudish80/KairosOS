@@ -1,8 +1,8 @@
 //! Terminal emulator — ANSI escape sequence parser, VT100-compatible rendering
+use crate::config;
 use std::collections::VecDeque;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use crate::config;
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct Cell {
@@ -16,7 +16,14 @@ pub struct Cell {
 
 impl Default for Cell {
     fn default() -> Self {
-        Self { ch: ' ', fg: 0xD4D4D4, bg: 0x1E1E1E, bold: false, italic: false, underline: false }
+        Self {
+            ch: ' ',
+            fg: 0xD4D4D4,
+            bg: 0x1E1E1E,
+            bold: false,
+            italic: false,
+            underline: false,
+        }
     }
 }
 
@@ -48,9 +55,11 @@ impl TerminalEmulator {
         let mut screens = self.screens.write().await;
         let id = screens.len();
         screens.push(TerminalScreen {
-            width, height,
+            width,
+            height,
             cells: vec![Cell::default(); (width * height) as usize],
-            cursor_x: 0, cursor_y: 0,
+            cursor_x: 0,
+            cursor_y: 0,
             scrollback: VecDeque::new(),
         });
         id
@@ -58,7 +67,9 @@ impl TerminalEmulator {
 
     pub async fn write(&self, screen_id: usize, data: &str) {
         let mut screens = self.screens.write().await;
-        if screen_id >= screens.len() { return; }
+        if screen_id >= screens.len() {
+            return;
+        }
         let screen = &mut screens[screen_id];
 
         for ch in data.chars() {
@@ -69,14 +80,20 @@ impl TerminalEmulator {
                 }
                 '\r' => screen.cursor_x = 0,
                 '\t' => screen.cursor_x = (screen.cursor_x + 8) & !7,
-                '\x08' => { // Backspace
-                    if screen.cursor_x > 0 { screen.cursor_x -= 1; }
+                '\x08' => {
+                    // Backspace
+                    if screen.cursor_x > 0 {
+                        screen.cursor_x -= 1;
+                    }
                 }
                 c if c.is_ascii_control() => { /* Skip other controls */ }
                 c => {
                     let idx = (screen.cursor_y * screen.width + screen.cursor_x) as usize;
                     if idx < screen.cells.len() {
-                        screen.cells[idx] = Cell { ch: c, ..Cell::default() };
+                        screen.cells[idx] = Cell {
+                            ch: c,
+                            ..Cell::default()
+                        };
                     }
                     screen.cursor_x += 1;
                     if screen.cursor_x >= screen.width {
@@ -92,7 +109,9 @@ impl TerminalEmulator {
                 if screen.scrollback.len() > 10000 {
                     screen.scrollback.pop_front();
                 }
-                screen.cells.extend(vec![Cell::default(); screen.width as usize]);
+                screen
+                    .cells
+                    .extend(vec![Cell::default(); screen.width as usize]);
                 screen.cursor_y = screen.height - 1;
             }
         }

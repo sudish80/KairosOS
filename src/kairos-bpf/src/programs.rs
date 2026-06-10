@@ -1,10 +1,10 @@
 //! eBPF programs for kairos-bpf
-pub mod execsnoop;
-pub mod tcptop;
-pub mod filemon;
 pub mod anomaly;
-pub mod schedlatency;
+pub mod execsnoop;
+pub mod filemon;
 pub mod oomkill;
+pub mod schedlatency;
+pub mod tcptop;
 
 use crate::error::Result;
 

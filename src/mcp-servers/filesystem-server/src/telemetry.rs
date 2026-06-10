@@ -13,13 +13,29 @@ pub struct Telemetry {
 }
 
 impl Telemetry {
-    pub fn new() -> Self { Self::default() }
-    pub fn record_request(&self) { self.requests.fetch_add(1, Ordering::Relaxed); }
-    pub fn record_read(&self, bytes: u64) { self.read_ops.fetch_add(1, Ordering::Relaxed); self.bytes_read.fetch_add(bytes, Ordering::Relaxed); }
-    pub fn record_write(&self, bytes: u64) { self.write_ops.fetch_add(1, Ordering::Relaxed); self.bytes_written.fetch_add(bytes, Ordering::Relaxed); }
-    pub fn record_list(&self) { self.list_ops.fetch_add(1, Ordering::Relaxed); }
-    pub fn record_stat(&self) { self.stat_ops.fetch_add(1, Ordering::Relaxed); }
-    pub fn record_error(&self) { self.errors.fetch_add(1, Ordering::Relaxed); }
+    pub fn new() -> Self {
+        Self::default()
+    }
+    pub fn record_request(&self) {
+        self.requests.fetch_add(1, Ordering::Relaxed);
+    }
+    pub fn record_read(&self, bytes: u64) {
+        self.read_ops.fetch_add(1, Ordering::Relaxed);
+        self.bytes_read.fetch_add(bytes, Ordering::Relaxed);
+    }
+    pub fn record_write(&self, bytes: u64) {
+        self.write_ops.fetch_add(1, Ordering::Relaxed);
+        self.bytes_written.fetch_add(bytes, Ordering::Relaxed);
+    }
+    pub fn record_list(&self) {
+        self.list_ops.fetch_add(1, Ordering::Relaxed);
+    }
+    pub fn record_stat(&self) {
+        self.stat_ops.fetch_add(1, Ordering::Relaxed);
+    }
+    pub fn record_error(&self) {
+        self.errors.fetch_add(1, Ordering::Relaxed);
+    }
     pub fn metrics(&self) -> serde_json::Value {
         serde_json::json!({
             "total_requests": self.requests.load(Ordering::Relaxed),

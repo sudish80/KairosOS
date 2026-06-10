@@ -1,8 +1,7 @@
 """ Tests for autonomous healing loop """
 import pytest
 import json
-import asyncio
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from main import HealingLoop, MCPClient
 
 
@@ -46,7 +45,7 @@ async def test_select_remediation_unknown():
 
 
 def test_mcp_client_serialization():
-    client = MCPClient("/tmp/test.sock")
+    _ = MCPClient("/tmp/test.sock")
     req = json.dumps({"jsonrpc": "2.0", "id": 1, "method": "test", "params": {}})
     data = json.loads(req)
     assert data["method"] == "test"

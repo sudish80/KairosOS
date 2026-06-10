@@ -1,12 +1,12 @@
 //! Model router — selects optimal model based on prompt characteristics, load, latency
+use crate::config;
+use crate::error::InferenceError;
+use crate::models::{ModelHandle, ModelRegistry, ModelType};
+use crate::scheduler::InferenceScheduler;
 use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::RwLock;
-use tracing::{info, debug};
-use crate::config;
-use crate::models::{ModelRegistry, ModelHandle, ModelType};
-use crate::scheduler::InferenceScheduler;
-use crate::error::InferenceError;
+use tracing::{debug, info};
 
 pub struct ModelRouter {
     config: Arc<RwLock<config::Config>>,
@@ -20,7 +20,11 @@ impl ModelRouter {
         model_registry: Arc<ModelRegistry>,
         scheduler: Arc<InferenceScheduler>,
     ) -> Self {
-        Self { config, model_registry, scheduler }
+        Self {
+            config,
+            model_registry,
+            scheduler,
+        }
     }
 
     pub async fn route(&self, model_name: &str, prompt: &str) -> anyhow::Result<ModelHandle> {
@@ -32,7 +36,11 @@ impl ModelRouter {
         }
 
         // Try fallback chain: oracle → fallback → draft
-        for fallback in [&cfg.models.oracle_model, &cfg.models.fallback_model, &cfg.models.draft_model] {
+        for fallback in [
+            &cfg.models.oracle_model,
+            &cfg.models.fallback_model,
+            &cfg.models.draft_model,
+        ] {
             if let Ok(handle) = self.model_registry.get_or_load(fallback).await {
                 info!("Routed '{}' to fallback model '{}'", model_name, fallback);
                 return Ok(handle);
@@ -44,7 +52,9 @@ impl ModelRouter {
 
     pub async fn select_draft(&self, oracle: &ModelHandle) -> anyhow::Result<ModelHandle> {
         let cfg = self.config.read().await;
-        self.model_registry.get_or_load(&cfg.models.draft_model).await
+        self.model_registry
+            .get_or_load(&cfg.models.draft_model)
+            .await
     }
 
     fn estimate_prompt_complexity(&self, prompt: &str) -> f64 {

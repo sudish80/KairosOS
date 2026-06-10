@@ -1,9 +1,9 @@
 //! Configuration diff engine — shows changes between generations
+use crate::config;
+use similar::{ChangeTag, TextDiff};
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use similar::{ChangeTag, TextDiff};
-use crate::config;
 
 #[derive(Debug, Clone, serde::Serialize)]
 pub struct DiffResult {
@@ -44,12 +44,22 @@ impl DiffEngine {
         Self { config }
     }
 
-    pub fn diff_files(&self, old: &HashMap<String, Vec<u8>>, new: &HashMap<String, Vec<u8>>) -> DiffResult {
+    pub fn diff_files(
+        &self,
+        old: &HashMap<String, Vec<u8>>,
+        new: &HashMap<String, Vec<u8>>,
+    ) -> DiffResult {
         let old_paths: std::collections::HashSet<_> = old.keys().collect();
         let new_paths: std::collections::HashSet<_> = new.keys().collect();
 
-        let added: Vec<String> = new_paths.difference(&old_paths).map(|s| (*s).clone()).collect();
-        let removed: Vec<String> = old_paths.difference(&new_paths).map(|s| (*s).clone()).collect();
+        let added: Vec<String> = new_paths
+            .difference(&old_paths)
+            .map(|s| (*s).clone())
+            .collect();
+        let removed: Vec<String> = old_paths
+            .difference(&new_paths)
+            .map(|s| (*s).clone())
+            .collect();
         let common: Vec<_> = old_paths.intersection(&new_paths).collect();
 
         let mut modified = Vec::new();
@@ -65,7 +75,12 @@ impl DiffEngine {
             }
         }
 
-        DiffResult { added, removed, modified, unchanged }
+        DiffResult {
+            added,
+            removed,
+            modified,
+            unchanged,
+        }
     }
 
     fn compute_diff(&self, path: &&String, old: &str, new: &str) -> FileDiff {

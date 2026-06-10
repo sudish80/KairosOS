@@ -1,5 +1,8 @@
 """Handler for knowledge-graph."""
-import sys, os, json, time, logging
+import sys
+import os
+import time
+import logging
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 
 from .config import Config
@@ -9,7 +12,8 @@ logger = logging.getLogger(__name__)
 class Handler:
     def __init__(self, config: Config):
         self.config = config
-        self.entities = {}; self.relations = []
+        self.entities = {}
+        self.relations = []
 
     async def handle(self, req: dict) -> dict:
         method = req.get("method", "")

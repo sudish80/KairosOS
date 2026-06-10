@@ -4,16 +4,16 @@
 
 pub mod config;
 pub mod error;
+pub mod kv_cache;
+pub mod metrics;
+pub mod models;
+pub mod pipeline;
+pub mod quantizer;
+pub mod router;
+pub mod scheduler;
+pub mod speculator;
 pub mod telemetry;
 pub mod worker;
-pub mod pipeline;
-pub mod models;
-pub mod quantizer;
-pub mod kv_cache;
-pub mod scheduler;
-pub mod router;
-pub mod speculator;
-pub mod metrics;
 
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -40,18 +40,35 @@ impl AppState {
         let kv_cache = Arc::new(kv_cache::KVCache::new(Arc::clone(&config)));
         let scheduler = Arc::new(scheduler::InferenceScheduler::new(Arc::clone(&config)));
         let router = Arc::new(router::ModelRouter::new(
-            Arc::clone(&config), Arc::clone(&model_registry), Arc::clone(&scheduler),
+            Arc::clone(&config),
+            Arc::clone(&model_registry),
+            Arc::clone(&scheduler),
         ));
         let speculator = Arc::new(speculator::SpeculativeEngine::new(
-            Arc::clone(&config), Arc::clone(&model_registry), Arc::clone(&kv_cache),
+            Arc::clone(&config),
+            Arc::clone(&model_registry),
+            Arc::clone(&kv_cache),
         ));
         let pipeline = Arc::new(pipeline::InferencePipeline::new(
-            Arc::clone(&config), Arc::clone(&router), Arc::clone(&speculator),
-            Arc::clone(&kv_cache), Arc::clone(&telemetry),
+            Arc::clone(&config),
+            Arc::clone(&router),
+            Arc::clone(&speculator),
+            Arc::clone(&kv_cache),
+            Arc::clone(&telemetry),
         ));
 
         info!("kairos-inference-hub AppState initialized");
-        Ok(Self { config, telemetry, model_registry, quantizer, kv_cache, scheduler, router, speculator, pipeline })
+        Ok(Self {
+            config,
+            telemetry,
+            model_registry,
+            quantizer,
+            kv_cache,
+            scheduler,
+            router,
+            speculator,
+            pipeline,
+        })
     }
 
     pub async fn infer(&self, model: &str, prompt: &str) -> anyhow::Result<InferenceResult> {

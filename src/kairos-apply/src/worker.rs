@@ -1,12 +1,12 @@
 //! Background worker — watches for new pending configs, auto-applies with health check
-use std::sync::Arc;
-use std::path::PathBuf;
-use tokio::sync::RwLock;
-use tokio::fs;
-use tracing::{info, debug, error};
+use crate::applier::StateApplier;
 use crate::config;
 use crate::parser::DeclarativeParser;
-use crate::applier::StateApplier;
+use std::path::PathBuf;
+use std::sync::Arc;
+use tokio::fs;
+use tokio::sync::RwLock;
+use tracing::{debug, error, info};
 
 pub struct ApplyWorker {
     config: Arc<RwLock<config::Config>>,
@@ -22,7 +22,12 @@ impl ApplyWorker {
         applier: Arc<StateApplier>,
     ) -> Self {
         let watch_dir = PathBuf::from("/etc/kairos/apply.d");
-        Self { config, parser, applier, watch_dir }
+        Self {
+            config,
+            parser,
+            applier,
+            watch_dir,
+        }
     }
 
     pub async fn start(&self) -> anyhow::Result<()> {
@@ -60,18 +65,18 @@ impl ApplyWorker {
         let mut reader = fs::read_dir(watch_dir).await?;
         while let Some(entry) = reader.next_entry().await? {
             let path = entry.path();
-            if path.extension().map_or(false, |e| matches!(e.to_str(), Some("yaml"|"yml"|"toml"|"json"))) {
+            if path.extension().map_or(false, |e| {
+                matches!(e.to_str(), Some("yaml" | "yml" | "toml" | "json"))
+            }) {
                 match parser.parse(&path) {
-                    Ok(decl_config) => {
-                        match applier.apply(&decl_config).await {
-                            Ok(gen_id) => {
-                                info!("Applied {} -> {}", path.display(), gen_id);
-                                count += 1;
-                                let _ = fs::remove_file(&path).await;
-                            }
-                            Err(e) => error!("Apply failed for {:?}: {}", path, e),
+                    Ok(decl_config) => match applier.apply(&decl_config).await {
+                        Ok(gen_id) => {
+                            info!("Applied {} -> {}", path.display(), gen_id);
+                            count += 1;
+                            let _ = fs::remove_file(&path).await;
                         }
-                    }
+                        Err(e) => error!("Apply failed for {:?}: {}", path, e),
+                    },
                     Err(e) => error!("Parse failed for {:?}: {}", path, e),
                 }
             }

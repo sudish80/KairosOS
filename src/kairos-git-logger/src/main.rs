@@ -1,10 +1,14 @@
-use std::path::PathBuf;
 use clap::Parser;
-use tracing_subscriber::EnvFilter;
+use std::path::PathBuf;
 use tracing::info;
+use tracing_subscriber::EnvFilter;
 
 #[derive(Parser)]
-#[command(name = "kairos-git-logger", version = "1.0.0", about = "Git-backed /etc version tracker")]
+#[command(
+    name = "kairos-git-logger",
+    version = "1.0.0",
+    about = "Git-backed /etc version tracker"
+)]
 struct Cli {
     #[arg(short, long, default_value = "/etc/kairos/git-logger.toml")]
     config: PathBuf,

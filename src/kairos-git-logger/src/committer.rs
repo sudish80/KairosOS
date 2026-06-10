@@ -1,11 +1,11 @@
 //! Change committer — batches file changes into git commits
-use std::path::PathBuf;
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use tokio::fs;
-use tracing::{info, debug, error};
 use crate::config;
 use crate::repo::RepoManager;
+use std::path::PathBuf;
+use std::sync::Arc;
+use tokio::fs;
+use tokio::sync::RwLock;
+use tracing::{debug, error, info};
 
 pub struct ChangeCommitter {
     config: Arc<RwLock<config::Config>>,
@@ -14,7 +14,10 @@ pub struct ChangeCommitter {
 
 impl ChangeCommitter {
     pub fn new(config: Arc<RwLock<config::Config>>, repo_manager: Arc<RepoManager>) -> Self {
-        Self { config, repo_manager }
+        Self {
+            config,
+            repo_manager,
+        }
     }
 
     pub async fn commit_changes(&self, paths: &[PathBuf]) -> anyhow::Result<String> {
@@ -40,7 +43,10 @@ impl ChangeCommitter {
             valid_paths.len(),
         );
 
-        let hash = self.repo_manager.add_and_commit(&valid_paths, &message).await?;
+        let hash = self
+            .repo_manager
+            .add_and_commit(&valid_paths, &message)
+            .await?;
         info!("Committed {} files as {}", valid_paths.len(), hash);
         Ok(hash)
     }

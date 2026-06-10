@@ -1,10 +1,10 @@
 //! Recovery shell — emergency access with controlled environment
+use crate::config;
 use std::path::PathBuf;
 use std::sync::Arc;
-use tokio::sync::RwLock;
 use tokio::process::Command;
+use tokio::sync::RwLock;
 use tracing::{info, warn};
-use crate::config;
 
 pub struct RecoveryShell {
     config: Arc<RwLock<config::Config>>,
@@ -36,9 +36,7 @@ impl RecoveryShell {
     }
 
     pub async fn run_recovery_command(&self, cmd: &str) -> anyhow::Result<String> {
-        let output = Command::new("sh")
-            .args(["-c", cmd])
-            .output().await?;
+        let output = Command::new("sh").args(["-c", cmd]).output().await?;
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     }
 }

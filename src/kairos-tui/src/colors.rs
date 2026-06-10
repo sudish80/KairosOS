@@ -30,10 +30,22 @@ impl Theme {
 
 pub fn ansi_to_rgb(code: u8) -> u32 {
     match code {
-        0 => 0x000000, 1 => 0xAA0000, 2 => 0x00AA00, 3 => 0xAA5500,
-        4 => 0x0000AA, 5 => 0xAA00AA, 6 => 0x00AAAA, 7 => 0xAAAAAA,
-        8 => 0x555555, 9 => 0xFF5555, 10 => 0x55FF55, 11 => 0xFFFF55,
-        12 => 0x5555FF, 13 => 0xFF55FF, 14 => 0x55FFFF, 15 => 0xFFFFFF,
+        0 => 0x000000,
+        1 => 0xAA0000,
+        2 => 0x00AA00,
+        3 => 0xAA5500,
+        4 => 0x0000AA,
+        5 => 0xAA00AA,
+        6 => 0x00AAAA,
+        7 => 0xAAAAAA,
+        8 => 0x555555,
+        9 => 0xFF5555,
+        10 => 0x55FF55,
+        11 => 0xFFFF55,
+        12 => 0x5555FF,
+        13 => 0xFF55FF,
+        14 => 0x55FFFF,
+        15 => 0xFFFFFF,
         _ => 0xFFFFFF,
     }
 }

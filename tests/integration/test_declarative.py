@@ -1,8 +1,6 @@
 """Tests for declarative config validation logic."""
 
-import json
 import yaml
-import pytest
 
 
 SAMPLE_YAML_CONFIG = """

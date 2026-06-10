@@ -1,10 +1,10 @@
 //! KV cache — page-based key-value caching with LRU eviction and compression
-use std::collections::{HashMap, VecDeque};
-use std::sync::Arc;
-use std::sync::atomic::{AtomicU64, Ordering};
-use tokio::sync::RwLock;
-use tracing::{info, debug};
 use crate::config;
+use std::collections::{HashMap, VecDeque};
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::Arc;
+use tokio::sync::RwLock;
+use tracing::{debug, info};
 
 struct CacheEntry {
     key: String,
@@ -98,7 +98,9 @@ impl KVCache {
         let before = entries.len();
         entries.retain(|k, v| {
             let valid = v.created_at.elapsed().as_secs() <= ttl;
-            if !valid { access.retain(|ak| ak != k); }
+            if !valid {
+                access.retain(|ak| ak != k);
+            }
             valid
         });
         before - entries.len()

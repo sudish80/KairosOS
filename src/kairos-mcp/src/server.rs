@@ -1,10 +1,10 @@
 //! JSON-RPC server — request routing, middleware pipeline, response dispatch
+use crate::config;
+use crate::protocol::{self, JsonRpcNotification, JsonRpcRequest, JsonRpcResponse};
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use tracing::{info, debug, error, warn};
-use crate::protocol::{self, JsonRpcRequest, JsonRpcResponse, JsonRpcNotification};
-use crate::config;
+use tracing::{debug, error, info, warn};
 
 type MethodHandler = Arc<dyn Fn(serde_json::Value) -> serde_json::Value + Send + Sync>;
 type MiddlewareFn = Arc<dyn Fn(&JsonRpcRequest, Option<&JsonRpcResponse>) -> bool + Send + Sync>;
@@ -28,7 +28,10 @@ impl McpServer {
     where
         F: Fn(serde_json::Value) -> serde_json::Value + Send + Sync + 'static,
     {
-        self.methods.write().await.insert(name.to_string(), Arc::new(handler));
+        self.methods
+            .write()
+            .await
+            .insert(name.to_string(), Arc::new(handler));
         info!("Registered MCP method: {}", name);
     }
 
@@ -36,7 +39,10 @@ impl McpServer {
     where
         F: Fn(&JsonRpcRequest, Option<&JsonRpcResponse>) -> bool + Send + Sync + 'static,
     {
-        self.middleware.write().await.push((name.to_string(), Arc::new(f)));
+        self.middleware
+            .write()
+            .await
+            .push((name.to_string(), Arc::new(f)));
         info!("Added middleware: {}", name);
     }
 
@@ -44,7 +50,12 @@ impl McpServer {
         let request: JsonRpcRequest = match serde_json::from_str(request_str) {
             Ok(r) => r,
             Err(e) => {
-                let resp = JsonRpcResponse::error(None, protocol::PARSE_ERROR, format!("Parse error: {}", e), None);
+                let resp = JsonRpcResponse::error(
+                    None,
+                    protocol::PARSE_ERROR,
+                    format!("Parse error: {}", e),
+                    None,
+                );
                 return serde_json::to_string(&resp).unwrap();
             }
         };
@@ -54,7 +65,12 @@ impl McpServer {
             let middleware = self.middleware.read().await;
             for (name, m) in middleware.iter() {
                 if !m(&request, None) {
-                    let resp = JsonRpcResponse::error(request.id.clone(), -32000, format!("Blocked by middleware: {}", name), None);
+                    let resp = JsonRpcResponse::error(
+                        request.id.clone(),
+                        -32000,
+                        format!("Blocked by middleware: {}", name),
+                        None,
+                    );
                     return serde_json::to_string(&resp).unwrap();
                 }
             }
@@ -67,9 +83,12 @@ impl McpServer {
                 let result = handler(params);
                 JsonRpcResponse::success(request.id.clone(), result)
             }
-            None => {
-                JsonRpcResponse::error(request.id.clone(), protocol::METHOD_NOT_FOUND, format!("Method not found: {}", request.method), None)
-            }
+            None => JsonRpcResponse::error(
+                request.id.clone(),
+                protocol::METHOD_NOT_FOUND,
+                format!("Method not found: {}", request.method),
+                None,
+            ),
         };
 
         // Run middleware after (logging/audit)
@@ -107,9 +126,13 @@ mod tests {
     async fn test_ping_pong() {
         let cfg = Arc::new(RwLock::new(config::Config::default()));
         let server = McpServer::new(cfg);
-        server.register_method("ping", |_| serde_json::json!("pong")).await;
+        server
+            .register_method("ping", |_| serde_json::json!("pong"))
+            .await;
 
-        let response = server.handle_request(r#"{"jsonrpc":"2.0","id":1,"method":"ping"}"#).await;
+        let response = server
+            .handle_request(r#"{"jsonrpc":"2.0","id":1,"method":"ping"}"#)
+            .await;
         let resp: JsonRpcResponse = serde_json::from_str(&response).unwrap();
         assert_eq!(resp.result, Some(serde_json::json!("pong")));
     }
@@ -118,7 +141,9 @@ mod tests {
     async fn test_method_not_found() {
         let cfg = Arc::new(RwLock::new(config::Config::default()));
         let server = McpServer::new(cfg);
-        let response = server.handle_request(r#"{"jsonrpc":"2.0","id":1,"method":"nonexistent"}"#).await;
+        let response = server
+            .handle_request(r#"{"jsonrpc":"2.0","id":1,"method":"nonexistent"}"#)
+            .await;
         let resp: JsonRpcResponse = serde_json::from_str(&response).unwrap();
         assert!(resp.error.is_some());
         assert_eq!(resp.error.unwrap().code, protocol::METHOD_NOT_FOUND);

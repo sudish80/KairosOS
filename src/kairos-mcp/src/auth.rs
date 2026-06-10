@@ -1,7 +1,7 @@
 //! Authentication and authorization
+use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use std::collections::HashMap;
 use tracing::{info, warn};
 
 pub struct AuthManager {
@@ -37,7 +37,8 @@ impl AuthManager {
         let info = TokenInfo {
             token: token.clone(),
             capabilities,
-            expires_at: ttl_secs.map(|t| std::time::Instant::now() + std::time::Duration::from_secs(t)),
+            expires_at: ttl_secs
+                .map(|t| std::time::Instant::now() + std::time::Duration::from_secs(t)),
             created_at: std::time::Instant::now(),
         };
         self.tokens.write().await.insert(token.clone(), info);
@@ -51,8 +52,6 @@ impl AuthManager {
     pub async fn cleanup_expired(&self) {
         let mut tokens = self.tokens.write().await;
         let now = std::time::Instant::now();
-        tokens.retain(|_, info| {
-            info.expires_at.map_or(true, |exp| exp > now)
-        });
+        tokens.retain(|_, info| info.expires_at.map_or(true, |exp| exp > now));
     }
 }

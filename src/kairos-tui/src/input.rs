@@ -1,11 +1,11 @@
 //! Input manager — touch and keyboard event handling
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use tokio::fs::File;
-use tokio::io::AsyncReadExt;
-use tracing::{info, debug, error};
 use crate::config;
 use crate::gestures::GestureEngine;
+use std::sync::Arc;
+use tokio::fs::File;
+use tokio::io::AsyncReadExt;
+use tokio::sync::RwLock;
+use tracing::{debug, error, info};
 
 pub struct InputManager {
     config: Arc<RwLock<config::Config>>,
@@ -38,7 +38,10 @@ pub enum KeyAction {
 
 impl InputManager {
     pub fn new(config: Arc<RwLock<config::Config>>, gesture_engine: Arc<GestureEngine>) -> Self {
-        Self { config, gesture_engine }
+        Self {
+            config,
+            gesture_engine,
+        }
     }
 
     pub async fn process_input(&self, event: InputEvent) {

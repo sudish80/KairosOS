@@ -30,7 +30,14 @@ fn compile_bpf_programs() {
     }
 
     // Compile each BPF program
-    let programs = ["execsnoop", "tcptop", "filemon", "anomaly", "schedlatency", "oomkill"];
+    let programs = [
+        "execsnoop",
+        "tcptop",
+        "filemon",
+        "anomaly",
+        "schedlatency",
+        "oomkill",
+    ];
     for prog in programs {
         let src = bpf_dir.join(format!("{}.bpf.c", prog));
         let out = PathBuf::from(std::env::var("OUT_DIR").unwrap()).join(format!("{}.o", prog));
@@ -38,23 +45,32 @@ fn compile_bpf_programs() {
         if src.exists() {
             let status = std::process::Command::new("clang")
                 .args([
-                    "-target", "bpf",
+                    "-target",
+                    "bpf",
                     "-O2",
                     "-g",
                     "-Wall",
                     "-Wno-unused-value",
                     "-Wno-pointer-sign",
                     "-Wno-compare-distinct-pointer-types",
-                    "-I", "/usr/include",
-                    "-I", "/usr/include/linux",
-                    "-c", src.to_str().unwrap(),
-                    "-o", out.to_str().unwrap(),
+                    "-I",
+                    "/usr/include",
+                    "-I",
+                    "/usr/include/linux",
+                    "-c",
+                    src.to_str().unwrap(),
+                    "-o",
+                    out.to_str().unwrap(),
                 ])
                 .status();
 
             match status {
                 Ok(s) if s.success() => println!("Compiled BPF: {}", prog),
-                Ok(s) => eprintln!("BPF compilation failed for {}: exit code {:?}", prog, s.code()),
+                Ok(s) => eprintln!(
+                    "BPF compilation failed for {}: exit code {:?}",
+                    prog,
+                    s.code()
+                ),
                 Err(e) => eprintln!("Failed to run clang for {}: {}", prog, e),
             }
         }

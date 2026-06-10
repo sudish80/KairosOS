@@ -28,7 +28,9 @@ pub struct MapManager {
 
 impl MapManager {
     pub fn new() -> Self {
-        Self { maps: HashMap::new() }
+        Self {
+            maps: HashMap::new(),
+        }
     }
 
     pub fn get_ring_buffer(&self, name: &str) -> Option<&Map> {

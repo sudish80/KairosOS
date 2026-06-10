@@ -11,7 +11,10 @@ async fn main() -> anyhow::Result<()> {
     let engine = std::sync::Arc::new(kairos_chaos::ChaosEngine::new(cfg));
     engine.start().await;
 
-    tracing::info!("kairos-chaos daemon started with score {}", engine.get_score().await);
+    tracing::info!(
+        "kairos-chaos daemon started with score {}",
+        engine.get_score().await
+    );
     tokio::signal::ctrl_c().await?;
     engine.stop().await;
     tracing::info!("Shutdown signal received");

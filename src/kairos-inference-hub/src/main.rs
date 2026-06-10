@@ -1,10 +1,14 @@
-use std::path::PathBuf;
 use clap::Parser;
-use tracing_subscriber::EnvFilter;
+use std::path::PathBuf;
 use tracing::info;
+use tracing_subscriber::EnvFilter;
 
 #[derive(Parser)]
-#[command(name = "kairos-inference-hub", version = "1.0.0", about = "Speculative inference pipeline orchestrator")]
+#[command(
+    name = "kairos-inference-hub",
+    version = "1.0.0",
+    about = "Speculative inference pipeline orchestrator"
+)]
 struct Cli {
     #[arg(short, long, default_value = "/etc/kairos/inference-hub.toml")]
     config: PathBuf,
@@ -28,7 +32,10 @@ async fn main() -> anyhow::Result<()> {
         .with_env_filter(EnvFilter::new(&cfg.general.log_level))
         .init();
 
-    info!("kairos-inference-hub v{} starting", env!("CARGO_PKG_VERSION"));
+    info!(
+        "kairos-inference-hub v{} starting",
+        env!("CARGO_PKG_VERSION")
+    );
 
     let state = kairos_inference_hub::AppState::new(cfg).await?;
 

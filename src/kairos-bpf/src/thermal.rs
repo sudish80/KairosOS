@@ -1,6 +1,6 @@
 //! Thermal governor for hardware thermal management
-use crate::error::Result;
 use crate::config::Config;
+use crate::error::Result;
 use crate::telemetry::TelemetryStore;
 use std::sync::Arc;
 use tokio::sync::RwLock;
@@ -61,7 +61,10 @@ impl ThermalGovernor {
         };
 
         if *state != new_state {
-            info!("Thermal state transition: {:?} -> {:?} (max_temp: {}°C)", state, new_state, max_temp);
+            info!(
+                "Thermal state transition: {:?} -> {:?} (max_temp: {}°C)",
+                state, new_state, max_temp
+            );
             *state = new_state;
             self.handle_state_change(new_state, max_temp, &cfg).await?;
         }
@@ -69,7 +72,12 @@ impl ThermalGovernor {
         Ok(())
     }
 
-    async fn handle_state_change(&self, state: ThermalState, temp: u16, cfg: &Config) -> Result<()> {
+    async fn handle_state_change(
+        &self,
+        state: ThermalState,
+        temp: u16,
+        cfg: &Config,
+    ) -> Result<()> {
         match state {
             ThermalState::Critical => {
                 warn!("CRITICAL TEMPERATURE: {}°C", temp);

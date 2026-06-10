@@ -1,9 +1,9 @@
+use serde::{Deserialize, Serialize};
 use std::collections::VecDeque;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use tokio::time::{interval, Duration};
 use tracing::warn;
-use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HardwareTelemetry {
@@ -87,7 +87,9 @@ impl PredictiveAnalyzer {
         let recent: Vec<_> = history.iter().rev().take(100).cloned().collect();
         let avg = |items: &[f64]| -> f64 { items.iter().sum::<f64>() / items.len() as f64 };
         let trend = |items: &[f64]| -> f64 {
-            if items.len() < 2 { return 0.0; }
+            if items.len() < 2 {
+                return 0.0;
+            }
             let n = items.len() as f64;
             let sum_x: f64 = (0..items.len()).map(|i| i as f64).sum();
             let sum_y: f64 = items.iter().sum();
@@ -110,14 +112,22 @@ impl PredictiveAnalyzer {
         // Memory failure prediction
         let avg_ue = avg(&edac_ue_vals);
         let avg_ce = avg(&edac_ce_vals);
-        if avg_ue > thresholds.edac_ue_warn || (avg_ce > thresholds.edac_ce_warn && edac_ce_trend > 0.0) {
+        if avg_ue > thresholds.edac_ue_warn
+            || (avg_ce > thresholds.edac_ce_warn && edac_ce_trend > 0.0)
+        {
             let prob = (avg_ue * 10.0 + avg_ce / 100.0).min(0.95);
             predictions.push(FailurePrediction {
                 component: "memory".into(),
                 probability: prob,
                 timeframe_hours: if avg_ue > 0.0 { 24.0 } else { 168.0 },
-                recommended_action: "Schedule memory replacement. OTA rollback to redundant DIMM configuration.".into(),
-                confidence: if prob > 0.7 { "high".into() } else { "medium".into() },
+                recommended_action:
+                    "Schedule memory replacement. OTA rollback to redundant DIMM configuration."
+                        .into(),
+                confidence: if prob > 0.7 {
+                    "high".into()
+                } else {
+                    "medium".into()
+                },
                 evidence: vec![
                     format!("UE rate: {:.2}/hr (trend: {:.4})", avg_ue, edac_ue_trend),
                     format!("CE rate: {:.2}/hr (trend: {:.4})", avg_ce, edac_ce_trend),
@@ -134,10 +144,23 @@ impl PredictiveAnalyzer {
                 probability: (avg_temp / 100.0).min(0.9),
                 timeframe_hours: hours_to_critical.max(1.0),
                 recommended_action: "Increase cooling. Reduce CPU frequency via cpufreq.".into(),
-                confidence: if temp_trend > 1.0 { "high".into() } else { "medium".into() },
+                confidence: if temp_trend > 1.0 {
+                    "high".into()
+                } else {
+                    "medium".into()
+                },
                 evidence: vec![
-                    format!("Temperature: {:.1}°C (trend: {:.2}°C/hr)", avg_temp, temp_trend),
-                    format!("PROCHOT throttle: {:.1}%", avg(&recent.iter().map(|t| t.prochot_throttle_pct).collect::<Vec<_>>())),
+                    format!(
+                        "Temperature: {:.1}°C (trend: {:.2}°C/hr)",
+                        avg_temp, temp_trend
+                    ),
+                    format!(
+                        "PROCHOT throttle: {:.1}%",
+                        avg(&recent
+                            .iter()
+                            .map(|t| t.prochot_throttle_pct)
+                            .collect::<Vec<_>>())
+                    ),
                 ],
             });
         }
@@ -149,11 +172,17 @@ impl PredictiveAnalyzer {
                 component: "storage".into(),
                 probability: (avg_disk / 2000.0).min(0.85),
                 timeframe_hours: 72.0,
-                recommended_action: "Run SMART self-test. Consider proactive disk replacement.".into(),
-                confidence: if avg_disk > 1000.0 { "high".into() } else { "medium".into() },
-                evidence: vec![
-                    format!("Disk latency: {:.1}ms avg (trend: {:.2}ms/hr)", avg_disk, disk_trend),
-                ],
+                recommended_action: "Run SMART self-test. Consider proactive disk replacement."
+                    .into(),
+                confidence: if avg_disk > 1000.0 {
+                    "high".into()
+                } else {
+                    "medium".into()
+                },
+                evidence: vec![format!(
+                    "Disk latency: {:.1}ms avg (trend: {:.2}ms/hr)",
+                    avg_disk, disk_trend
+                )],
             });
         }
 
@@ -166,9 +195,7 @@ impl PredictiveAnalyzer {
                 timeframe_hours: 48.0,
                 recommended_action: "Re-seal TPM keys. Check for hardware tampering.".into(),
                 confidence: "low".into(),
-                evidence: vec![
-                    format!("PCR drift: {:.4}/hr", avg_tpm_drift),
-                ],
+                evidence: vec![format!("PCR drift: {:.4}/hr", avg_tpm_drift)],
             });
         }
 
@@ -188,8 +215,10 @@ impl PredictiveAnalyzer {
                 let predictions = analyzer.analyze().await;
                 if !predictions.is_empty() {
                     for p in &predictions {
-                        warn!("Failure prediction: {} (prob: {:.2}, timeframe: {:.1}h) — {}",
-                            p.component, p.probability, p.timeframe_hours, p.recommended_action);
+                        warn!(
+                            "Failure prediction: {} (prob: {:.2}, timeframe: {:.1}h) — {}",
+                            p.component, p.probability, p.timeframe_hours, p.recommended_action
+                        );
                     }
                 }
             }
@@ -212,16 +241,18 @@ mod tests {
     async fn test_memory_failure_prediction() {
         let analyzer = PredictiveAnalyzer::new();
         for i in 0..50 {
-            analyzer.ingest(HardwareTelemetry {
-                timestamp: i as f64,
-                edac_ce_rate: 100.0 + i as f64 * 2.0,
-                edac_ue_rate: 0.5 + i as f64 * 0.05,
-                tpm_pcr_drift: 0.01,
-                prochot_throttle_pct: 5.0,
-                bpf_disk_latency_ms: 50.0,
-                bpf_oom_rate: 0.1,
-                cpu_temperature_c: 60.0,
-            }).await;
+            analyzer
+                .ingest(HardwareTelemetry {
+                    timestamp: i as f64,
+                    edac_ce_rate: 100.0 + i as f64 * 2.0,
+                    edac_ue_rate: 0.5 + i as f64 * 0.05,
+                    tpm_pcr_drift: 0.01,
+                    prochot_throttle_pct: 5.0,
+                    bpf_disk_latency_ms: 50.0,
+                    bpf_oom_rate: 0.1,
+                    cpu_temperature_c: 60.0,
+                })
+                .await;
         }
         let predictions = analyzer.analyze().await;
         let memory = predictions.iter().find(|p| p.component == "memory");
@@ -233,16 +264,18 @@ mod tests {
     async fn test_thermal_failure_prediction() {
         let analyzer = PredictiveAnalyzer::new();
         for i in 0..50 {
-            analyzer.ingest(HardwareTelemetry {
-                timestamp: i as f64,
-                edac_ce_rate: 10.0,
-                edac_ue_rate: 0.0,
-                tpm_pcr_drift: 0.01,
-                prochot_throttle_pct: 40.0,
-                bpf_disk_latency_ms: 50.0,
-                bpf_oom_rate: 0.1,
-                cpu_temperature_c: 80.0 + i as f64 * 0.5,
-            }).await;
+            analyzer
+                .ingest(HardwareTelemetry {
+                    timestamp: i as f64,
+                    edac_ce_rate: 10.0,
+                    edac_ue_rate: 0.0,
+                    tpm_pcr_drift: 0.01,
+                    prochot_throttle_pct: 40.0,
+                    bpf_disk_latency_ms: 50.0,
+                    bpf_oom_rate: 0.1,
+                    cpu_temperature_c: 80.0 + i as f64 * 0.5,
+                })
+                .await;
         }
         let predictions = analyzer.analyze().await;
         let thermal = predictions.iter().find(|p| p.component == "thermal");

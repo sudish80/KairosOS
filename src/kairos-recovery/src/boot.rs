@@ -1,12 +1,12 @@
 //! Boot manager — slot selection, boot count tracking, automatic fallback
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use tokio::fs;
-use tokio::process::Command;
-use tracing::{info, error, warn};
 use crate::config;
 use crate::partitions::PartitionManager;
 use crate::Slot;
+use std::sync::Arc;
+use tokio::fs;
+use tokio::process::Command;
+use tokio::sync::RwLock;
+use tracing::{error, info, warn};
 
 pub struct BootManager {
     config: Arc<RwLock<config::Config>>,
@@ -14,13 +14,23 @@ pub struct BootManager {
 }
 
 impl BootManager {
-    pub fn new(config: Arc<RwLock<config::Config>>, partition_manager: Arc<PartitionManager>) -> Self {
-        Self { config, partition_manager }
+    pub fn new(
+        config: Arc<RwLock<config::Config>>,
+        partition_manager: Arc<PartitionManager>,
+    ) -> Self {
+        Self {
+            config,
+            partition_manager,
+        }
     }
 
     pub async fn get_boot_slot(&self) -> Slot {
         let cfg = self.config.read().await;
-        if cfg.boot.default_slot == "a" { Slot::A } else { Slot::B }
+        if cfg.boot.default_slot == "a" {
+            Slot::A
+        } else {
+            Slot::B
+        }
     }
 
     pub async fn should_fallback(&self) -> bool {
@@ -31,7 +41,10 @@ impl BootManager {
         };
         let max_attempts = self.config.read().await.boot.max_boot_attempts;
         if count >= max_attempts {
-            info!("Boot count {} exceeds max {} - triggering fallback", count, max_attempts);
+            info!(
+                "Boot count {} exceeds max {} - triggering fallback",
+                count, max_attempts
+            );
             return true;
         }
         false
@@ -56,7 +69,10 @@ impl BootManager {
 
     pub async fn switch_slot(&self, target: &Slot) -> anyhow::Result<()> {
         // In production: use efibootmgr or grub-reboot
-        let target_name = match target { Slot::A => "A", Slot::B => "B" };
+        let target_name = match target {
+            Slot::A => "A",
+            Slot::B => "B",
+        };
         if let Err(e) = Command::new("grub-reboot").arg(target_name).status().await {
             warn!("grub-reboot failed (may not be installed): {}", e);
         }

@@ -1,9 +1,9 @@
 //! CPU scheduler integration and optimization
-use crate::error::Result;
 use crate::config::Config;
+use crate::error::Result;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use tracing::{info, debug};
+use tracing::{debug, info};
 
 pub struct Scheduler {
     config: Arc<RwLock<Config>>,
@@ -36,11 +36,11 @@ impl Scheduler {
 
         // In production: read schedlatency events, boost priority of high-latency tasks
         // For now, placeholder logic
-        
+
         // Check for tasks that should be boosted to RT
         // Check for tasks that should be moved to efficiency cores
         // Check for SMT sibling conflicts
-        
+
         Ok(())
     }
 

@@ -4,8 +4,6 @@ Connects kairos-llm to MCP to query all daemons in natural language
 import asyncio
 import json
 import logging
-import subprocess
-from pathlib import Path
 
 logger = logging.getLogger("nl-sysadmin")
 

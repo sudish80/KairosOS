@@ -1,8 +1,8 @@
 //! Rate limiting for API protection
-use std::sync::Arc;
-use tokio::sync::RwLock;
 use std::collections::HashMap;
-use std::time::{Instant, Duration};
+use std::sync::Arc;
+use std::time::{Duration, Instant};
+use tokio::sync::RwLock;
 use tracing::warn;
 
 pub struct RateLimiter {

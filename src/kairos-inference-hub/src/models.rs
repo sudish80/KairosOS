@@ -1,12 +1,12 @@
 //! Model registry — load, unload, version models dynamically
+use crate::config;
+use crate::error::InferenceError;
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
-use tokio::sync::RwLock;
 use tokio::fs;
-use tracing::{info, debug, error, warn};
-use crate::config;
-use crate::error::InferenceError;
+use tokio::sync::RwLock;
+use tracing::{debug, error, info, warn};
 
 #[derive(Debug, Clone)]
 pub struct ModelHandle {
@@ -52,7 +52,11 @@ impl ModelRegistry {
         let models_dir = PathBuf::from(&cfg.models.models_dir);
         fs::create_dir_all(&models_dir).await?;
 
-        Ok(Self { config, models: Arc::new(RwLock::new(HashMap::new())), models_dir })
+        Ok(Self {
+            config,
+            models: Arc::new(RwLock::new(HashMap::new())),
+            models_dir,
+        })
     }
 
     pub async fn load_model(&self, name: &str) -> anyhow::Result<ModelHandle> {
@@ -80,7 +84,10 @@ impl ModelRegistry {
             metadata: HashMap::new(),
         };
 
-        self.models.write().await.insert(name.to_string(), handle.clone());
+        self.models
+            .write()
+            .await
+            .insert(name.to_string(), handle.clone());
         info!("Loaded model: {} ({:?})", name, model_type);
         Ok(handle)
     }

@@ -1,7 +1,7 @@
-use std::sync::Arc;
-use std::sync::atomic::{AtomicU64, Ordering};
-use tokio::sync::RwLock;
 use crate::config;
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 pub struct Telemetry {
     config: Arc<RwLock<config::Config>>,
@@ -30,10 +30,18 @@ impl Telemetry {
         self.frames_rendered.fetch_add(1, Ordering::Relaxed);
         self.frame_time_ns.store(time_ns, Ordering::Relaxed);
     }
-    pub fn record_input(&self) { self.input_events.fetch_add(1, Ordering::Relaxed); }
-    pub fn record_gesture(&self) { self.gestures_detected.fetch_add(1, Ordering::Relaxed); }
-    pub fn record_terminal_write(&self) { self.terminal_writes.fetch_add(1, Ordering::Relaxed); }
-    pub fn record_error(&self) { self.errors_total.fetch_add(1, Ordering::Relaxed); }
+    pub fn record_input(&self) {
+        self.input_events.fetch_add(1, Ordering::Relaxed);
+    }
+    pub fn record_gesture(&self) {
+        self.gestures_detected.fetch_add(1, Ordering::Relaxed);
+    }
+    pub fn record_terminal_write(&self) {
+        self.terminal_writes.fetch_add(1, Ordering::Relaxed);
+    }
+    pub fn record_error(&self) {
+        self.errors_total.fetch_add(1, Ordering::Relaxed);
+    }
 
     pub fn metrics(&self) -> serde_json::Value {
         serde_json::json!({

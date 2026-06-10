@@ -1,12 +1,12 @@
+use rand::Rng;
+use rand::Rng;
+use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::RwLock;
 use tokio::time::sleep;
-use rand::Rng;
-use serde::{Deserialize, Serialize};
-use tracing::{info, error};
-use serde::{Deserialize, Serialize};
-use rand::Rng;
+use tracing::{error, info};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ChaosAction {
@@ -63,8 +63,11 @@ impl Default for ChaosConfig {
             auto_rollback: true,
             score_decay_per_minute: 5,
             target_daemons: vec![
-                "kairos-bpf".into(), "kairos-mcp".into(), "kairos-db".into(),
-                "kairos-apply".into(), "kairos-orchestrator".into(),
+                "kairos-bpf".into(),
+                "kairos-mcp".into(),
+                "kairos-db".into(),
+                "kairos-apply".into(),
+                "kairos-orchestrator".into(),
             ],
             allowed_actions: vec![
                 ChaosAction::KillDaemon("kairos-bpf".into()),
@@ -85,12 +88,22 @@ impl ChaosEngine {
         }
     }
 
-    pub async fn execute(&self, action: ChaosAction, duration_secs: u64) -> anyhow::Result<ChaosEvent> {
-        let id = format!("chaos-{}", std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)?
-            .as_nanos());
+    pub async fn execute(
+        &self,
+        action: ChaosAction,
+        duration_secs: u64,
+    ) -> anyhow::Result<ChaosEvent> {
+        let id = format!(
+            "chaos-{}",
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)?
+                .as_nanos()
+        );
 
-        info!("Executing chaos action: {:?} for {}s", action, duration_secs);
+        info!(
+            "Executing chaos action: {:?} for {}s",
+            action, duration_secs
+        );
         let mut event = ChaosEvent {
             id,
             action: action.clone(),
@@ -102,7 +115,9 @@ impl ChaosEngine {
 
         let result = match &action {
             ChaosAction::KillDaemon(name) => self.kill_daemon(name, duration_secs).await,
-            ChaosAction::NetworkPartition(from, to) => self.network_partition(from, to, duration_secs).await,
+            ChaosAction::NetworkPartition(from, to) => {
+                self.network_partition(from, to, duration_secs).await
+            }
             ChaosAction::DiskFull(pct) => self.fill_disk(*pct, duration_secs).await,
             ChaosAction::MemoryPressure(mb) => self.memory_pressure(*mb, duration_secs).await,
             ChaosAction::CorruptPacket(prob) => self.corrupt_packets(*prob, duration_secs).await,
@@ -164,23 +179,35 @@ impl ChaosEngine {
         Ok(String::from_utf8_lossy(&output.stdout).to_string())
     }
 
-    async fn network_partition(&self, from: &str, to: &str, duration: u64) -> anyhow::Result<String> {
+    async fn network_partition(
+        &self,
+        from: &str,
+        to: &str,
+        duration: u64,
+    ) -> anyhow::Result<String> {
         let source_ip = self.resolve_daemon_ip(from).await;
         let target_ip = self.resolve_daemon_ip(to).await;
 
         tokio::process::Command::new("iptables")
-            .args(["-A", "INPUT", "-s", &source_ip, "-d", &target_ip, "-j", "DROP"])
+            .args([
+                "-A", "INPUT", "-s", &source_ip, "-d", &target_ip, "-j", "DROP",
+            ])
             .status()
             .await?;
 
         tokio::time::sleep(Duration::from_secs(duration)).await;
 
         tokio::process::Command::new("iptables")
-            .args(["-D", "INPUT", "-s", &source_ip, "-d", &target_ip, "-j", "DROP"])
+            .args([
+                "-D", "INPUT", "-s", &source_ip, "-d", &target_ip, "-j", "DROP",
+            ])
             .status()
             .await?;
 
-        Ok(format!("Partitioned {} from {} for {}s", from, to, duration))
+        Ok(format!(
+            "Partitioned {} from {} for {}s",
+            from, to, duration
+        ))
     }
 
     async fn fill_disk(&self, pct: f64, duration: u64) -> anyhow::Result<String> {
@@ -190,8 +217,12 @@ impl ChaosEngine {
         let fill_bytes = (total as f64 * pct / 100.0) as u64;
 
         let output = tokio::process::Command::new("dd")
-            .args(["if=/dev/zero", &format!("of={}", path), &format!("bs=1M"),
-                   &format!("count={}", fill_bytes / 1024 / 1024)])
+            .args([
+                "if=/dev/zero",
+                &format!("of={}", path),
+                &format!("bs=1M"),
+                &format!("count={}", fill_bytes / 1024 / 1024),
+            ])
             .output()
             .await?;
 
@@ -218,7 +249,16 @@ impl ChaosEngine {
     async fn corrupt_packets(&self, prob: f64, duration: u64) -> anyhow::Result<String> {
         // Use tc to add packet loss
         tokio::process::Command::new("tc")
-            .args(["qdisc", "add", "dev", "eth0", "root", "netem", "loss", &format!("{}%", prob * 100.0)])
+            .args([
+                "qdisc",
+                "add",
+                "dev",
+                "eth0",
+                "root",
+                "netem",
+                "loss",
+                &format!("{}%", prob * 100.0),
+            ])
             .status()
             .await?;
 
@@ -229,13 +269,22 @@ impl ChaosEngine {
             .status()
             .await?;
 
-        Ok(format!("Introduced {:.0}% packet loss for {}s", prob * 100.0, duration))
+        Ok(format!(
+            "Introduced {:.0}% packet loss for {}s",
+            prob * 100.0,
+            duration
+        ))
     }
 
     async fn slow_disk(&self, latency_ms: u64, duration: u64) -> anyhow::Result<String> {
         // Use device-mapper delay target
         let minor = self.get_root_minor().await;
-        let dmsetup = format!("0 {} delay /dev/{} 0 {}", self.get_disk_sectors().await, minor, latency_ms);
+        let dmsetup = format!(
+            "0 {} delay /dev/{} 0 {}",
+            self.get_disk_sectors().await,
+            minor,
+            latency_ms
+        );
 
         tokio::process::Command::new("dmsetup")
             .args(["create", "chaos-slow", "--table", &dmsetup])
@@ -248,7 +297,10 @@ impl ChaosEngine {
             .status()
             .await?;
 
-        Ok(format!("Added {}ms disk latency for {}s", latency_ms, duration))
+        Ok(format!(
+            "Added {}ms disk latency for {}s",
+            latency_ms, duration
+        ))
     }
 
     async fn random_oom(&self, _duration: u64) -> anyhow::Result<String> {
@@ -258,7 +310,15 @@ impl ChaosEngine {
 
         // Fork bomb: (simplified — use stress-ng if available)
         let output = tokio::process::Command::new("stress-ng")
-            .args(["--vm", "4", "--vm-bytes", "75%", "--timeout", "10s", "--oomable"])
+            .args([
+                "--vm",
+                "4",
+                "--vm-bytes",
+                "75%",
+                "--timeout",
+                "10s",
+                "--oomable",
+            ])
             .output()
             .await?;
 
@@ -337,7 +397,9 @@ impl ChaosEngine {
         tokio::spawn(async move {
             loop {
                 sleep(Duration::from_secs(60)).await;
-                if !*running.read().await { break; }
+                if !*running.read().await {
+                    break;
+                }
                 let mut s = score.write().await;
                 *s = (*s + score_decay).min(100);
             }
@@ -347,7 +409,6 @@ impl ChaosEngine {
     pub async fn stop(&self) {
         *self.running.write().await = false;
     }
-
 }
 
 #[cfg(test)]

@@ -1,10 +1,14 @@
-use std::path::PathBuf;
 use clap::Parser;
-use tracing_subscriber::EnvFilter;
+use std::path::PathBuf;
 use tracing::info;
+use tracing_subscriber::EnvFilter;
 
 #[derive(Parser)]
-#[command(name = "kairos-recovery", version = "1.0.0", about = "A/B partition management, OTA updates, and recovery system")]
+#[command(
+    name = "kairos-recovery",
+    version = "1.0.0",
+    about = "A/B partition management, OTA updates, and recovery system"
+)]
 struct Cli {
     #[arg(short, long, default_value = "/etc/kairos/recovery.toml")]
     config: PathBuf,
@@ -61,7 +65,9 @@ async fn main() -> anyhow::Result<()> {
     if cli.download_update {
         let result = state.update_engine.check_for_update().await?;
         if let Some(manifest) = result.manifest {
-            let image = manifest.images.first()
+            let image = manifest
+                .images
+                .first()
                 .ok_or_else(|| anyhow::anyhow!("No images in manifest"))?;
             let path = state.update_engine.download_update(image).await?;
             println!("Downloaded update to: {}", path);
@@ -105,7 +111,10 @@ async fn main() -> anyhow::Result<()> {
     }
 
     if cli.shell {
-        state.recovery_shell.enter_shell("User requested recovery shell").await?;
+        state
+            .recovery_shell
+            .enter_shell("User requested recovery shell")
+            .await?;
         return Ok(());
     }
 
@@ -113,7 +122,10 @@ async fn main() -> anyhow::Result<()> {
         let target = match slot.to_lowercase().as_str() {
             "a" => kairos_recovery::Slot::A,
             "b" => kairos_recovery::Slot::B,
-            _ => { eprintln!("Invalid slot: {}. Use 'a' or 'b'.", slot); return Ok(()); }
+            _ => {
+                eprintln!("Invalid slot: {}. Use 'a' or 'b'.", slot);
+                return Ok(());
+            }
         };
         state.boot_manager.switch_slot(&target).await?;
         println!("Switched to slot {}. Reboot to apply.", slot.to_uppercase());

@@ -2,7 +2,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use tracing::{info, debug, warn};
+use tracing::{debug, info, warn};
 
 #[derive(Debug, Clone)]
 pub struct ServiceInfo {
@@ -29,7 +29,9 @@ pub struct ServiceRegistry {
 
 impl ServiceRegistry {
     pub fn new() -> Self {
-        Self { services: Arc::new(RwLock::new(HashMap::new())) }
+        Self {
+            services: Arc::new(RwLock::new(HashMap::new())),
+        }
     }
 
     pub async fn register(&self, info: ServiceInfo) -> anyhow::Result<()> {
@@ -48,7 +50,8 @@ impl ServiceRegistry {
 
     pub async fn resolve(&self, capability: &str) -> Option<ServiceInfo> {
         let services = self.services.read().await;
-        services.values()
+        services
+            .values()
             .filter(|s| s.status == crate::registry::ServiceStatus::Healthy)
             .find(|s| s.capabilities.iter().any(|c| c.name == capability))
             .cloned()

@@ -1,8 +1,8 @@
 //! Font rendering — bitmap glyph atlas, glyph lookup, rasterization
+use crate::config;
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use crate::config;
 
 pub struct GlyphInfo {
     pub width: u32,

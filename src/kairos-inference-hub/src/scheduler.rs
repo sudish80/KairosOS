@@ -1,11 +1,11 @@
 //! Inference scheduler — batch-aware, priority-based request scheduling
-use std::collections::{HashMap, VecDeque, BTreeMap};
+use crate::config;
+use crate::error::InferenceError;
+use std::collections::{BTreeMap, HashMap, VecDeque};
 use std::sync::Arc;
 use std::time::Instant;
 use tokio::sync::RwLock;
-use tracing::{info, debug};
-use crate::config;
-use crate::error::InferenceError;
+use tracing::{debug, info};
 
 #[derive(Debug, Clone)]
 pub struct InferenceRequest {
@@ -54,7 +54,8 @@ impl InferenceScheduler {
 
     pub async fn enqueue(&self, request: InferenceRequest) {
         let mut queues = self.queues.write().await;
-        queues.get_mut(&request.priority)
+        queues
+            .get_mut(&request.priority)
             .unwrap_or_else(|| {
                 let mut q = VecDeque::new();
                 q.push_back(request.clone());

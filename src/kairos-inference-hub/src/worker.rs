@@ -1,10 +1,10 @@
 //! Background worker — dequeues inference requests, manages batch processing
-use std::sync::Arc;
-use tokio::sync::RwLock;
-use tracing::{info, debug, error};
 use crate::config;
 use crate::pipeline::InferencePipeline;
 use crate::scheduler::InferenceScheduler;
+use std::sync::Arc;
+use tokio::sync::RwLock;
+use tracing::{debug, error, info};
 
 pub struct InferenceWorker {
     config: Arc<RwLock<config::Config>>,
@@ -18,7 +18,11 @@ impl InferenceWorker {
         pipeline: Arc<InferencePipeline>,
         scheduler: Arc<InferenceScheduler>,
     ) -> Self {
-        Self { config, pipeline, scheduler }
+        Self {
+            config,
+            pipeline,
+            scheduler,
+        }
     }
 
     pub async fn start(&self) -> anyhow::Result<()> {
@@ -34,7 +38,10 @@ impl InferenceWorker {
                 if let Some(batch) = scheduler.dequeue_batch().await {
                     for request in &batch.requests {
                         match pipeline.infer(&request.model, &request.prompt).await {
-                            Ok(result) => debug!("Batch request {} complete: {} tokens", request.id, result.tokens_generated),
+                            Ok(result) => debug!(
+                                "Batch request {} complete: {} tokens",
+                                request.id, result.tokens_generated
+                            ),
                             Err(e) => error!("Batch request {} failed: {}", request.id, e),
                         }
                     }

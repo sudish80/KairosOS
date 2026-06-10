@@ -1,7 +1,7 @@
-use std::sync::Arc;
-use std::sync::atomic::{AtomicU64, Ordering};
-use tokio::sync::RwLock;
 use crate::config;
+use std::sync::atomic::{AtomicU64, Ordering};
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 pub struct Telemetry {
     config: Arc<RwLock<config::Config>>,
@@ -26,14 +26,22 @@ impl Telemetry {
         }
     }
 
-    pub fn record_generation_created(&self) { self.generations_created.fetch_add(1, Ordering::Relaxed); }
+    pub fn record_generation_created(&self) {
+        self.generations_created.fetch_add(1, Ordering::Relaxed);
+    }
     pub fn record_apply(&self, success: bool, duration_ns: u64) {
         self.generations_applied.fetch_add(1, Ordering::Relaxed);
-        self.last_apply_duration_ns.store(duration_ns, Ordering::Relaxed);
-        self.last_apply_success.store(success as u64, Ordering::Relaxed);
+        self.last_apply_duration_ns
+            .store(duration_ns, Ordering::Relaxed);
+        self.last_apply_success
+            .store(success as u64, Ordering::Relaxed);
     }
-    pub fn record_rollback(&self) { self.rollbacks_triggered.fetch_add(1, Ordering::Relaxed); }
-    pub fn record_error(&self) { self.errors_total.fetch_add(1, Ordering::Relaxed); }
+    pub fn record_rollback(&self) {
+        self.rollbacks_triggered.fetch_add(1, Ordering::Relaxed);
+    }
+    pub fn record_error(&self) {
+        self.errors_total.fetch_add(1, Ordering::Relaxed);
+    }
 
     pub fn metrics(&self) -> serde_json::Value {
         serde_json::json!({

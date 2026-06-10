@@ -41,7 +41,10 @@ pub struct CommitConfig {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            general: GeneralConfig { daemonize: true, log_level: "info".into() },
+            general: GeneralConfig {
+                daemonize: true,
+                log_level: "info".into(),
+            },
             repo: RepoConfig {
                 bare_path: "/var/lib/kairos/git/state.git".into(),
                 workdir: "/etc".into(),
@@ -51,7 +54,12 @@ impl Default for Config {
             watcher: WatcherConfig {
                 watch_paths: vec!["/etc".into(), "/var/lib/kairos".into()],
                 debounce_ms: 1000,
-                ignore_patterns: vec!["*.swp".into(), "*.tmp".into(), ".git".into(), "*.lock".into()],
+                ignore_patterns: vec![
+                    "*.swp".into(),
+                    "*.tmp".into(),
+                    ".git".into(),
+                    "*.lock".into(),
+                ],
             },
             commit: CommitConfig {
                 author_name: "Kairos Git Logger".into(),
