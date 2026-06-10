@@ -14,5 +14,10 @@ thiserror = "1"
 clap = { version = "4", features = ["derive"] }
 toml = "0.8"
 chrono = { version = "0.4", features = ["serde"] }
-[lib] name = "kairos_climate" path = "src/lib.rs"
-[[bin]] name = "kairos-climate" path = "src/main.rs"
+[lib]
+name = "kairos_climate"
+path = "src/lib.rs"
+
+[[bin]]
+name = "kairos-climate"
+path = "src/main.rs"

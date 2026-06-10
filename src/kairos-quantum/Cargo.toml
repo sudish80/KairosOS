@@ -1,9 +1,26 @@
-﻿[package] name="kairos-quantum" version="1.0.0" edition="2021" description="Quantum gate emulation and simulator daemon — production-hardened"
+﻿[package]
+name = "kairos-quantum"
+version = "1.0.0"
+edition = "2021"
+description = "Quantum gate emulation and simulator daemon — production-hardened"
+
 [dependencies]
-tokio={version="1",features=["full","rt-multi-thread","macros","sync","signal"]}
-serde={version="1",features=["derive"]} serde_json="1" tracing="0.1"
-tracing-subscriber={version="0.3",features=["env-filter","fmt"]} anyhow="1" thiserror="1"
-clap={version="4",features=["derive"]} toml="0.8" chrono={version="0.4",features=["serde"]}
-num-complex="0.4"
-[lib] name="kairos_quantum" path="src/lib.rs"
-[[bin]] name="kairos-quantum" path="src/main.rs"
+tokio = { version = "1", features = ["full", "rt-multi-thread", "macros", "sync", "signal"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "fmt"] }
+anyhow = "1"
+thiserror = "1"
+clap = { version = "4", features = ["derive"] }
+toml = "0.8"
+chrono = { version = "0.4", features = ["serde"] }
+num-complex = "0.4"
+
+[lib]
+name = "kairos_quantum"
+path = "src/lib.rs"
+
+[[bin]]
+name = "kairos-quantum"
+path = "src/main.rs"

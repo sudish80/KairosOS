@@ -348,4 +348,43 @@ impl UpdateEngine {
             Err(anyhow::anyhow!("Signature verification failed for {}", image_path))
         }
     }
+
+    pub async fn get_status(&self) -> anyhow::Result<UpdateStatus> {
+        let cfg = self.config.read().await;
+        let active = self.partition_manager.get_active_slot().await;
+        let inactive = self.partition_manager.get_inactive_slot().await;
+        let active_device = self.partition_manager.get_slot_device(&active).await;
+        let inactive_device = self.partition_manager.get_slot_device(&inactive).await;
+
+        Ok(UpdateStatus {
+            active_slot: format!("{:?}", active),
+            inactive_slot: format!("{:?}", inactive),
+            active_device,
+            inactive_device,
+            server_url: cfg.update.server_url.clone(),
+            channel: cfg.update.channel.clone(),
+            auto_check: cfg.update.auto_check,
+            auto_apply: cfg.update.auto_apply,
+            check_interval_secs: cfg.update.check_interval_secs,
+            staging_percentage: cfg.update.staging_percentage,
+            updates_applied: self.telemetry.updates_applied(),
+            rollbacks_performed: self.telemetry.rollbacks_performed(),
+        })
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct UpdateStatus {
+    pub active_slot: String,
+    pub inactive_slot: String,
+    pub active_device: String,
+    pub inactive_device: String,
+    pub server_url: String,
+    pub channel: String,
+    pub auto_check: bool,
+    pub auto_apply: bool,
+    pub check_interval_secs: u64,
+    pub staging_percentage: u32,
+    pub updates_applied: u64,
+    pub rollbacks_performed: u64,
 }

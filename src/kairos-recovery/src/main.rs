@@ -4,7 +4,7 @@ use tracing_subscriber::EnvFilter;
 use tracing::info;
 
 #[derive(Parser)]
-#[command(name = "kairos-recovery", version = "1.0.0", about = "A/B partition management and recovery system")]
+#[command(name = "kairos-recovery", version = "1.0.0", about = "A/B partition management, OTA updates, and recovery system")]
 struct Cli {
     #[arg(short, long, default_value = "/etc/kairos/recovery.toml")]
     config: PathBuf,
@@ -22,7 +22,19 @@ struct Cli {
     shell: bool,
 
     #[arg(long)]
-    switch: bool,
+    switch: Option<String>,
+
+    #[arg(long)]
+    check_update: bool,
+
+    #[arg(long)]
+    download_update: bool,
+
+    #[arg(long)]
+    apply_update: bool,
+
+    #[arg(long)]
+    update_status: bool,
 }
 
 #[tokio::main]
@@ -37,6 +49,41 @@ async fn main() -> anyhow::Result<()> {
     info!("kairos-recovery v{} starting", env!("CARGO_PKG_VERSION"));
 
     let state = kairos_recovery::AppState::new(cfg).await?;
+
+    // OTA: check for update
+    if cli.check_update {
+        let result = state.update_engine.check_for_update().await?;
+        println!("{}", serde_json::to_string_pretty(&result)?);
+        return Ok(());
+    }
+
+    // OTA: download available update
+    if cli.download_update {
+        let result = state.update_engine.check_for_update().await?;
+        if let Some(manifest) = result.manifest {
+            let image = manifest.images.first()
+                .ok_or_else(|| anyhow::anyhow!("No images in manifest"))?;
+            let path = state.update_engine.download_update(image).await?;
+            println!("Downloaded update to: {}", path);
+        } else {
+            println!("No update available");
+        }
+        return Ok(());
+    }
+
+    // OTA: apply downloaded update
+    if cli.apply_update {
+        state.update_engine.finalize_update().await?;
+        println!("Update applied. Reboot to activate.");
+        return Ok(());
+    }
+
+    // OTA: show update status
+    if cli.update_status {
+        let status = state.update_engine.get_status().await?;
+        println!("{}", serde_json::to_string_pretty(&status)?);
+        return Ok(());
+    }
 
     if let Some(image) = cli.update {
         state.update_engine.prepare_update(&image).await?;
@@ -62,10 +109,14 @@ async fn main() -> anyhow::Result<()> {
         return Ok(());
     }
 
-    if cli.switch {
-        let inactive = state.partition_manager.get_inactive_slot().await;
-        state.boot_manager.switch_slot(&inactive).await?;
-        println!("Switched to slot. Reboot to apply.");
+    if let Some(slot) = cli.switch {
+        let target = match slot.to_lowercase().as_str() {
+            "a" => kairos_recovery::Slot::A,
+            "b" => kairos_recovery::Slot::B,
+            _ => { eprintln!("Invalid slot: {}. Use 'a' or 'b'.", slot); return Ok(()); }
+        };
+        state.boot_manager.switch_slot(&target).await?;
+        println!("Switched to slot {}. Reboot to apply.", slot.to_uppercase());
         return Ok(());
     }
 
