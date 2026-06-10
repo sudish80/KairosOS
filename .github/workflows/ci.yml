@@ -38,6 +38,8 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y gcc-aarch64-linux-gnu libc6-dev-arm64-cross
+      - name: Install build deps
+        run: sudo apt-get update && sudo apt-get install -y cmake pkg-config libclang-dev
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
@@ -52,12 +54,11 @@ jobs:
         run: |
           cargo build --release --workspace 2> build_output.txt || (echo "=== BUILD ERRORS ===" | cat - build_output.txt; exit 1)
         working-directory: src
-      - name: Annotate build errors
+      - name: Print build errors
         if: failure()
         run: |
-          grep -E "(error|Error|aborting|not found)" build_output.txt | head -40 | while IFS= read -r line; do
-            echo "::error file=build.log,title=Rust Build Error::${line}"
-          done
+          echo "=== BUILD ERRORS (last 50 lines) ==="
+          tail -50 build_output.txt
         working-directory: src
       - name: Clippy (deny warnings)
         continue-on-error: true
