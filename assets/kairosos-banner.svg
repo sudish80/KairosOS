@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 280" width="1100" height="280">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="50%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="accent1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#60a5fa"/>
+      <stop offset="50%" stop-color="#a78bfa"/>
+      <stop offset="100%" stop-color="#f472b6"/>
+    </linearGradient>
+    <linearGradient id="accent2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="50%" stop-color="#22d3ee"/>
+      <stop offset="100%" stop-color="#818cf8"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="20" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1100" height="280" rx="16" fill="url(#bg)"/>
+
+  <!-- Orbs -->
+  <circle cx="150" cy="200" r="100" fill="#60a5fa" opacity="0.06" filter="url(#softGlow)"/>
+  <circle cx="550" cy="80" r="120" fill="#a78bfa" opacity="0.05" filter="url(#softGlow)"/>
+  <circle cx="950" cy="200" r="100" fill="#f472b6" opacity="0.06" filter="url(#softGlow)"/>
+
+  <!-- Grid dots -->
+  <g fill="#334155" opacity="0.4">
+    <circle cx="50" cy="50" r="1.5"/><circle cx="150" cy="50" r="1.5"/><circle cx="250" cy="50" r="1.5"/>
+    <circle cx="350" cy="50" r="1.5"/><circle cx="450" cy="50" r="1.5"/><circle cx="550" cy="50" r="1.5"/>
+    <circle cx="650" cy="50" r="1.5"/><circle cx="750" cy="50" r="1.5"/><circle cx="850" cy="50" r="1.5"/>
+    <circle cx="950" cy="50" r="1.5"/><circle cx="1050" cy="50" r="1.5"/>
+    <circle cx="50" cy="150" r="1.5"/><circle cx="150" cy="150" r="1.5"/><circle cx="250" cy="150" r="1.5"/>
+    <circle cx="350" cy="150" r="1.5"/><circle cx="450" cy="150" r="1.5"/><circle cx="550" cy="150" r="1.5"/>
+    <circle cx="650" cy="150" r="1.5"/><circle cx="750" cy="150" r="1.5"/><circle cx="850" cy="150" r="1.5"/>
+    <circle cx="950" cy="150" r="1.5"/><circle cx="1050" cy="150" r="1.5"/>
+    <circle cx="50" cy="230" r="1.5"/><circle cx="150" cy="230" r="1.5"/><circle cx="250" cy="230" r="1.5"/>
+    <circle cx="350" cy="230" r="1.5"/><circle cx="450" cy="230" r="1.5"/><circle cx="550" cy="230" r="1.5"/>
+    <circle cx="650" cy="230" r="1.5"/><circle cx="750" cy="230" r="1.5"/><circle cx="850" cy="230" r="1.5"/>
+    <circle cx="950" cy="230" r="1.5"/><circle cx="1050" cy="230" r="1.5"/>
+  </g>
+
+  <!-- Logo symbol -->
+  <rect x="60" y="65" width="50" height="50" rx="12" fill="none" stroke="url(#accent1)" stroke-width="2.5"/>
+  <text x="85" y="98" text-anchor="middle" font-family="system-ui, sans-serif" font-size="28" font-weight="800" fill="url(#accent1)">K</text>
+  <rect x="60" y="125" width="50" height="4" rx="2" fill="url(#accent2)"/>
+  <rect x="60" y="135" width="35" height="4" rx="2" fill="url(#accent2)" opacity="0.6"/>
+  <rect x="60" y="145" width="20" height="4" rx="2" fill="url(#accent2)" opacity="0.3"/>
+
+  <!-- Title -->
+  <text x="140" y="90" font-family="system-ui, sans-serif" font-size="38" font-weight="800" fill="#f1f5f9">KairosOS</text>
+  <text x="142" y="117" font-family="monospace" font-size="14" fill="#64748b" letter-spacing="1">Autonomous Operating System</text>
+
+  <!-- Tagline -->
+  <text x="140" y="147" font-family="system-ui, sans-serif" font-size="13" fill="#94a3b8">Production-hardened · Self-healing · OTA-updatable · 24k+ LOC</text>
+
+  <!-- Stats cards -->
+  <rect x="60" y="175" width="970" height="85" rx="10" fill="#1e293b" opacity="0.5"/>
+  <rect x="60" y="175" width="970" height="2" rx="1" fill="url(#accent1)" opacity="0.5"/>
+
+  <!-- Rust -->
+  <rect x="80" y="192" width="10" height="10" rx="3" fill="#818cf8"/>
+  <text x="96" y="201" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#e2e8f0">20</text>
+  <text x="96" y="215" font-family="system-ui" font-size="9" fill="#64748b">Rust Daemons</text>
+
+  <!-- Python -->
+  <rect x="250" y="192" width="10" height="10" rx="3" fill="#f472b6"/>
+  <text x="266" y="201" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#e2e8f0">8</text>
+  <text x="266" y="215" font-family="system-ui" font-size="9" fill="#64748b">Python AI Services</text>
+
+  <!-- Kernel -->
+  <rect x="430" y="192" width="10" height="10" rx="3" fill="#34d399"/>
+  <text x="446" y="201" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#e2e8f0">7</text>
+  <text x="446" y="215" font-family="system-ui" font-size="9" fill="#64748b">Kernel Modules</text>
+
+  <!-- AppArmor -->
+  <rect x="600" y="192" width="10" height="10" rx="3" fill="#fbbf24"/>
+  <text x="616" y="201" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#e2e8f0">22</text>
+  <text x="616" y="215" font-family="system-ui" font-size="9" fill="#64748b">AppArmor Profiles</text>
+
+  <!-- Scripts -->
+  <rect x="770" y="192" width="10" height="10" rx="3" fill="#60a5fa"/>
+  <text x="786" y="201" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#e2e8f0">74</text>
+  <text x="786" y="215" font-family="system-ui" font-size="9" fill="#64748b">Shell Scripts</text>
+
+  <!-- Units -->
+  <rect x="920" y="192" width="10" height="10" rx="3" fill="#a78bfa"/>
+  <text x="936" y="201" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#e2e8f0">35</text>
+  <text x="936" y="215" font-family="system-ui" font-size="9" fill="#64748b">Systemd Units</text>
+
+  <!-- Bottom accent -->
+  <rect x="60" y="255" width="970" height="2" rx="1" fill="url(#accent2)" opacity="0.3"/>
+</svg>

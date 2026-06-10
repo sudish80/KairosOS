@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 380" width="1100" height="380">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="purple" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <linearGradient id="amber" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="rose" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f43f5e"/>
+      <stop offset="100%" stop-color="#e11d48"/>
+    </linearGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#0891b2"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <rect width="1100" height="380" rx="16" fill="url(#bg)"/>
+
+  <text x="550" y="38" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" font-weight="700" fill="#e2e8f0" letter-spacing="1">KEY CAPABILITIES</text>
+  <line x1="420" y1="48" x2="680" y2="48" stroke="#334155" stroke-width="1"/>
+
+  <!-- Row 1 -->
+  <!-- Card 1: OTA Updates -->
+  <rect x="40" y="62" width="325" height="135" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="40" y="62" width="325" height="3" rx="1.5" fill="url(#blue)"/>
+  <circle cx="68" cy="92" r="12" fill="#1e3a5f"/>
+  <text x="68" y="97" text-anchor="middle" font-family="system-ui" font-size="14" fill="#60a5fa">↻</text>
+  <text x="92" y="96" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#e2e8f0">OTA Updates</text>
+  <text x="56" y="118" font-family="system-ui" font-size="10" fill="#94a3b8">A/B partitioning with automatic rollback</text>
+  <text x="56" y="134" font-family="system-ui" font-size="10" fill="#94a3b8">GPG-signed manifests · HTTPS + SHA256</text>
+  <text x="56" y="150" font-family="system-ui" font-size="10" fill="#94a3b8">Delta updates (bspatch) · Staged rollout</text>
+  <text x="56" y="166" font-family="system-ui" font-size="10" fill="#94a3b8">Deterministic hash-based canary groups</text>
+  <text x="56" y="182" font-family="system-ui" font-size="10" fill="#64748b">→ scripts/root/ota-update.sh</text>
+
+  <!-- Card 2: Security -->
+  <rect x="387" y="62" width="325" height="135" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="387" y="62" width="325" height="3" rx="1.5" fill="url(#green)"/>
+  <circle cx="415" cy="92" r="12" fill="#064e3b"/>
+  <text x="415" y="97" text-anchor="middle" font-family="system-ui" font-size="14" fill="#34d399">🔒</text>
+  <text x="439" y="96" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#e2e8f0">Security Hardening</text>
+  <text x="403" y="118" font-family="system-ui" font-size="10" fill="#94a3b8">22 daemon-specific AppArmor profiles</text>
+  <text x="403" y="134" font-family="system-ui" font-size="10" fill="#94a3b8">dm-verity block-level integrity</text>
+  <text x="403" y="150" font-family="system-ui" font-size="10" fill="#94a3b8">TPM 2.0 PCR binding &amp; key sealing</text>
+  <text x="403" y="166" font-family="system-ui" font-size="10" fill="#94a3b8">Secure Boot · No unsafe code in Rust</text>
+  <text x="403" y="182" font-family="system-ui" font-size="10" fill="#64748b">→ config/apparmor/ (22 profiles)</text>
+
+  <!-- Card 3: AI -->
+  <rect x="734" y="62" width="325" height="135" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="734" y="62" width="325" height="3" rx="1.5" fill="url(#rose)"/>
+  <circle cx="762" cy="92" r="12" fill="#4c0519"/>
+  <text x="762" y="97" text-anchor="middle" font-family="system-ui" font-size="13" fill="#fb7185">AI</text>
+  <text x="786" y="96" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#e2e8f0">AI Microservices</text>
+  <text x="750" y="118" font-family="system-ui" font-size="10" fill="#94a3b8">8 Python asyncio JSON-RPC services</text>
+  <text x="750" y="134" font-family="system-ui" font-size="10" fill="#94a3b8">Confidence scoring · Context manager</text>
+  <text x="750" y="150" font-family="system-ui" font-size="10" fill="#94a3b8">System supervisor · Autonomous agent</text>
+  <text x="750" y="166" font-family="system-ui" font-size="10" fill="#94a3b8">Knowledge graph · Skill evolution</text>
+  <text x="750" y="182" font-family="system-ui" font-size="10" fill="#64748b">→ ai/ (8 service directories)</text>
+
+  <!-- Row 2 -->
+  <!-- Card 4: Rust Daemons -->
+  <rect x="40" y="212" width="325" height="150" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="40" y="212" width="325" height="3" rx="1.5" fill="url(#purple)"/>
+  <circle cx="68" cy="242" r="12" fill="#2e1065"/>
+  <text x="68" y="247" text-anchor="middle" font-family="system-ui" font-size="13" fill="#a78bfa">R</text>
+  <text x="92" y="246" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#e2e8f0">20 Rust Daemons</text>
+  <text x="56" y="268" font-family="system-ui" font-size="10" fill="#94a3b8">BPF telemetry · MCP router · Config apply</text>
+  <text x="56" y="284" font-family="system-ui" font-size="10" fill="#94a3b8">Git /etc versioning · Inference hub</text>
+  <text x="56" y="300" font-family="system-ui" font-size="10" fill="#94a3b8">Recovery shell · TUI · Orchestrator</text>
+  <text x="56" y="316" font-family="system-ui" font-size="10" fill="#94a3b8">Mesh networking · Vector DB · Framebuffer</text>
+  <text x="56" y="332" font-family="system-ui" font-size="10" fill="#94a3b8">LLM runtime · Build · Climate · Finance</text>
+  <text x="56" y="348" font-family="system-ui" font-size="10" fill="#94a3b8">Vision · Avionics · Quantum · Robotics · Bio</text>
+
+  <!-- Card 5: Kernel -->
+  <rect x="387" y="212" width="325" height="150" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="387" y="212" width="325" height="3" rx="1.5" fill="url(#cyan)"/>
+  <circle cx="415" cy="242" r="12" fill="#164e63"/>
+  <text x="415" y="247" text-anchor="middle" font-family="system-ui" font-size="13" fill="#22d3ee">⚙</text>
+  <text x="439" y="246" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#e2e8f0">7 Kernel Modules (C)</text>
+  <text x="403" y="268" font-family="system-ui" font-size="10" fill="#94a3b8">dm-verity: Sysfs integrity manager</text>
+  <text x="403" y="284" font-family="system-ui" font-size="10" fill="#94a3b8">TPM 2.0: PCR binding via sysfs</text>
+  <text x="403" y="300" font-family="system-ui" font-size="10" fill="#94a3b8">EDAC: ECC memory error handler</text>
+  <text x="403" y="316" font-family="system-ui" font-size="10" fill="#94a3b8">PTP: Hardware clock (ptp_clock)</text>
+  <text x="403" y="332" font-family="system-ui" font-size="10" fill="#94a3b8">Framebuffer: register_framebuffer</text>
+  <text x="403" y="348" font-family="system-ui" font-size="10" fill="#94a3b8">IOMMU: DMA isolation · PROCHOT</text>
+
+  <!-- Card 6: CI/CD -->
+  <rect x="734" y="212" width="325" height="150" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="734" y="212" width="325" height="3" rx="1.5" fill="url(#amber)"/>
+  <circle cx="762" cy="242" r="12" fill="#422006"/>
+  <text x="762" y="247" text-anchor="middle" font-family="system-ui" font-size="14" fill="#fbbf24">⇄</text>
+  <text x="786" y="246" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#e2e8f0">CI/CD &amp; Packaging</text>
+  <text x="750" y="268" font-family="system-ui" font-size="10" fill="#94a3b8">GitHub Actions: Rust + Python + Kernel</text>
+  <text x="750" y="284" font-family="system-ui" font-size="10" fill="#94a3b8">Cross-compile x86_64 + aarch64</text>
+  <text x="750" y="300" font-family="system-ui" font-size="10" fill="#94a3b8">Trivy SAST · cargo-audit · gitleaks</text>
+  <text x="750" y="316" font-family="system-ui" font-size="10" fill="#94a3b8">SBOM via CycloneDX · Docker builds</text>
+  <text x="750" y="332" font-family="system-ui" font-size="10" fill="#94a3b8">Debian · RPM · Arch packaging</text>
+  <text x="750" y="348" font-family="system-ui" font-size="10" fill="#64748b">→ .github/workflows/ · packaging/</text>
+</svg>
