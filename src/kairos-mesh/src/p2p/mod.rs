@@ -6,8 +6,6 @@ use tokio::net::{TcpListener, TcpStream};
 use tracing::{info, error, debug};
 use serde::{Deserialize, Serialize};
 
-const BLOCK_SIZE: u64 = 4 * 1024 * 1024; // 4 MiB per block
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BlockRequest {
     pub release_id: String,
@@ -35,9 +33,7 @@ pub struct SwarmManifest {
 pub struct P2pSwarm {
     manifest: Arc<RwLock<Option<SwarmManifest>>>,
     local_blocks: Arc<RwLock<HashMap<u32, Vec<u8>>>>,
-    peer_availability: Arc<RwLock<HashMap<String, Vec<u32>>>>,
     listen_port: u16,
-    active: Arc<RwLock<bool>>,
 }
 
 impl P2pSwarm {
@@ -45,9 +41,7 @@ impl P2pSwarm {
         Self {
             manifest: Arc::new(RwLock::new(None)),
             local_blocks: Arc::new(RwLock::new(HashMap::new())),
-            peer_availability: Arc::new(RwLock::new(HashMap::new())),
             listen_port,
-            active: Arc::new(RwLock::new(true)),
         }
     }
 
@@ -113,9 +107,6 @@ impl P2pSwarm {
         blocks.len() as u32
     }
 
-    pub async fn shutdown(&self) {
-        *self.active.write().await = false;
-    }
 }
 
 async fn handle_peer(mut stream: TcpStream, blocks: Arc<RwLock<HashMap<u32, Vec<u8>>>>) -> anyhow::Result<()> {

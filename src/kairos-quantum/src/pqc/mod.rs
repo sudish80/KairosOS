@@ -1,8 +1,5 @@
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use tokio::net::TcpStream;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use tracing::{info, error};
 use serde::{Deserialize, Serialize};
 use pqcrypto_kyber::kyber768;
 use pqcrypto_dilithium::dilithium3;
@@ -45,7 +42,6 @@ pub struct KeyMaterial {
 pub struct PostQuantumCrypto {
     config: QuantumConfig,
     key_store: Arc<RwLock<Vec<(String, KeyMaterial, f64)>>>,
-    sessions: Arc<RwLock<Vec<(String, Vec<u8>, f64)>>>, // peer -> shared_secret -> expiry
 }
 
 impl PostQuantumCrypto {
@@ -53,7 +49,6 @@ impl PostQuantumCrypto {
         Self {
             config,
             key_store: Arc::new(RwLock::new(Vec::new())),
-            sessions: Arc::new(RwLock::new(Vec::new())),
         }
     }
 

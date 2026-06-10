@@ -3,6 +3,7 @@ use std::sync::Arc;
 use tokio::sync::RwLock;
 use tokio::fs;
 use serde::{Deserialize, Serialize};
+use tracing::info;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LiveEndpoint {
@@ -173,8 +174,8 @@ impl LiveArchitecture {
 
     pub async fn save_documentation(&self) -> anyhow::Result<()> {
         let json = self.export_json().await?;
-        let mermaid = self.export_mermaid();
-        let plantuml = self.export_plantuml();
+        let mermaid = self.export_mermaid().await;
+        let plantuml = self.export_plantuml().await;
 
         std::fs::create_dir_all(&self.output_path)?;
 
@@ -286,9 +287,9 @@ mod tests {
             frequency_ms: 500,
         }).await;
 
-        let mermaid = arch.export_mermaid();
-        assert!(mermaid.contains("kaikros-mcp"));
-        assert!(mermaid.contains("kaikros-db"));
+        let mermaid = arch.export_mermaid().await;
+        assert!(mermaid.contains("kairosmcp[kairos-mcp]"));
+        assert!(mermaid.contains("kairosdb[kairos-db]"));
     }
 
     #[tokio::test]
@@ -305,7 +306,7 @@ mod tests {
             frequency_ms: 100,
         }).await;
 
-        let plant = arch.export_plantuml();
+        let plant = arch.export_plantuml().await;
         assert!(plant.contains("kairos-llm"));
         assert!(plant.contains("kairos-orchestrator"));
     }

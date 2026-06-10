@@ -3,9 +3,8 @@ use std::path::{Path, PathBuf};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 use tokio::process::Command;
-use tracing::{info, warn};
+use tracing::info;
 use serde::{Deserialize, Serialize};
-use sha2::{Sha256, Digest};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StateSnapshot {
