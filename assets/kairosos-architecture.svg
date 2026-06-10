@@ -1,297 +1,445 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 780" width="1100" height="780">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 920" width="1100" height="920">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#1e293b"/>
+      <stop offset="0%" stop-color="#000000"/>
+      <stop offset="100%" stop-color="#0a0a0a"/>
     </linearGradient>
-    <linearGradient id="kernel" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#2563eb"/>
-      <stop offset="100%" stop-color="#7c3aed"/>
+    <linearGradient id="layer1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e3a5f"/>
+      <stop offset="100%" stop-color="#1e1b4b"/>
     </linearGradient>
-    <linearGradient id="hardware" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0891b2"/>
-      <stop offset="100%" stop-color="#0d9488"/>
+    <linearGradient id="layer2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4c0519"/>
+      <stop offset="100%" stop-color="#1a0a0a"/>
     </linearGradient>
-    <linearGradient id="system" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#ca8a04"/>
-      <stop offset="100%" stop-color="#d97706"/>
+    <linearGradient id="layer3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#422006"/>
+      <stop offset="100%" stop-color="#1a0f00"/>
     </linearGradient>
-    <linearGradient id="ai" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#dc2626"/>
-      <stop offset="100%" stop-color="#db2777"/>
+    <linearGradient id="layer4" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#164e63"/>
+      <stop offset="100%" stop-color="#0a1a1a"/>
     </linearGradient>
-    <linearGradient id="ui" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#7c3aed"/>
-      <stop offset="100%" stop-color="#a855f7"/>
+    <linearGradient id="layer5" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e1b4b"/>
+      <stop offset="100%" stop-color="#0a0a1a"/>
     </linearGradient>
-    <linearGradient id="security" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#059669"/>
-      <stop offset="100%" stop-color="#10b981"/>
+    <linearGradient id="layer6" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#022c22"/>
+      <stop offset="100%" stop-color="#000a0a"/>
     </linearGradient>
     <linearGradient id="titleGrad" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#60a5fa"/>
-      <stop offset="100%" stop-color="#a78bfa"/>
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#a3a3a3"/>
     </linearGradient>
-    <filter id="glow">
-      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>
     <filter id="shadow">
-      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.3"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#000" flood-opacity="0.5"/>
     </filter>
   </defs>
 
-  <!-- Background -->
-  <rect width="1100" height="780" rx="16" fill="url(#bg)"/>
-
-  <!-- Grid overlay -->
-  <g opacity="0.03">
-    <line x1="0" y1="0" x2="1100" y2="780" stroke="#fff" stroke-width="0.5"/>
-    <line x1="220" y1="0" x2="1100" y2="580" stroke="#fff" stroke-width="0.5"/>
-    <line x1="440" y1="0" x2="1100" y2="380" stroke="#fff" stroke-width="0.5"/>
-    <line x1="660" y1="0" x2="1100" y2="180" stroke="#fff" stroke-width="0.5"/>
-    <line x1="0" y1="195" x2="1100" y2="195" stroke="#fff" stroke-width="0.5"/>
-    <line x1="0" y1="390" x2="1100" y2="390" stroke="#fff" stroke-width="0.5"/>
-    <line x1="0" y1="585" x2="1100" y2="585" stroke="#fff" stroke-width="0.5"/>
-  </g>
+  <rect width="1100" height="920" rx="0" fill="url(#bg)"/>
 
   <!-- Title -->
-  <text x="550" y="42" text-anchor="middle" font-family="system-ui, sans-serif" font-size="26" font-weight="800" fill="url(#titleGrad)" letter-spacing="2">KAIROSOS</text>
-  <text x="550" y="62" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" fill="#94a3b8" letter-spacing="4">AUTONOMOUS OS ARCHITECTURE</text>
-  <line x1="350" y1="70" x2="750" y2="70" stroke="#334155" stroke-width="1"/>
+  <text x="550" y="42" text-anchor="middle" font-family="system-ui, sans-serif" font-size="28" font-weight="800" fill="url(#titleGrad)" letter-spacing="3">SYSTEM ARCHITECTURE</text>
+  <text x="550" y="62" text-anchor="middle" font-family="monospace" font-size="12" fill="#404040" letter-spacing="4">KAIROSOS — 6-LAYER STACK</text>
+  <line x1="300" y1="72" x2="800" y2="72" stroke="#1a1a1a" stroke-width="1"/>
 
-  <!-- Stats bar -->
-  <rect x="40" y="82" width="1020" height="30" rx="6" fill="#1e293b" opacity="0.6"/>
-  <text x="60" y="101" font-family="monospace" font-size="11" fill="#818cf8">20 Rust Daemons</text>
-  <circle cx="55" cy="97" r="3" fill="#818cf8"/>
-  <text x="270" y="101" font-family="monospace" font-size="11" fill="#f472b6">8 Python AI Services</text>
-  <circle cx="265" cy="97" r="3" fill="#f472b6"/>
-  <text x="510" y="101" font-family="monospace" font-size="11" fill="#34d399">7 Kernel Modules (C)</text>
-  <circle cx="505" cy="97" r="3" fill="#34d399"/>
-  <text x="730" y="101" font-family="monospace" font-size="11" fill="#fbbf24">22 AppArmor Profiles</text>
-  <circle cx="725" cy="97" r="3" fill="#fbbf24"/>
-  <text x="920" y="101" font-family="monospace" font-size="11" fill="#60a5fa">OTA Updates</text>
-  <circle cx="915" cy="97" r="3" fill="#60a5fa"/>
+  <!-- ==================== LAYER 6: USER INTERFACE ==================== -->
+  <rect x="40" y="90" width="1020" height="105" rx="6" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="40" y="90" width="6" height="105" rx="3" fill="#3b82f6"/>
+  <rect x="40" y="90" width="1020" height="1" fill="#1a1a1a"/>
 
-  <!-- Layer 6: User Interface -->
-  <rect x="40" y="130" width="1020" height="85" rx="10" fill="url(#ui)" opacity="0.15" filter="url(#shadow)"/>
-  <rect x="40" y="130" width="4" height="85" rx="2" fill="url(#ui)"/>
-  <text x="60" y="153" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#c084fc" letter-spacing="2">UI LAYER</text>
+  <g>
+    <rect x="40" y="90" width="1020" height="28" rx="6" fill="#0a0a0a"/>
+    <rect x="40" y="110" width="1020" height="8" rx="0" fill="#0a0a0a"/>
+    <circle cx="62" cy="104" r="6" fill="#1e3a5f"/>
+    <text x="62" y="108" text-anchor="middle" font-family="system-ui" font-size="9" fill="#60a5fa">UI</text>
+    <text x="80" y="108" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#e5e5e5" letter-spacing="2">LAYER 6 — USER INTERFACE</text>
+    <text x="280" y="108" font-family="monospace" font-size="9" fill="#404040">Presentation · HMI · Dashboards · Terminal</text>
+  </g>
 
-  <rect x="60" y="162" width="135" height="40" rx="6" fill="#2e1065" opacity="0.7"/>
-  <text x="72" y="187" font-family="monospace" font-size="11" fill="#d8b4fe">kairos-tui</text>
-  <text x="72" y="199" font-family="system-ui" font-size="8" fill="#6b21a8">DRM/KMS Terminal</text>
+  <!-- UI daemons -->
+  <rect x="60" y="128" width="140" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="60" y="128" width="140" height="2" rx="1" fill="#3b82f6"/>
+  <text x="72" y="150" font-family="monospace" font-size="11" font-weight="700" fill="#60a5fa">kairos-tui</text>
+  <text x="72" y="164" font-family="system-ui" font-size="9" fill="#525252">DRM/KMS Terminal UI</text>
+  <text x="72" y="176" font-family="system-ui" font-size="8" fill="#404040">Multiplexer · Gesture Input</text>
 
-  <rect x="210" y="162" width="135" height="40" rx="6" fill="#2e1065" opacity="0.7"/>
-  <text x="222" y="187" font-family="monospace" font-size="11" fill="#d8b4fe">kairos-fb</text>
-  <text x="222" y="199" font-family="system-ui" font-size="8" fill="#6b21a8">Framebuffer Engine</text>
+  <rect x="215" y="128" width="140" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="215" y="128" width="140" height="2" rx="1" fill="#06b6d4"/>
+  <text x="227" y="150" font-family="monospace" font-size="11" font-weight="700" fill="#22d3ee">kairos-fb</text>
+  <text x="227" y="164" font-family="system-ui" font-size="9" fill="#525252">Framebuffer Engine</text>
+  <text x="227" y="176" font-family="system-ui" font-size="8" fill="#404040">register_framebuffer</text>
 
-  <rect x="360" y="162" width="135" height="40" rx="6" fill="#2e1065" opacity="0.7"/>
-  <text x="372" y="187" font-family="monospace" font-size="11" fill="#d8b4fe">kairos-web</text>
-  <text x="372" y="199" font-family="system-ui" font-size="8" fill="#6b21a8">Dashboards</text>
+  <rect x="370" y="128" width="140" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="370" y="128" width="140" height="2" rx="1" fill="#8b5cf6"/>
+  <text x="382" y="150" font-family="monospace" font-size="11" font-weight="700" fill="#a78bfa">kairos-web</text>
+  <text x="382" y="164" font-family="system-ui" font-size="9" fill="#525252">Web Dashboard</text>
+  <text x="382" y="176" font-family="system-ui" font-size="8" fill="#404040">Metrics · Status</text>
 
-  <rect x="510" y="162" width="135" height="40" rx="6" fill="#2e1065" opacity="0.7"/>
-  <text x="522" y="187" font-family="monospace" font-size="11" fill="#d8b4fe">kairos-bpf</text>
-  <text x="522" y="199" font-family="system-ui" font-size="8" fill="#6b21a8">eBPF Telemetry</text>
+  <rect x="525" y="128" width="140" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="525" y="128" width="140" height="2" rx="1" fill="#10b981"/>
+  <text x="537" y="150" font-family="monospace" font-size="11" font-weight="700" fill="#34d399">kairos-bpf</text>
+  <text x="537" y="164" font-family="system-ui" font-size="9" fill="#525252">eBPF Telemetry</text>
+  <text x="537" y="176" font-family="system-ui" font-size="8" fill="#404040">Anomaly · Exec · Filemon</text>
 
-  <rect x="660" y="162" width="135" height="40" rx="6" fill="#2e1065" opacity="0.7"/>
-  <text x="672" y="187" font-family="monospace" font-size="11" fill="#d8b4fe">kairos-mcp</text>
-  <text x="672" y="199" font-family="system-ui" font-size="8" fill="#6b21a8">Protocol Router</text>
+  <rect x="680" y="128" width="140" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="680" y="128" width="140" height="2" rx="1" fill="#ec4899"/>
+  <text x="692" y="150" font-family="monospace" font-size="11" font-weight="700" fill="#f472b6">kairos-mcp</text>
+  <text x="692" y="164" font-family="system-ui" font-size="9" fill="#525252">MCP Protocol Router</text>
+  <text x="692" y="176" font-family="system-ui" font-size="8" fill="#404040">Service Registry</text>
 
-  <!-- Arrow -->
-  <polygon points="550,221 540,215 560,215" fill="#334155"/>
+  <rect x="835" y="128" width="210" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="835" y="128" width="210" height="2" rx="1" fill="#f59e0b"/>
+  <text x="847" y="150" font-family="monospace" font-size="11" font-weight="700" fill="#fbbf24">MCP Servers (4)</text>
+  <text x="847" y="164" font-family="system-ui" font-size="9" fill="#525252">filesystem · ollama · process · systemd</text>
+  <text x="847" y="176" font-family="system-ui" font-size="8" fill="#404040">JSON-RPC over stdio</text>
 
-  <!-- Layer 5: AI / Reasoning -->
-  <rect x="40" y="230" width="1020" height="105" rx="10" fill="url(#ai)" opacity="0.12" filter="url(#shadow)"/>
-  <rect x="40" y="230" width="4" height="105" rx="2" fill="url(#ai)"/>
-  <text x="60" y="253" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#fb7185" letter-spacing="2">AI / REASONING LAYER</text>
+  <!-- Down arrow -->
+  <polygon points="550,201 538,195 562,195" fill="#1f1f1f"/>
 
-  <rect x="60" y="262" width="115" height="60" rx="6" fill="#4c0519" opacity="0.7"/>
-  <text x="72" y="283" font-family="monospace" font-size="10" fill="#fda4af">confidence</text>
-  <text x="72" y="295" font-family="monospace" font-size="8" fill="#881337">Scoring</text>
-  <text x="72" y="307" font-family="monospace" font-size="8" fill="#881337">Engine</text>
+  <!-- ==================== LAYER 5: AI / REASONING ==================== -->
+  <rect x="40" y="210" width="1020" height="120" rx="6" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="40" y="210" width="6" height="120" rx="3" fill="#ec4899"/>
 
-  <rect x="190" y="262" width="115" height="60" rx="6" fill="#4c0519" opacity="0.7"/>
-  <text x="202" y="283" font-family="monospace" font-size="10" fill="#fda4af">context-mgr</text>
-  <text x="202" y="295" font-family="monospace" font-size="8" fill="#881337">Context</text>
-  <text x="202" y="307" font-family="monospace" font-size="8" fill="#881337">Window</text>
+  <g>
+    <rect x="40" y="210" width="1020" height="28" rx="6" fill="#0a0a0a"/>
+    <rect x="40" y="230" width="1020" height="8" rx="0" fill="#0a0a0a"/>
+    <circle cx="62" cy="224" r="6" fill="#4c0519"/>
+    <text x="62" y="228" text-anchor="middle" font-family="system-ui" font-size="9" fill="#f472b6">AI</text>
+    <text x="80" y="228" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#e5e5e5" letter-spacing="2">LAYER 5 — AI / REASONING</text>
+    <text x="310" y="228" font-family="monospace" font-size="9" fill="#404040">Python asyncio JSON-RPC services</text>
+  </g>
 
-  <rect x="320" y="262" width="115" height="60" rx="6" fill="#4c0519" opacity="0.7"/>
-  <text x="332" y="283" font-family="monospace" font-size="10" fill="#fda4af">supervisor</text>
-  <text x="332" y="295" font-family="monospace" font-size="8" fill="#881337">System</text>
-  <text x="332" y="307" font-family="monospace" font-size="8" fill="#881337">Overseer</text>
+  <!-- AI services - row 1 -->
+  <rect x="60" y="248" width="115" height="70" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="60" y="248" width="115" height="2" rx="1" fill="#ec4899"/>
+  <text x="72" y="270" font-family="monospace" font-size="10" font-weight="700" fill="#f472b6">confidence</text>
+  <text x="72" y="284" font-family="system-ui" font-size="8" fill="#525252">Confidence</text>
+  <text x="72" y="296" font-family="system-ui" font-size="8" fill="#525252">Scoring Engine</text>
+  <text x="72" y="310" font-family="system-ui" font-size="7" fill="#404040">Model weighing</text>
 
-  <rect x="450" y="262" width="115" height="60" rx="6" fill="#4c0519" opacity="0.7"/>
-  <text x="462" y="283" font-family="monospace" font-size="10" fill="#fda4af">hermes-agent</text>
-  <text x="462" y="295" font-family="monospace" font-size="8" fill="#881337">Autonomous</text>
-  <text x="462" y="307" font-family="monospace" font-size="8" fill="#881337">Agent</text>
+  <rect x="188" y="248" width="115" height="70" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="188" y="248" width="115" height="2" rx="1" fill="#a78bfa"/>
+  <text x="200" y="270" font-family="monospace" font-size="10" font-weight="700" fill="#a78bfa">context-mgr</text>
+  <text x="200" y="284" font-family="system-ui" font-size="8" fill="#525252">Context Window</text>
+  <text x="200" y="296" font-family="system-ui" font-size="8" fill="#525252">Manager</text>
+  <text x="200" y="310" font-family="system-ui" font-size="7" fill="#404040">Sliding window</text>
 
-  <rect x="580" y="262" width="115" height="60" rx="6" fill="#4c0519" opacity="0.7"/>
-  <text x="592" y="283" font-family="monospace" font-size="10" fill="#fda4af">knowledge-graph</text>
-  <text x="592" y="295" font-family="monospace" font-size="8" fill="#881337">Relationship</text>
-  <text x="592" y="307" font-family="monospace" font-size="8" fill="#881337">Store</text>
+  <rect x="316" y="248" width="115" height="70" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="316" y="248" width="115" height="2" rx="1" fill="#f59e0b"/>
+  <text x="328" y="270" font-family="monospace" font-size="10" font-weight="700" fill="#fbbf24">supervisor</text>
+  <text x="328" y="284" font-family="system-ui" font-size="8" fill="#525252">System Overseer</text>
+  <text x="328" y="296" font-family="system-ui" font-size="8" fill="#525252">Orchestrator</text>
+  <text x="328" y="310" font-family="system-ui" font-size="7" fill="#404040">Policy enforcement</text>
 
-  <rect x="710" y="262" width="115" height="60" rx="6" fill="#4c0519" opacity="0.7"/>
-  <text x="722" y="283" font-family="monospace" font-size="10" fill="#fda4af">skill-evolver</text>
-  <text x="722" y="295" font-family="monospace" font-size="8" fill="#881337">Skill</text>
-  <text x="722" y="307" font-family="monospace" font-size="8" fill="#881337">Evolution</text>
+  <rect x="444" y="248" width="115" height="70" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="444" y="248" width="115" height="2" rx="1" fill="#3b82f6"/>
+  <text x="456" y="270" font-family="monospace" font-size="10" font-weight="700" fill="#60a5fa">hermes-agent</text>
+  <text x="456" y="284" font-family="system-ui" font-size="8" fill="#525252">Autonomous</text>
+  <text x="456" y="296" font-family="system-ui" font-size="8" fill="#525252">Agent</text>
+  <text x="456" y="310" font-family="system-ui" font-size="7" fill="#404040">Goal-driven</text>
 
-  <rect x="840" y="262" width="115" height="60" rx="6" fill="#4c0519" opacity="0.7"/>
-  <text x="852" y="283" font-family="monospace" font-size="9" fill="#fda4af">task-scheduler</text>
-  <text x="852" y="295" font-family="monospace" font-size="8" fill="#881337">DAG</text>
-  <text x="852" y="307" font-family="monospace" font-size="8" fill="#881337">Scheduler</text>
+  <rect x="572" y="248" width="115" height="70" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="572" y="248" width="115" height="2" rx="1" fill="#10b981"/>
+  <text x="584" y="270" font-family="monospace" font-size="10" font-weight="700" fill="#34d399">knowledge-graph</text>
+  <text x="584" y="284" font-family="system-ui" font-size="8" fill="#525252">Relationship</text>
+  <text x="584" y="296" font-family="system-ui" font-size="8" fill="#525252">Store</text>
+  <text x="584" y="310" font-family="system-ui" font-size="7" fill="#404040">Entity resolution</text>
 
-  <rect x="970" y="262" width="75" height="60" rx="6" fill="#4c0519" opacity="0.7"/>
-  <text x="982" y="283" font-family="monospace" font-size="8" fill="#fda4af">telemetry</text>
-  <text x="982" y="295" font-family="monospace" font-size="7" fill="#881337">Metrics</text>
-  <text x="982" y="307" font-family="monospace" font-size="7" fill="#881337">Collector</text>
+  <rect x="700" y="248" width="115" height="70" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="700" y="248" width="115" height="2" rx="1" fill="#06b6d4"/>
+  <text x="712" y="270" font-family="monospace" font-size="10" font-weight="700" fill="#22d3ee">skill-evolver</text>
+  <text x="712" y="284" font-family="system-ui" font-size="8" fill="#525252">Skill Evolution</text>
+  <text x="712" y="296" font-family="system-ui" font-size="8" fill="#525252">Pipeline</text>
+  <text x="712" y="310" font-family="system-ui" font-size="7" fill="#404040">Optimization</text>
 
-  <polygon points="550,341 540,335 560,335" fill="#334155"/>
+  <rect x="828" y="248" width="115" height="70" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="828" y="248" width="115" height="2" rx="1" fill="#8b5cf6"/>
+  <text x="840" y="270" font-family="monospace" font-size="10" font-weight="700" fill="#a78bfa">task-scheduler</text>
+  <text x="840" y="284" font-family="system-ui" font-size="8" fill="#525252">DAG Scheduler</text>
+  <text x="840" y="296" font-family="system-ui" font-size="8" fill="#525252">Workflow</text>
+  <text x="840" y="310" font-family="system-ui" font-size="7" fill="#404040">Dependency graph</text>
 
-  <!-- Layer 4: Core Orchestration -->
-  <rect x="40" y="350" width="1020" height="85" rx="10" fill="url(#system)" opacity="0.12" filter="url(#shadow)"/>
-  <rect x="40" y="350" width="4" height="85" rx="2" fill="url(#system)"/>
-  <text x="60" y="373" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#fbbf24" letter-spacing="2">CORE ORCHESTRATION</text>
+  <rect x="956" y="248" width="90" height="70" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="956" y="248" width="90" height="2" rx="1" fill="#fbbf24"/>
+  <text x="968" y="270" font-family="monospace" font-size="8" font-weight="700" fill="#fbbf24">telemetry</text>
+  <text x="968" y="284" font-family="system-ui" font-size="8" fill="#525252">Metrics</text>
+  <text x="968" y="296" font-family="system-ui" font-size="8" fill="#525252">Collector</text>
+  <text x="968" y="310" font-family="system-ui" font-size="7" fill="#404040">Prometheus</text>
 
-  <rect x="60" y="382" width="120" height="40" rx="6" fill="#422006" opacity="0.7"/>
-  <text x="72" y="407" font-family="monospace" font-size="11" fill="#fde68a">orchestrator</text>
-  <text x="72" y="419" font-family="system-ui" font-size="8" fill="#a16207">DAG Scheduler</text>
+  <!-- Down arrow -->
+  <polygon points="550,336 538,330 562,330" fill="#1f1f1f"/>
 
-  <rect x="195" y="382" width="120" height="40" rx="6" fill="#422006" opacity="0.7"/>
-  <text x="207" y="407" font-family="monospace" font-size="11" fill="#fde68a">kairos-mesh</text>
-  <text x="207" y="419" font-family="system-ui" font-size="8" fill="#a16207">WireGuard Mesh</text>
+  <!-- ==================== LAYER 4: CORE ORCHESTRATION ==================== -->
+  <rect x="40" y="345" width="1020" height="105" rx="6" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="40" y="345" width="6" height="105" rx="3" fill="#f59e0b"/>
 
-  <rect x="330" y="382" width="120" height="40" rx="6" fill="#422006" opacity="0.7"/>
-  <text x="342" y="407" font-family="monospace" font-size="11" fill="#fde68a">kairos-db</text>
-  <text x="342" y="419" font-family="system-ui" font-size="8" fill="#a16207">Vector / SQLite</text>
+  <g>
+    <rect x="40" y="345" width="1020" height="28" rx="6" fill="#0a0a0a"/>
+    <rect x="40" y="365" width="1020" height="8" rx="0" fill="#0a0a0a"/>
+    <circle cx="62" cy="359" r="6" fill="#422006"/>
+    <text x="62" y="363" text-anchor="middle" font-family="system-ui" font-size="9" fill="#fbbf24">⚙</text>
+    <text x="80" y="363" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#e5e5e5" letter-spacing="2">LAYER 4 — CORE ORCHESTRATION</text>
+    <text x="340" y="363" font-family="monospace" font-size="9" fill="#404040">Rust daemons — system services &amp; data</text>
+  </g>
 
-  <rect x="465" y="382" width="120" height="40" rx="6" fill="#422006" opacity="0.7"/>
-  <text x="477" y="407" font-family="monospace" font-size="11" fill="#fde68a">kairos-mcp</text>
-  <text x="477" y="419" font-family="system-ui" font-size="8" fill="#a16207">MCP Router</text>
+  <rect x="60" y="383" width="120" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="60" y="383" width="120" height="2" rx="1" fill="#f59e0b"/>
+  <text x="72" y="405" font-family="monospace" font-size="11" font-weight="700" fill="#fbbf24">orchestrator</text>
+  <text x="72" y="419" font-family="system-ui" font-size="9" fill="#525252">DAG Task Scheduler</text>
+  <text x="72" y="431" font-family="system-ui" font-size="8" fill="#404040">Multi-agent deps</text>
 
-  <rect x="600" y="382" width="120" height="40" rx="6" fill="#422006" opacity="0.7"/>
-  <text x="612" y="407" font-family="monospace" font-size="11" fill="#fde68a">kairos-apply</text>
-  <text x="612" y="419" font-family="system-ui" font-size="8" fill="#a16207">Declarative Config</text>
+  <rect x="195" y="383" width="120" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="195" y="383" width="120" height="2" rx="1" fill="#06b6d4"/>
+  <text x="207" y="405" font-family="monospace" font-size="11" font-weight="700" fill="#22d3ee">kairos-mesh</text>
+  <text x="207" y="419" font-family="system-ui" font-size="9" fill="#525252">WireGuard VPN</text>
+  <text x="207" y="431" font-family="system-ui" font-size="8" fill="#404040">Consensus overlay</text>
 
-  <rect x="735" y="382" width="120" height="40" rx="6" fill="#422006" opacity="0.7"/>
-  <text x="747" y="407" font-family="monospace" font-size="11" fill="#fde68a">git-logger</text>
-  <text x="747" y="419" font-family="system-ui" font-size="8" fill="#a16207">/etc Versioning</text>
+  <rect x="330" y="383" width="120" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="330" y="383" width="120" height="2" rx="1" fill="#10b981"/>
+  <text x="342" y="405" font-family="monospace" font-size="11" font-weight="700" fill="#34d399">kairos-db</text>
+  <text x="342" y="419" font-family="system-ui" font-size="9" fill="#525252">Vector DB / SQLite</text>
+  <text x="342" y="431" font-family="system-ui" font-size="8" fill="#404040">Memory bus</text>
 
-  <rect x="870" y="382" width="175" height="40" rx="6" fill="#422006" opacity="0.7"/>
-  <text x="882" y="407" font-family="monospace" font-size="11" fill="#fde68a">kairos-llm</text>
-  <text x="882" y="419" font-family="system-ui" font-size="8" fill="#a16207">Local LLM Runtime</text>
+  <rect x="465" y="383" width="120" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="465" y="383" width="120" height="2" rx="1" fill="#3b82f6"/>
+  <text x="477" y="405" font-family="monospace" font-size="11" font-weight="700" fill="#60a5fa">kairos-mcp</text>
+  <text x="477" y="419" font-family="system-ui" font-size="9" fill="#525252">MCP Protocol Router</text>
+  <text x="477" y="431" font-family="system-ui" font-size="8" fill="#404040">Service registry</text>
 
-  <polygon points="550,441 540,435 560,435" fill="#334155"/>
+  <rect x="600" y="383" width="120" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="600" y="383" width="120" height="2" rx="1" fill="#8b5cf6"/>
+  <text x="612" y="405" font-family="monospace" font-size="11" font-weight="700" fill="#a78bfa">kairos-apply</text>
+  <text x="612" y="419" font-family="system-ui" font-size="9" fill="#525252">Declarative State</text>
+  <text x="612" y="431" font-family="system-ui" font-size="8" fill="#404040">GitOps-style</text>
 
-  <!-- Layer 3: Hardware / System Control -->
-  <rect x="40" y="450" width="1020" height="85" rx="10" fill="url(#hardware)" opacity="0.12" filter="url(#shadow)"/>
-  <rect x="40" y="450" width="4" height="85" rx="2" fill="url(#hardware)"/>
-  <text x="60" y="473" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#22d3ee" letter-spacing="2">HARDWARE / SYSTEM CONTROL</text>
+  <rect x="735" y="383" width="120" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="735" y="383" width="120" height="2" rx="1" fill="#ec4899"/>
+  <text x="747" y="405" font-family="monospace" font-size="11" font-weight="700" fill="#f472b6">git-logger</text>
+  <text x="747" y="419" font-family="system-ui" font-size="9" fill="#525252">/etc Versioning</text>
+  <text x="747" y="431" font-family="system-ui" font-size="8" fill="#404040">git-backed audit</text>
 
-  <rect x="60" y="482" width="110" height="40" rx="6" fill="#164e63" opacity="0.7"/>
-  <text x="72" y="507" font-family="monospace" font-size="11" fill="#67e8f9">recovery</text>
-  <text x="72" y="519" font-family="system-ui" font-size="8" fill="#0e7490">A/B Partitions</text>
+  <rect x="870" y="383" width="175" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="870" y="383" width="175" height="2" rx="1" fill="#f59e0b"/>
+  <text x="882" y="405" font-family="monospace" font-size="11" font-weight="700" fill="#fbbf24">kairos-llm</text>
+  <text x="882" y="419" font-family="system-ui" font-size="9" fill="#525252">Local LLM Runtime</text>
+  <text x="882" y="431" font-family="system-ui" font-size="8" fill="#404040">Quantizer · Inference</text>
 
-  <rect x="185" y="482" width="110" height="40" rx="6" fill="#164e63" opacity="0.7"/>
-  <text x="197" y="507" font-family="monospace" font-size="11" fill="#67e8f9">avionics</text>
-  <text x="197" y="519" font-family="system-ui" font-size="8" fill="#0e7490">Bus Protocols</text>
+  <!-- Down arrow -->
+  <polygon points="550,456 538,450 562,450" fill="#1f1f1f"/>
 
-  <rect x="310" y="482" width="110" height="40" rx="6" fill="#164e63" opacity="0.7"/>
-  <text x="322" y="507" font-family="monospace" font-size="11" fill="#67e8f9">robotics</text>
-  <text x="322" y="519" font-family="system-ui" font-size="8" fill="#0e7490">Motor Control</text>
+  <!-- ==================== LAYER 3: HARDWARE / SYSTEM CONTROL ==================== -->
+  <rect x="40" y="465" width="1020" height="120" rx="6" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="40" y="465" width="6" height="120" rx="3" fill="#06b6d4"/>
 
-  <rect x="435" y="482" width="110" height="40" rx="6" fill="#164e63" opacity="0.7"/>
-  <text x="447" y="507" font-family="monospace" font-size="11" fill="#67e8f9">vision</text>
-  <text x="447" y="519" font-family="system-ui" font-size="8" fill="#0e7490">Object Detection</text>
+  <g>
+    <rect x="40" y="465" width="1020" height="28" rx="6" fill="#0a0a0a"/>
+    <rect x="40" y="485" width="1020" height="8" rx="0" fill="#0a0a0a"/>
+    <circle cx="62" cy="479" r="6" fill="#164e63"/>
+    <text x="62" y="483" text-anchor="middle" font-family="system-ui" font-size="9" fill="#22d3ee">⚡</text>
+    <text x="80" y="483" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#e5e5e5" letter-spacing="2">LAYER 3 — HARDWARE / SYSTEM CONTROL</text>
+    <text x="360" y="483" font-family="monospace" font-size="9" fill="#404040">Domain-specific Rust daemons</text>
+  </g>
 
-  <rect x="560" y="482" width="110" height="40" rx="6" fill="#164e63" opacity="0.7"/>
-  <text x="572" y="507" font-family="monospace" font-size="11" fill="#67e8f9">climate</text>
-  <text x="572" y="519" font-family="system-ui" font-size="8" fill="#0e7490">Data Assimilation</text>
+  <rect x="60" y="503" width="110" height="70" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="60" y="503" width="110" height="2" rx="1" fill="#22d3ee"/>
+  <text x="72" y="525" font-family="monospace" font-size="11" font-weight="700" fill="#22d3ee">recovery</text>
+  <text x="72" y="539" font-family="system-ui" font-size="9" fill="#525252">A/B Partitions</text>
+  <text x="72" y="553" font-family="system-ui" font-size="8" fill="#404040">dm-verity · OTA</text>
+  <text x="72" y="567" font-family="system-ui" font-size="7" fill="#333">Recovery shell</text>
 
-  <rect x="685" y="482" width="110" height="40" rx="6" fill="#164e63" opacity="0.7"/>
-  <text x="697" y="507" font-family="monospace" font-size="11" fill="#67e8f9">finance</text>
-  <text x="697" y="519" font-family="system-ui" font-size="8" fill="#0e7490">Market Data</text>
+  <rect x="185" y="503" width="110" height="70" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="185" y="503" width="110" height="2" rx="1" fill="#f472b6"/>
+  <text x="197" y="525" font-family="monospace" font-size="11" font-weight="700" fill="#f472b6">avionics</text>
+  <text x="197" y="539" font-family="system-ui" font-size="9" fill="#525252">Bus Protocols</text>
+  <text x="197" y="553" font-family="system-ui" font-size="8" fill="#404040">ARINC 429 / CAN</text>
+  <text x="197" y="567" font-family="system-ui" font-size="7" fill="#333">Telemetry</text>
 
-  <rect x="810" y="482" width="110" height="40" rx="6" fill="#164e63" opacity="0.7"/>
-  <text x="822" y="507" font-family="monospace" font-size="11" fill="#67e8f9">quantum</text>
-  <text x="822" y="519" font-family="system-ui" font-size="8" fill="#0e7490">Gate Simulator</text>
+  <rect x="310" y="503" width="110" height="70" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="310" y="503" width="110" height="2" rx="1" fill="#34d399"/>
+  <text x="322" y="525" font-family="monospace" font-size="11" font-weight="700" fill="#34d399">robotics</text>
+  <text x="322" y="539" font-family="system-ui" font-size="9" fill="#525252">Motor Control</text>
+  <text x="322" y="553" font-family="system-ui" font-size="8" fill="#404040">PID loops</text>
+  <text x="322" y="567" font-family="system-ui" font-size="7" fill="#333">Actuator drivers</text>
 
-  <rect x="935" y="482" width="110" height="40" rx="6" fill="#164e63" opacity="0.7"/>
-  <text x="947" y="507" font-family="monospace" font-size="11" fill="#67e8f9">bio</text>
-  <text x="947" y="519" font-family="system-ui" font-size="8" fill="#0e7490">Genomics</text>
+  <rect x="435" y="503" width="110" height="70" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="435" y="503" width="110" height="2" rx="1" fill="#60a5fa"/>
+  <text x="447" y="525" font-family="monospace" font-size="11" font-weight="700" fill="#60a5fa">vision</text>
+  <text x="447" y="539" font-family="system-ui" font-size="9" fill="#525252">Object Detection</text>
+  <text x="447" y="553" font-family="system-ui" font-size="8" fill="#404040">OpenCV pipeline</text>
+  <text x="447" y="567" font-family="system-ui" font-size="7" fill="#333">YOLO inference</text>
 
-  <polygon points="550,541 540,535 560,535" fill="#334155"/>
+  <rect x="560" y="503" width="110" height="70" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="560" y="503" width="110" height="2" rx="1" fill="#fbbf24"/>
+  <text x="572" y="525" font-family="monospace" font-size="11" font-weight="700" fill="#fbbf24">climate</text>
+  <text x="572" y="539" font-family="system-ui" font-size="9" fill="#525252">Data Assimilation</text>
+  <text x="572" y="553" font-family="system-ui" font-size="8" fill="#404040">Weather models</text>
+  <text x="572" y="567" font-family="system-ui" font-size="7" fill="#333">Ensemble Kalman</text>
 
-  <!-- Layer 2: Kernel Modules -->
-  <rect x="40" y="550" width="1020" height="85" rx="10" fill="url(#kernel)" opacity="0.12" filter="url(#shadow)"/>
-  <rect x="40" y="550" width="4" height="85" rx="2" fill="url(#kernel)"/>
-  <text x="60" y="573" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#93a5fc" letter-spacing="2">KERNEL MODULES (C)</text>
+  <rect x="685" y="503" width="110" height="70" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="685" y="503" width="110" height="2" rx="1" fill="#a78bfa"/>
+  <text x="697" y="525" font-family="monospace" font-size="11" font-weight="700" fill="#a78bfa">finance</text>
+  <text x="697" y="539" font-family="system-ui" font-size="9" fill="#525252">Market Data</text>
+  <text x="697" y="553" font-family="system-ui" font-size="8" fill="#404040">Algo trading</text>
+  <text x="697" y="567" font-family="system-ui" font-size="7" fill="#333">FIX protocol</text>
 
-  <rect x="60" y="582" width="120" height="40" rx="6" fill="#1e1b4b" opacity="0.7"/>
-  <text x="72" y="607" font-family="monospace" font-size="11" fill="#a5b4fc">dm-verity</text>
-  <text x="72" y="619" font-family="system-ui" font-size="8" fill="#4338ca">Block Integrity</text>
+  <rect x="810" y="503" width="110" height="70" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="810" y="503" width="110" height="2" rx="1" fill="#10b981"/>
+  <text x="822" y="525" font-family="monospace" font-size="11" font-weight="700" fill="#34d399">quantum</text>
+  <text x="822" y="539" font-family="system-ui" font-size="9" fill="#525252">Gate Simulator</text>
+  <text x="822" y="553" font-family="system-ui" font-size="8" fill="#404040">Qubit states</text>
+  <text x="822" y="567" font-family="system-ui" font-size="7" fill="#333">QASM transpile</text>
 
-  <rect x="195" y="582" width="120" height="40" rx="6" fill="#1e1b4b" opacity="0.7"/>
-  <text x="207" y="607" font-family="monospace" font-size="11" fill="#a5b4fc">tpm</text>
-  <text x="207" y="619" font-family="system-ui" font-size="8" fill="#4338ca">TPM 2.0 Binding</text>
+  <rect x="935" y="503" width="110" height="70" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="935" y="503" width="110" height="2" rx="1" fill="#ec4899"/>
+  <text x="947" y="525" font-family="monospace" font-size="11" font-weight="700" fill="#f472b6">bio</text>
+  <text x="947" y="539" font-family="system-ui" font-size="9" fill="#525252">Genomics</text>
+  <text x="947" y="553" font-family="system-ui" font-size="8" fill="#404040">DNA/RNA seq</text>
+  <text x="947" y="567" font-family="system-ui" font-size="7" fill="#333">BLAST align</text>
 
-  <rect x="330" y="582" width="120" height="40" rx="6" fill="#1e1b4b" opacity="0.7"/>
-  <text x="342" y="607" font-family="monospace" font-size="11" fill="#a5b4fc">edac</text>
-  <text x="342" y="619" font-family="system-ui" font-size="8" fill="#4338ca">ECC Memory</text>
+  <!-- Down arrow -->
+  <polygon points="550,591 538,585 562,585" fill="#1f1f1f"/>
 
-  <rect x="465" y="582" width="120" height="40" rx="6" fill="#1e1b4b" opacity="0.7"/>
-  <text x="477" y="607" font-family="monospace" font-size="11" fill="#a5b4fc">ptp</text>
-  <text x="477" y="619" font-family="system-ui" font-size="8" fill="#4338ca">PTP Clock</text>
+  <!-- ==================== LAYER 2: KERNEL MODULES ==================== -->
+  <rect x="40" y="600" width="1020" height="105" rx="6" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="40" y="600" width="6" height="105" rx="3" fill="#8b5cf6"/>
 
-  <rect x="600" y="582" width="120" height="40" rx="6" fill="#1e1b4b" opacity="0.7"/>
-  <text x="612" y="607" font-family="monospace" font-size="11" fill="#a5b4fc">framebuffer</text>
-  <text x="612" y="619" font-family="system-ui" font-size="8" fill="#4338ca">Display Canvas</text>
+  <g>
+    <rect x="40" y="600" width="1020" height="28" rx="6" fill="#0a0a0a"/>
+    <rect x="40" y="620" width="1020" height="8" rx="0" fill="#0a0a0a"/>
+    <circle cx="62" cy="614" r="6" fill="#1e1b4b"/>
+    <text x="62" y="618" text-anchor="middle" font-family="system-ui" font-size="9" fill="#a78bfa">🐧</text>
+    <text x="80" y="618" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#e5e5e5" letter-spacing="2">LAYER 2 — KERNEL MODULES</text>
+    <text x="320" y="618" font-family="monospace" font-size="9" fill="#404040">Linux kernel C modules · sysfs · miscdevice</text>
+  </g>
 
-  <rect x="735" y="582" width="120" height="40" rx="6" fill="#1e1b4b" opacity="0.7"/>
-  <text x="747" y="607" font-family="monospace" font-size="11" fill="#a5b4fc">iommu</text>
-  <text x="747" y="619" font-family="system-ui" font-size="8" fill="#4338ca">DMA Isolation</text>
+  <rect x="60" y="638" width="130" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="60" y="638" width="130" height="2" rx="1" fill="#818cf8"/>
+  <text x="72" y="658" font-family="monospace" font-size="11" font-weight="700" fill="#818cf8">kairos_dmverity</text>
+  <text x="72" y="672" font-family="system-ui" font-size="9" fill="#525252">dm-verity sysfs manager</text>
+  <text x="72" y="686" font-family="system-ui" font-size="8" fill="#404040">active_targets · root_hash</text>
 
-  <rect x="870" y="582" width="175" height="40" rx="6" fill="#1e1b4b" opacity="0.7"/>
-  <text x="882" y="607" font-family="monospace" font-size="11" fill="#a5b4fc">prochot</text>
-  <text x="882" y="619" font-family="system-ui" font-size="8" fill="#4338ca">Thermal Throttle</text>
+  <rect x="205" y="638" width="130" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="205" y="638" width="130" height="2" rx="1" fill="#34d399"/>
+  <text x="217" y="658" font-family="monospace" font-size="11" font-weight="700" fill="#34d399">kairos_tpm</text>
+  <text x="217" y="672" font-family="system-ui" font-size="9" fill="#525252">TPM 2.0 PCR Binding</text>
+  <text x="217" y="686" font-family="system-ui" font-size="8" fill="#404040">PCR read · available</text>
 
-  <polygon points="550,641 540,635 560,635" fill="#334155"/>
+  <rect x="350" y="638" width="130" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="350" y="638" width="130" height="2" rx="1" fill="#f472b6"/>
+  <text x="362" y="658" font-family="monospace" font-size="11" font-weight="700" fill="#f472b6">kairos_edac</text>
+  <text x="362" y="672" font-family="system-ui" font-size="9" fill="#525252">ECC Memory Handler</text>
+  <text x="362" y="686" font-family="system-ui" font-size="8" fill="#404040">CE/UE counters</text>
 
-  <!-- Layer 1: Security & OTA -->
-  <rect x="40" y="650" width="1020" height="105" rx="10" fill="url(#security)" opacity="0.12" filter="url(#shadow)"/>
-  <rect x="40" y="650" width="4" height="105" rx="2" fill="url(#security)"/>
-  <text x="60" y="673" font-family="system-ui, sans-serif" font-size="13" font-weight="700" fill="#34d399" letter-spacing="2">SECURITY &amp; LIFECYCLE</text>
+  <rect x="495" y="638" width="130" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="495" y="638" width="130" height="2" rx="1" fill="#fbbf24"/>
+  <text x="507" y="658" font-family="monospace" font-size="11" font-weight="700" fill="#fbbf24">kairos_ptp</text>
+  <text x="507" y="672" font-family="system-ui" font-size="9" fill="#525252">PTP Hardware Clock</text>
+  <text x="507" y="686" font-family="system-ui" font-size="8" fill="#404040">adjfine · gettime64</text>
 
-  <rect x="60" y="682" width="140" height="60" rx="6" fill="#022c22" opacity="0.7"/>
-  <text x="72" y="703" font-family="monospace" font-size="10" fill="#6ee7b7">22 AppArmor</text>
-  <text x="72" y="715" font-family="monospace" font-size="9" fill="#065f46">Profiles</text>
-  <text x="72" y="727" font-family="system-ui" font-size="8" fill="#065f46">Daemon-specific</text>
+  <rect x="640" y="638" width="130" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="640" y="638" width="130" height="2" rx="1" fill="#22d3ee"/>
+  <text x="652" y="658" font-family="monospace" font-size="11" font-weight="700" fill="#22d3ee">kairos_fb</text>
+  <text x="652" y="672" font-family="system-ui" font-size="9" fill="#525252">Framebuffer Canvas</text>
+  <text x="652" y="686" font-family="system-ui" font-size="8" fill="#404040">register_framebuffer</text>
 
-  <rect x="220" y="682" width="140" height="60" rx="6" fill="#022c22" opacity="0.7"/>
-  <text x="232" y="703" font-family="monospace" font-size="10" fill="#6ee7b7">A/B Partitions</text>
-  <text x="232" y="715" font-family="monospace" font-size="9" fill="#065f46">OTA Updates</text>
-  <text x="232" y="727" font-family="system-ui" font-size="8" fill="#065f46">Auto-rollback</text>
+  <rect x="785" y="638" width="130" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="785" y="638" width="130" height="2" rx="1" fill="#60a5fa"/>
+  <text x="797" y="658" font-family="monospace" font-size="11" font-weight="700" fill="#60a5fa">kairos_iommu</text>
+  <text x="797" y="672" font-family="system-ui" font-size="9" fill="#525252">IOMMU DMA Isolation</text>
+  <text x="797" y="686" font-family="system-ui" font-size="8" fill="#404040">group_count · enforced</text>
 
-  <rect x="380" y="682" width="140" height="60" rx="6" fill="#022c22" opacity="0.7"/>
-  <text x="392" y="703" font-family="monospace" font-size="10" fill="#6ee7b7">dm-verity</text>
-  <text x="392" y="715" font-family="monospace" font-size="9" fill="#065f46">Integrity</text>
-  <text x="392" y="727" font-family="system-ui" font-size="8" fill="#065f46">Block-level</text>
+  <rect x="930" y="638" width="115" height="54" rx="6" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <rect x="930" y="638" width="115" height="2" rx="1" fill="#ec4899"/>
+  <text x="942" y="658" font-family="monospace" font-size="11" font-weight="700" fill="#f472b6">prochot</text>
+  <text x="942" y="672" font-family="system-ui" font-size="9" fill="#525252">Thermal Throttle</text>
+  <text x="942" y="686" font-family="system-ui" font-size="8" fill="#404040">cpufreq_update</text>
 
-  <rect x="540" y="682" width="140" height="60" rx="6" fill="#022c22" opacity="0.7"/>
-  <text x="552" y="703" font-family="monospace" font-size="10" fill="#6ee7b7">GPG Signing</text>
-  <text x="552" y="715" font-family="monospace" font-size="9" fill="#065f46">Update</text>
-  <text x="552" y="727" font-family="system-ui" font-size="8" fill="#065f46">Manifests</text>
+  <!-- Down arrow -->
+  <polygon points="550,711 538,705 562,705" fill="#1f1f1f"/>
 
-  <rect x="700" y="682" width="140" height="60" rx="6" fill="#022c22" opacity="0.7"/>
-  <text x="712" y="703" font-family="monospace" font-size="10" fill="#6ee7b7">Staged Rollout</text>
-  <text x="712" y="715" font-family="monospace" font-size="9" fill="#065f46">Canary-based</text>
-  <text x="712" y="727" font-family="system-ui" font-size="8" fill="#065f46">Hash deterministic</text>
+  <!-- ==================== LAYER 1: SECURITY & OTA ==================== -->
+  <rect x="40" y="720" width="1020" height="175" rx="6" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="40" y="720" width="6" height="175" rx="3" fill="#10b981"/>
 
-  <rect x="860" y="682" width="185" height="60" rx="6" fill="#022c22" opacity="0.7"/>
-  <text x="872" y="703" font-family="monospace" font-size="9" fill="#6ee7b7">Secure Boot</text>
-  <text x="872" y="715" font-family="monospace" font-size="9" fill="#065f46">Signed kernel</text>
-  <text x="872" y="727" font-family="system-ui" font-size="8" fill="#065f46">&amp; initramfs</text>
+  <g>
+    <rect x="40" y="720" width="1020" height="28" rx="6" fill="#0a0a0a"/>
+    <rect x="40" y="740" width="1020" height="8" rx="0" fill="#0a0a0a"/>
+    <circle cx="62" cy="734" r="6" fill="#022c22"/>
+    <text x="62" y="738" text-anchor="middle" font-family="system-ui" font-size="9" fill="#34d399">🔒</text>
+    <text x="80" y="738" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="#e5e5e5" letter-spacing="2">LAYER 1 — SECURITY &amp; DEVICE LIFECYCLE</text>
+    <text x="370" y="738" font-family="monospace" font-size="9" fill="#404040">AppArmor · dm-verity · TPM · OTA</text>
+  </g>
 
-  <!-- Side decorative line -->
-  <line x1="36" y1="130" x2="36" y2="755" stroke="#334155" stroke-width="1" stroke-dasharray="4,4"/>
+  <!-- First row -->
+  <rect x="60" y="758" width="145" height="60" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="60" y="758" width="145" height="2" rx="1" fill="#34d399"/>
+  <text x="72" y="780" font-family="system-ui" font-size="10" font-weight="700" fill="#34d399">22 AppArmor Profiles</text>
+  <text x="72" y="796" font-family="system-ui" font-size="8" fill="#525252">Daemon-specific least privilege</text>
+  <text x="72" y="810" font-family="system-ui" font-size="7" fill="#333">bpf · recovery · mesh · ollama</text>
+
+  <rect x="220" y="758" width="145" height="60" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="220" y="758" width="145" height="2" rx="1" fill="#22d3ee"/>
+  <text x="232" y="780" font-family="system-ui" font-size="10" font-weight="700" fill="#22d3ee">A/B Partition OTA</text>
+  <text x="232" y="796" font-family="system-ui" font-size="8" fill="#525252">Full auto-rollback</text>
+  <text x="232" y="810" font-family="system-ui" font-size="7" fill="#333">3 failed boots → fallback</text>
+
+  <rect x="380" y="758" width="145" height="60" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="380" y="758" width="145" height="2" rx="1" fill="#60a5fa"/>
+  <text x="392" y="780" font-family="system-ui" font-size="10" font-weight="700" fill="#60a5fa">dm-verity Integrity</text>
+  <text x="392" y="796" font-family="system-ui" font-size="8" fill="#525252">Block-level hash tree</text>
+  <text x="392" y="810" font-family="system-ui" font-size="7" fill="#333">veritysetup verify</text>
+
+  <rect x="540" y="758" width="145" height="60" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="540" y="758" width="145" height="2" rx="1" fill="#f472b6"/>
+  <text x="552" y="780" font-family="system-ui" font-size="10" font-weight="700" fill="#f472b6">GPG-Signed Updates</text>
+  <text x="552" y="796" font-family="system-ui" font-size="8" fill="#525252">Manifest + image sigs</text>
+  <text x="552" y="810" font-family="system-ui" font-size="7" fill="#333">gpgv verification</text>
+
+  <rect x="700" y="758" width="145" height="60" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="700" y="758" width="145" height="2" rx="1" fill="#fbbf24"/>
+  <text x="712" y="780" font-family="system-ui" font-size="10" font-weight="700" fill="#fbbf24">Staged Rollout</text>
+  <text x="712" y="796" font-family="system-ui" font-size="8" fill="#525252">Canary-based deployment</text>
+  <text x="712" y="810" font-family="system-ui" font-size="7" fill="#333">Hash-deterministic groups</text>
+
+  <rect x="860" y="758" width="185" height="60" rx="6" fill="#141414" stroke="#1f1f1f" stroke-width="1"/>
+  <rect x="860" y="758" width="185" height="2" rx="1" fill="#8b5cf6"/>
+  <text x="872" y="780" font-family="system-ui" font-size="10" font-weight="700" fill="#a78bfa">Secure Boot</text>
+  <text x="872" y="796" font-family="system-ui" font-size="8" fill="#525252">Signed kernel + initramfs</text>
+  <text x="872" y="810" font-family="system-ui" font-size="7" fill="#333">No unsafe code (deny unsafe_code)</text>
+
+  <!-- Second row: process flows -->
+  <rect x="60" y="828" width="985" height="55" rx="6" fill="#0a0a0a" stroke="#1a1a1a" stroke-width="1"/>
+
+  <!-- OTA flow -->
+  <text x="80" y="848" font-family="monospace" font-size="9" fill="#404040">OTA Flow:</text>
+  <rect x="150" y="837" width="80" height="22" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="190" y="852" text-anchor="middle" font-family="system-ui" font-size="8" fill="#737373">manifest</text>
+  <text x="235" y="852" font-family="system-ui" font-size="10" fill="#333">→</text>
+  <rect x="250" y="837" width="80" height="22" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="290" y="852" text-anchor="middle" font-family="system-ui" font-size="8" fill="#737373">download</text>
+  <text x="335" y="852" font-family="system-ui" font-size="10" fill="#333">→</text>
+  <rect x="350" y="837" width="65" height="22" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="382" y="852" text-anchor="middle" font-family="system-ui" font-size="8" fill="#737373">verify</text>
+  <text x="420" y="852" font-family="system-ui" font-size="10" fill="#333">→</text>
+  <rect x="435" y="837" width="85" height="22" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="477" y="852" text-anchor="middle" font-family="system-ui" font-size="8" fill="#737373">prepare (dd)</text>
+  <text x="525" y="852" font-family="system-ui" font-size="10" fill="#333">→</text>
+  <rect x="540" y="837" width="80" height="22" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="580" y="852" text-anchor="middle" font-family="system-ui" font-size="8" fill="#737373">finalize</text>
+  <text x="625" y="852" font-family="system-ui" font-size="10" fill="#333">→</text>
+  <rect x="640" y="837" width="60" height="22" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="670" y="852" text-anchor="middle" font-family="system-ui" font-size="8" fill="#737373">reboot</text>
+
+  <!-- Verity flow -->
+  <text x="750" y="848" font-family="monospace" font-size="9" fill="#404040">Verity:</text>
+  <rect x="810" y="837" width="80" height="22" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="850" y="852" text-anchor="middle" font-family="system-ui" font-size="8" fill="#737373">veritysetup</text>
+  <text x="895" y="852" font-family="system-ui" font-size="10" fill="#333">→</text>
+  <rect x="910" y="837" width="70" height="22" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="945" y="852" text-anchor="middle" font-family="system-ui" font-size="8" fill="#737373">dm-verity</text>
+
+  <rect x="60" y="862" width="985" height="18" rx="4" fill="#0a0a0a"/>
+  <text x="80" y="875" font-family="system-ui" font-size="8" fill="#333">Systemd timer (daily) → check manifest → download → SHA256 verify → GPG verify → dd to inactive → switch slot → reboot</text>
 </svg>

@@ -1,8 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 380" width="1100" height="380">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 480" width="1100" height="480">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0f172a"/>
-      <stop offset="100%" stop-color="#1e293b"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#000000"/>
+      <stop offset="100%" stop-color="#0a0a0a"/>
     </linearGradient>
     <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#3b82f6"/>
@@ -29,89 +29,202 @@
       <stop offset="100%" stop-color="#0891b2"/>
     </linearGradient>
     <filter id="shadow">
-      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.3"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#000" flood-opacity="0.5"/>
     </filter>
   </defs>
 
-  <rect width="1100" height="380" rx="16" fill="url(#bg)"/>
+  <rect width="1100" height="480" rx="0" fill="url(#bg)"/>
 
-  <text x="550" y="38" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" font-weight="700" fill="#e2e8f0" letter-spacing="1">KEY CAPABILITIES</text>
-  <line x1="420" y1="48" x2="680" y2="48" stroke="#334155" stroke-width="1"/>
+  <text x="550" y="38" text-anchor="middle" font-family="system-ui, sans-serif" font-size="20" font-weight="800" fill="#ffffff" letter-spacing="2">KEY CAPABILITIES</text>
+  <text x="550" y="56" text-anchor="middle" font-family="monospace" font-size="11" fill="#404040" letter-spacing="3">580+ FILES · 24,000+ LINES OF CODE</text>
+  <line x1="350" y1="66" x2="750" y2="66" stroke="#1a1a1a" stroke-width="1"/>
 
   <!-- Row 1 -->
   <!-- Card 1: OTA Updates -->
-  <rect x="40" y="62" width="325" height="135" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
-  <rect x="40" y="62" width="325" height="3" rx="1.5" fill="url(#blue)"/>
-  <circle cx="68" cy="92" r="12" fill="#1e3a5f"/>
-  <text x="68" y="97" text-anchor="middle" font-family="system-ui" font-size="14" fill="#60a5fa">↻</text>
-  <text x="92" y="96" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#e2e8f0">OTA Updates</text>
-  <text x="56" y="118" font-family="system-ui" font-size="10" fill="#94a3b8">A/B partitioning with automatic rollback</text>
-  <text x="56" y="134" font-family="system-ui" font-size="10" fill="#94a3b8">GPG-signed manifests · HTTPS + SHA256</text>
-  <text x="56" y="150" font-family="system-ui" font-size="10" fill="#94a3b8">Delta updates (bspatch) · Staged rollout</text>
-  <text x="56" y="166" font-family="system-ui" font-size="10" fill="#94a3b8">Deterministic hash-based canary groups</text>
-  <text x="56" y="182" font-family="system-ui" font-size="10" fill="#64748b">→ scripts/root/ota-update.sh</text>
+  <rect x="40" y="82" width="325" height="175" rx="8" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="40" y="82" width="325" height="3" rx="1.5" fill="#3b82f6"/>
+  <rect x="40" y="82" width="102" height="24" rx="4" fill="#1e3a5f" opacity="0.6"/>
+  <text x="91" y="98" text-anchor="middle" font-family="system-ui" font-size="10" font-weight="700" fill="#60a5fa">OTA UPDATES</text>
+
+  <rect x="56" y="118" width="140" height="40" rx="5" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="68" y="138" font-family="monospace" font-size="11" font-weight="700" fill="#60a5fa">A/B Partitions</text>
+  <text x="68" y="152" font-family="system-ui" font-size="8" fill="#525252">Automatic rollback</text>
+
+  <rect x="210" y="118" width="140" height="40" rx="5" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="222" y="138" font-family="monospace" font-size="11" font-weight="700" fill="#60a5fa">GPG Signing</text>
+  <text x="222" y="152" font-family="system-ui" font-size="8" fill="#525252">Manifest verification</text>
+
+  <rect x="56" y="168" width="140" height="40" rx="5" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="68" y="188" font-family="monospace" font-size="11" font-weight="700" fill="#60a5fa">Delta Updates</text>
+  <text x="68" y="202" font-family="system-ui" font-size="8" fill="#525252">bspatch differential</text>
+
+  <rect x="210" y="168" width="140" height="40" rx="5" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="222" y="188" font-family="monospace" font-size="11" font-weight="700" fill="#60a5fa">Staged Rollout</text>
+  <text x="222" y="202" font-family="system-ui" font-size="8" fill="#525252">Hash-deterministic canary</text>
+
+  <rect x="56" y="218" width="294" height="26" rx="4" fill="#0a0a0a" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="68" y="235" font-family="system-ui" font-size="8" fill="#404040">Systemd timer checks daily · SHA256 integrity · HTTPS</text>
 
   <!-- Card 2: Security -->
-  <rect x="387" y="62" width="325" height="135" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
-  <rect x="387" y="62" width="325" height="3" rx="1.5" fill="url(#green)"/>
-  <circle cx="415" cy="92" r="12" fill="#064e3b"/>
-  <text x="415" y="97" text-anchor="middle" font-family="system-ui" font-size="14" fill="#34d399">🔒</text>
-  <text x="439" y="96" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#e2e8f0">Security Hardening</text>
-  <text x="403" y="118" font-family="system-ui" font-size="10" fill="#94a3b8">22 daemon-specific AppArmor profiles</text>
-  <text x="403" y="134" font-family="system-ui" font-size="10" fill="#94a3b8">dm-verity block-level integrity</text>
-  <text x="403" y="150" font-family="system-ui" font-size="10" fill="#94a3b8">TPM 2.0 PCR binding &amp; key sealing</text>
-  <text x="403" y="166" font-family="system-ui" font-size="10" fill="#94a3b8">Secure Boot · No unsafe code in Rust</text>
-  <text x="403" y="182" font-family="system-ui" font-size="10" fill="#64748b">→ config/apparmor/ (22 profiles)</text>
+  <rect x="387" y="82" width="325" height="175" rx="8" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="387" y="82" width="325" height="3" rx="1.5" fill="#10b981"/>
+  <rect x="387" y="82" width="110" height="24" rx="4" fill="#022c22" opacity="0.6"/>
+  <text x="442" y="98" text-anchor="middle" font-family="system-ui" font-size="10" font-weight="700" fill="#34d399">SECURITY</text>
+
+  <rect x="403" y="118" width="140" height="40" rx="5" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="415" y="138" font-family="monospace" font-size="11" font-weight="700" fill="#34d399">AppArmor</text>
+  <text x="415" y="152" font-family="system-ui" font-size="8" fill="#525252">22 daemon profiles</text>
+
+  <rect x="557" y="118" width="140" height="40" rx="5" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="569" y="138" font-family="monospace" font-size="11" font-weight="700" fill="#34d399">dm-verity</text>
+  <text x="569" y="152" font-family="system-ui" font-size="8" fill="#525252">Block integrity</text>
+
+  <rect x="403" y="168" width="140" height="40" rx="5" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="415" y="188" font-family="monospace" font-size="11" font-weight="700" fill="#34d399">TPM 2.0</text>
+  <text x="415" y="202" font-family="system-ui" font-size="8" fill="#525252">PCR binding · Key seal</text>
+
+  <rect x="557" y="168" width="140" height="40" rx="5" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="569" y="188" font-family="monospace" font-size="11" font-weight="700" fill="#34d399">Secure Boot</text>
+  <text x="569" y="202" font-family="system-ui" font-size="8" fill="#525252">Signed kernel + initramfs</text>
+
+  <rect x="403" y="218" width="294" height="26" rx="4" fill="#0a0a0a" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="415" y="235" font-family="system-ui" font-size="8" fill="#404040">All Rust: #![deny(unsafe_code)]</text>
 
   <!-- Card 3: AI -->
-  <rect x="734" y="62" width="325" height="135" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
-  <rect x="734" y="62" width="325" height="3" rx="1.5" fill="url(#rose)"/>
-  <circle cx="762" cy="92" r="12" fill="#4c0519"/>
-  <text x="762" y="97" text-anchor="middle" font-family="system-ui" font-size="13" fill="#fb7185">AI</text>
-  <text x="786" y="96" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#e2e8f0">AI Microservices</text>
-  <text x="750" y="118" font-family="system-ui" font-size="10" fill="#94a3b8">8 Python asyncio JSON-RPC services</text>
-  <text x="750" y="134" font-family="system-ui" font-size="10" fill="#94a3b8">Confidence scoring · Context manager</text>
-  <text x="750" y="150" font-family="system-ui" font-size="10" fill="#94a3b8">System supervisor · Autonomous agent</text>
-  <text x="750" y="166" font-family="system-ui" font-size="10" fill="#94a3b8">Knowledge graph · Skill evolution</text>
-  <text x="750" y="182" font-family="system-ui" font-size="10" fill="#64748b">→ ai/ (8 service directories)</text>
+  <rect x="734" y="82" width="325" height="175" rx="8" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="734" y="82" width="325" height="3" rx="1.5" fill="#f43f5e"/>
+  <rect x="734" y="82" width="105" height="24" rx="4" fill="#4c0519" opacity="0.6"/>
+  <text x="786" y="98" text-anchor="middle" font-family="system-ui" font-size="10" font-weight="700" fill="#fb7185">AI SERVICES</text>
+
+  <rect x="750" y="118" width="95" height="40" rx="5" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="762" y="135" font-family="monospace" font-size="9" font-weight="700" fill="#fb7185">confidence</text>
+  <text x="762" y="150" font-family="system-ui" font-size="8" fill="#525252">Scoring</text>
+
+  <rect x="855" y="118" width="95" height="40" rx="5" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="867" y="135" font-family="monospace" font-size="9" font-weight="700" fill="#fb7185">context-mgr</text>
+  <text x="867" y="150" font-family="system-ui" font-size="8" fill="#525252">Window</text>
+
+  <rect x="960" y="118" width="85" height="40" rx="5" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="972" y="135" font-family="monospace" font-size="9" font-weight="700" fill="#fb7185">supervisor</text>
+  <text x="972" y="150" font-family="system-ui" font-size="8" fill="#525252">Overseer</text>
+
+  <rect x="750" y="168" width="95" height="40" rx="5" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="762" y="185" font-family="monospace" font-size="9" font-weight="700" fill="#fb7185">hermes</text>
+  <text x="762" y="200" font-family="system-ui" font-size="8" fill="#525252">Agent</text>
+
+  <rect x="855" y="168" width="95" height="40" rx="5" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="867" y="185" font-family="monospace" font-size="8" font-weight="700" fill="#fb7185">knowledge</text>
+  <text x="867" y="200" font-family="system-ui" font-size="8" fill="#525252">Graph</text>
+
+  <rect x="960" y="168" width="85" height="40" rx="5" fill="#141414" stroke="#262626" stroke-width="1"/>
+  <text x="972" y="185" font-family="monospace" font-size="9" font-weight="700" fill="#fb7185">evolver</text>
+  <text x="972" y="200" font-family="system-ui" font-size="8" fill="#525252">Skills</text>
+
+  <rect x="750" y="218" width="147" height="26" rx="4" fill="#0a0a0a" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="762" y="235" font-family="system-ui" font-size="8" fill="#404040">task-scheduler</text>
+
+  <rect x="907" y="218" width="138" height="26" rx="4" fill="#0a0a0a" stroke="#1a1a1a" stroke-width="1"/>
+  <text x="919" y="235" font-family="system-ui" font-size="8" fill="#404040">telemetry-collector</text>
 
   <!-- Row 2 -->
   <!-- Card 4: Rust Daemons -->
-  <rect x="40" y="212" width="325" height="150" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
-  <rect x="40" y="212" width="325" height="3" rx="1.5" fill="url(#purple)"/>
-  <circle cx="68" cy="242" r="12" fill="#2e1065"/>
-  <text x="68" y="247" text-anchor="middle" font-family="system-ui" font-size="13" fill="#a78bfa">R</text>
-  <text x="92" y="246" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#e2e8f0">20 Rust Daemons</text>
-  <text x="56" y="268" font-family="system-ui" font-size="10" fill="#94a3b8">BPF telemetry · MCP router · Config apply</text>
-  <text x="56" y="284" font-family="system-ui" font-size="10" fill="#94a3b8">Git /etc versioning · Inference hub</text>
-  <text x="56" y="300" font-family="system-ui" font-size="10" fill="#94a3b8">Recovery shell · TUI · Orchestrator</text>
-  <text x="56" y="316" font-family="system-ui" font-size="10" fill="#94a3b8">Mesh networking · Vector DB · Framebuffer</text>
-  <text x="56" y="332" font-family="system-ui" font-size="10" fill="#94a3b8">LLM runtime · Build · Climate · Finance</text>
-  <text x="56" y="348" font-family="system-ui" font-size="10" fill="#94a3b8">Vision · Avionics · Quantum · Robotics · Bio</text>
+  <rect x="40" y="272" width="325" height="190" rx="8" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="40" y="272" width="325" height="3" rx="1.5" fill="#8b5cf6"/>
+  <rect x="40" y="272" width="120" height="24" rx="4" fill="#2e1065" opacity="0.6"/>
+  <text x="100" y="288" text-anchor="middle" font-family="system-ui" font-size="10" font-weight="700" fill="#a78bfa">RUST DAEMONS</text>
+
+  <g>
+    <rect x="56" y="308" width="145" height="34" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <text x="68" y="326" font-family="monospace" font-size="9" fill="#a78bfa">kairos-bpf</text>
+    <text x="68" y="338" font-family="system-ui" font-size="7" fill="#404040">eBPF telemetry</text>
+
+    <rect x="210" y="308" width="140" height="34" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <text x="222" y="326" font-family="monospace" font-size="9" fill="#a78bfa">kairos-mcp</text>
+    <text x="222" y="338" font-family="system-ui" font-size="7" fill="#404040">Protocol router</text>
+
+    <rect x="56" y="350" width="145" height="34" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <text x="68" y="368" font-family="monospace" font-size="9" fill="#a78bfa">kairos-apply</text>
+    <text x="68" y="380" font-family="system-ui" font-size="7" fill="#404040">Declarative config</text>
+
+    <rect x="210" y="350" width="140" height="34" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <text x="222" y="368" font-family="monospace" font-size="9" fill="#a78bfa">git-logger</text>
+    <text x="222" y="380" font-family="system-ui" font-size="7" fill="#404040">/etc versioning</text>
+
+    <rect x="56" y="392" width="145" height="34" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <text x="68" y="410" font-family="monospace" font-size="9" fill="#a78bfa">inference-hub</text>
+    <text x="68" y="422" font-family="system-ui" font-size="7" fill="#404040">Speculative inf.</text>
+
+    <rect x="210" y="392" width="140" height="34" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <text x="222" y="410" font-family="monospace" font-size="9" fill="#a78bfa">kairos-recovery</text>
+    <text x="222" y="422" font-family="system-ui" font-size="7" fill="#404040">A/B partitions</text>
+
+    <rect x="56" y="434" width="145" height="16" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <text x="68" y="446" font-family="monospace" font-size="8" fill="#a78bfa">+3 more core</text>
+
+    <rect x="210" y="434" width="140" height="16" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <text x="222" y="446" font-family="monospace" font-size="8" fill="#a78bfa">+10 domain daemons</text>
+  </g>
 
   <!-- Card 5: Kernel -->
-  <rect x="387" y="212" width="325" height="150" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
-  <rect x="387" y="212" width="325" height="3" rx="1.5" fill="url(#cyan)"/>
-  <circle cx="415" cy="242" r="12" fill="#164e63"/>
-  <text x="415" y="247" text-anchor="middle" font-family="system-ui" font-size="13" fill="#22d3ee">⚙</text>
-  <text x="439" y="246" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#e2e8f0">7 Kernel Modules (C)</text>
-  <text x="403" y="268" font-family="system-ui" font-size="10" fill="#94a3b8">dm-verity: Sysfs integrity manager</text>
-  <text x="403" y="284" font-family="system-ui" font-size="10" fill="#94a3b8">TPM 2.0: PCR binding via sysfs</text>
-  <text x="403" y="300" font-family="system-ui" font-size="10" fill="#94a3b8">EDAC: ECC memory error handler</text>
-  <text x="403" y="316" font-family="system-ui" font-size="10" fill="#94a3b8">PTP: Hardware clock (ptp_clock)</text>
-  <text x="403" y="332" font-family="system-ui" font-size="10" fill="#94a3b8">Framebuffer: register_framebuffer</text>
-  <text x="403" y="348" font-family="system-ui" font-size="10" fill="#94a3b8">IOMMU: DMA isolation · PROCHOT</text>
+  <rect x="387" y="272" width="325" height="190" rx="8" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="387" y="272" width="325" height="3" rx="1.5" fill="#06b6d4"/>
+  <rect x="387" y="272" width="130" height="24" rx="4" fill="#164e63" opacity="0.6"/>
+  <text x="452" y="288" text-anchor="middle" font-family="system-ui" font-size="10" font-weight="700" fill="#22d3ee">KERNEL MODULES</text>
+
+  <g>
+    <rect x="403" y="308" width="140" height="34" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <text x="415" y="324" font-family="monospace" font-size="9" font-weight="700" fill="#22d3ee">dm-verity</text>
+    <text x="415" y="338" font-family="system-ui" font-size="8" fill="#525252">Sysfs integrity mgr</text>
+
+    <rect x="557" y="308" width="140" height="34" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <text x="569" y="324" font-family="monospace" font-size="9" font-weight="700" fill="#22d3ee">TPM 2.0</text>
+    <text x="569" y="338" font-family="system-ui" font-size="8" fill="#525252">PCR binding</text>
+
+    <rect x="403" y="350" width="140" height="34" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <text x="415" y="366" font-family="monospace" font-size="9" font-weight="700" fill="#22d3ee">EDAC</text>
+    <text x="415" y="380" font-family="system-ui" font-size="8" fill="#525252">ECC memory handler</text>
+
+    <rect x="557" y="350" width="140" height="34" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <text x="569" y="366" font-family="monospace" font-size="9" font-weight="700" fill="#22d3ee">PTP Clock</text>
+    <text x="569" y="380" font-family="system-ui" font-size="8" fill="#525252">ptp_clock_register</text>
+
+    <rect x="403" y="392" width="140" height="34" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <text x="415" y="408" font-family="monospace" font-size="9" font-weight="700" fill="#22d3ee">Framebuffer</text>
+    <text x="415" y="422" font-family="system-ui" font-size="8" fill="#525252">register_framebuffer</text>
+
+    <rect x="557" y="392" width="140" height="34" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <text x="569" y="408" font-family="monospace" font-size="9" font-weight="700" fill="#22d3ee">IOMMU</text>
+    <text x="569" y="422" font-family="system-ui" font-size="8" fill="#525252">DMA isolation</text>
+
+    <rect x="403" y="434" width="294" height="16" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <text x="415" y="446" font-family="monospace" font-size="8" fill="#22d3ee">PROCHOT — Thermal throttle · cpufreq_update_policy</text>
+  </g>
 
   <!-- Card 6: CI/CD -->
-  <rect x="734" y="212" width="325" height="150" rx="10" fill="#1e293b" stroke="#334155" stroke-width="1" filter="url(#shadow)"/>
-  <rect x="734" y="212" width="325" height="3" rx="1.5" fill="url(#amber)"/>
-  <circle cx="762" cy="242" r="12" fill="#422006"/>
-  <text x="762" y="247" text-anchor="middle" font-family="system-ui" font-size="14" fill="#fbbf24">⇄</text>
-  <text x="786" y="246" font-family="system-ui, sans-serif" font-size="14" font-weight="700" fill="#e2e8f0">CI/CD &amp; Packaging</text>
-  <text x="750" y="268" font-family="system-ui" font-size="10" fill="#94a3b8">GitHub Actions: Rust + Python + Kernel</text>
-  <text x="750" y="284" font-family="system-ui" font-size="10" fill="#94a3b8">Cross-compile x86_64 + aarch64</text>
-  <text x="750" y="300" font-family="system-ui" font-size="10" fill="#94a3b8">Trivy SAST · cargo-audit · gitleaks</text>
-  <text x="750" y="316" font-family="system-ui" font-size="10" fill="#94a3b8">SBOM via CycloneDX · Docker builds</text>
-  <text x="750" y="332" font-family="system-ui" font-size="10" fill="#94a3b8">Debian · RPM · Arch packaging</text>
-  <text x="750" y="348" font-family="system-ui" font-size="10" fill="#64748b">→ .github/workflows/ · packaging/</text>
+  <rect x="734" y="272" width="325" height="190" rx="8" fill="#0d0d0d" stroke="#1a1a1a" stroke-width="1" filter="url(#shadow)"/>
+  <rect x="734" y="272" width="325" height="3" rx="1.5" fill="#f59e0b"/>
+  <rect x="734" y="272" width="110" height="24" rx="4" fill="#422006" opacity="0.6"/>
+  <text x="789" y="288" text-anchor="middle" font-family="system-ui" font-size="10" font-weight="700" fill="#fbbf24">CI/CD</text>
+
+  <g>
+    <rect x="750" y="308" width="294" height="26" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <circle cx="764" cy="321" r="3" fill="#fbbf24"/>
+    <text x="774" y="325" font-family="monospace" font-size="9" fill="#a3a3a3">GitHub Actions: Rust + Python + Kernel</text>
+
+    <rect x="750" y="342" width="294" height="26" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <circle cx="764" cy="355" r="3" fill="#fbbf24"/>
+    <text x="774" y="359" font-family="monospace" font-size="9" fill="#a3a3a3">Cross-compile x86_64 + aarch64</text>
+
+    <rect x="750" y="376" width="294" height="26" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <circle cx="764" cy="389" r="3" fill="#fbbf24"/>
+    <text x="774" y="393" font-family="monospace" font-size="9" fill="#a3a3a3">Trivy SAST · cargo-audit · gitleaks</text>
+
+    <rect x="750" y="410" width="294" height="26" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <circle cx="764" cy="423" r="3" fill="#fbbf24"/>
+    <text x="774" y="427" font-family="monospace" font-size="9" fill="#a3a3a3">SBOM (CycloneDX) · Docker builds</text>
+
+    <rect x="750" y="444" width="294" height="16" rx="4" fill="#141414" stroke="#262626" stroke-width="1"/>
+    <text x="760" y="456" font-family="monospace" font-size="8" fill="#fbbf24">Packaging:</text>
+    <text x="832" y="456" font-family="monospace" font-size="8" fill="#a3a3a3">Debian · RPM · Arch · ISO</text>
+  </g>
 </svg>
