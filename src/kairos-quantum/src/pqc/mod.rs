@@ -1,7 +1,12 @@
 use pqcrypto_dilithium::dilithium3;
 use pqcrypto_kyber::kyber768;
-use pqcrypto_traits::kem::*;
-use pqcrypto_traits::sign::*;
+use pqcrypto_traits::kem::Ciphertext as _;
+use pqcrypto_traits::kem::PublicKey as _;
+use pqcrypto_traits::kem::SecretKey as _;
+use pqcrypto_traits::kem::SharedSecret as _;
+use pqcrypto_traits::sign::DetachedSignature as _;
+use pqcrypto_traits::sign::PublicKey as _;
+use pqcrypto_traits::sign::SecretKey as _;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
 use tokio::sync::RwLock;
