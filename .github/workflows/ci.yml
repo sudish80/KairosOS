@@ -53,7 +53,17 @@ jobs:
       - name: Build (release)
         run: |
           set -o pipefail
-          cargo build --release --workspace 2>&1 | tee build_output.txt
+          cargo build --release --workspace 2> build_output.txt
+        working-directory: src
+      - name: Print errors with file paths
+        if: failure()
+        run: |
+          grep -B 2 -A 5 "error\[" build_output.txt | head -300 | while IFS= read -r line; do
+            echo "::error file=build.log,title=build-error::${line}"
+          done
+          echo "---FULL OUTPUT---"
+          cat build_output.txt
+          # Also upload for download via browser
         working-directory: src
       - name: Upload build log
         if: failure()
@@ -61,7 +71,6 @@ jobs:
         with:
           name: build-log-${{ matrix.target }}
           path: src/build_output.txt
-          retention-days: 3
       - name: Clippy (deny warnings)
         continue-on-error: true
         run: |
