@@ -16,12 +16,19 @@ pub struct RollbackManager {
 
 impl RollbackManager {
     pub async fn new(config: Arc<RwLock<config::Config>>) -> anyhow::Result<Self> {
-        let cfg = config.read().await;
+        let (history_dir, active_link, pending_dir) = {
+            let cfg = config.read().await;
+            (
+                PathBuf::from(&cfg.store.history_dir),
+                PathBuf::from(&cfg.store.active_link),
+                PathBuf::from(&cfg.store.pending_dir),
+            )
+        };
         Ok(Self {
             config,
-            history_dir: PathBuf::from(&cfg.store.history_dir),
-            active_link: PathBuf::from(&cfg.store.active_link),
-            pending_dir: PathBuf::from(&cfg.store.pending_dir),
+            history_dir,
+            active_link,
+            pending_dir,
         })
     }
 

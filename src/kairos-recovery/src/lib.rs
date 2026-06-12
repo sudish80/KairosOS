@@ -67,6 +67,7 @@ impl AppState {
     }
 }
 
+#[derive(Debug)]
 pub enum Slot {
     A,
     B,

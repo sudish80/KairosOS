@@ -26,12 +26,19 @@ pub struct GenerationStore {
 
 impl GenerationStore {
     pub async fn new(config: Arc<RwLock<config::Config>>) -> anyhow::Result<Self> {
-        let cfg = config.read().await;
+        let (active_link, pending_dir, history_dir) = {
+            let cfg = config.read().await;
+            (
+                PathBuf::from(&cfg.store.active_link),
+                PathBuf::from(&cfg.store.pending_dir),
+                PathBuf::from(&cfg.store.history_dir),
+            )
+        };
         let store = Self {
             config,
-            active_link: PathBuf::from(&cfg.store.active_link),
-            pending_dir: PathBuf::from(&cfg.store.pending_dir),
-            history_dir: PathBuf::from(&cfg.store.history_dir),
+            active_link,
+            pending_dir,
+            history_dir,
         };
         fs::create_dir_all(&store.pending_dir).await?;
         fs::create_dir_all(&store.history_dir).await?;

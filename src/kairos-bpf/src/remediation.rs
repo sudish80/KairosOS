@@ -3,14 +3,14 @@ use crate::config::Config;
 use crate::error::Result;
 use crate::telemetry::TelemetryStore;
 use std::sync::Arc;
-use tokio::sync::RwLock;
+use tokio::sync::{Mutex, RwLock};
 use tracing::{error, info, warn};
 
 pub struct RemediationEngine {
     telemetry: Arc<TelemetryStore>,
     config: Arc<RwLock<Config>>,
     actions_taken: Arc<RwLock<Vec<RemediationAction>>>,
-    rate_limiter: Arc<RateLimiter>,
+    rate_limiter: Arc<Mutex<RateLimiter>>,
 }
 
 #[derive(Debug, Clone)]
@@ -53,12 +53,12 @@ impl RateLimiter {
 
 impl RemediationEngine {
     pub async fn new(telemetry: Arc<TelemetryStore>, config: Arc<RwLock<Config>>) -> Result<Self> {
-        let cfg = config.read().await;
+        let max_actions_per_minute = config.read().await.remediation.max_actions_per_minute;
         Ok(Self {
             telemetry,
             config,
             actions_taken: Arc::new(RwLock::new(Vec::new())),
-            rate_limiter: Arc::new(RateLimiter::new(cfg.remediation.max_actions_per_minute)),
+            rate_limiter: Arc::new(Mutex::new(RateLimiter::new(max_actions_per_minute))),
         })
     }
 

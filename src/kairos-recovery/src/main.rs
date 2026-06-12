@@ -45,9 +45,10 @@ struct Cli {
 async fn main() -> anyhow::Result<()> {
     let cli = Cli::parse();
     let cfg = kairos_recovery::config::Config::load(&cli.config)?;
+    let log_level = cfg.general.log_level.clone();
 
     tracing_subscriber::fmt()
-        .with_env_filter(EnvFilter::new(&cfg.general.log_level))
+        .with_env_filter(EnvFilter::new(&log_level))
         .init();
 
     info!("kairos-recovery v{} starting", env!("CARGO_PKG_VERSION"));

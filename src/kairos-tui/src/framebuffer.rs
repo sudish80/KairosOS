@@ -15,14 +15,17 @@ pub struct Framebuffer {
 
 impl Framebuffer {
     pub async fn new(config: Arc<RwLock<config::Config>>) -> anyhow::Result<Self> {
-        let cfg = config.read().await;
-        let size = (cfg.display.width * cfg.display.height) as usize;
+        let (width, height) = {
+            let cfg = config.read().await;
+            (cfg.display.width, cfg.display.height)
+        };
+        let size = (width * height) as usize;
         Ok(Self {
             config,
             front_buffer: Arc::new(RwLock::new(vec![0u32; size])),
             back_buffer: Arc::new(RwLock::new(vec![0u32; size])),
-            width: cfg.display.width,
-            height: cfg.display.height,
+            width,
+            height,
             fd: None,
         })
     }

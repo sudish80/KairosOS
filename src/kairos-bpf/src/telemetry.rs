@@ -248,7 +248,7 @@ impl TelemetryStore {
         self.capacity > 0
     }
 
-    async fn ingestion_loop(&self) {
+    pub async fn ingestion_loop(&self) {
         let mut rx = self.rx.lock().await;
         while let Some(event) = rx.recv().await {
             match event {
