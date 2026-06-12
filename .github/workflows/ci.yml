@@ -52,19 +52,16 @@ jobs:
         working-directory: src
       - name: Build (release)
         run: |
-          cargo build --release --workspace 2> build_output.txt || (echo "=== BUILD ERRORS ===" | cat - build_output.txt; exit 1)
+          set -o pipefail
+          cargo build --release --workspace 2>&1 | tee build_output.txt
         working-directory: src
-      - name: Print build errors
+      - name: Upload build log
         if: failure()
-        run: |
-          # Use ::error annotations for API visibility
-          while IFS= read -r line; do
-            echo "::error file=build.log,title=Rust error::${line}"
-          done < <(grep -E "error\[|Error ]|failed to|not found|aborting" build_output.txt | head -30)
-          # Also show full tail for log viewers
-          echo "=== BUILD ERRORS (last 50 lines) ==="
-          tail -50 build_output.txt
-        working-directory: src
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log-${{ matrix.target }}
+          path: src/build_output.txt
+          retention-days: 3
       - name: Clippy (deny warnings)
         continue-on-error: true
         run: |

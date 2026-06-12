@@ -130,7 +130,7 @@ impl PostQuantumCrypto {
                     .map_err(|e| anyhow::anyhow!("Invalid Dilithium public key: {:?}", e))?;
                 let sig = dilithium3::DetachedSignature::from_bytes(signature)
                     .map_err(|e| anyhow::anyhow!("Invalid Dilithium signature: {:?}", e))?;
-                Ok(dilithium3::verify_detached(&sig, message, &pk).is_ok())
+                Ok(dilithium3::verify_detached_signature(&sig, message, &pk).is_ok())
             }
             QuantumAlgorithm::Kyber768 => {
                 Err(anyhow::anyhow!("Kyber768 does not support verification"))
