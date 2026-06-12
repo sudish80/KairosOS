@@ -60,14 +60,14 @@ impl DiffEngine {
             .difference(&new_paths)
             .map(|s| (*s).clone())
             .collect();
-        let common: Vec<_> = old_paths.intersection(&new_paths).collect();
+        let common: Vec<_> = old_paths.intersection(&new_paths).copied().collect();
 
         let mut modified = Vec::new();
         let mut unchanged = 0usize;
 
         for path in &common {
-            let old_content = String::from_utf8_lossy(old.get(*path).unwrap());
-            let new_content = String::from_utf8_lossy(new.get(*path).unwrap());
+            let old_content = String::from_utf8_lossy(old.get(path).unwrap());
+            let new_content = String::from_utf8_lossy(new.get(path).unwrap());
             if old_content != new_content {
                 modified.push(self.compute_diff(path, &old_content, &new_content));
             } else {
@@ -92,18 +92,16 @@ impl DiffEngine {
                 let first = ops.first().unwrap();
                 let last = ops.last().unwrap();
                 let mut lines = Vec::new();
-                for op in ops {
-                    for change in op.iter_changes(&diff) {
-                        let kind = match change.tag() {
-                            ChangeTag::Delete => "delete",
-                            ChangeTag::Insert => "insert",
-                            ChangeTag::Equal => "equal",
-                        };
-                        lines.push(DiffLine {
-                            kind: kind.to_string(),
-                            content: change.value().to_string(),
-                        });
-                    }
+                for change in diff.iter_changes(ops) {
+                    let kind = match change.tag() {
+                        ChangeTag::Delete => "delete",
+                        ChangeTag::Insert => "insert",
+                        ChangeTag::Equal => "equal",
+                    };
+                    lines.push(DiffLine {
+                        kind: kind.to_string(),
+                        content: change.value().to_string(),
+                    });
                 }
                 DiffHunk {
                     old_start: first.old_range().start,
