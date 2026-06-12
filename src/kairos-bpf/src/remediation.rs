@@ -119,7 +119,7 @@ impl RemediationEngine {
             return Ok(false);
         }
 
-        let success = match action_type {
+        let result = match action_type {
             "expand_swap" => self.expand_swap().await,
             "kill_process" => self.kill_process(target).await,
             "throttle_process" => self.throttle_process(target).await,
@@ -133,12 +133,12 @@ impl RemediationEngine {
             timestamp: std::time::Instant::now(),
             action_type: action_type.to_string(),
             target: target.to_string(),
-            success,
+            success: result.unwrap_or(false),
             details: details.to_string(),
         };
 
         self.actions_taken.write().await.push(action);
-        success
+        result
     }
 
     async fn expand_swap(&self) -> Result<bool> {
