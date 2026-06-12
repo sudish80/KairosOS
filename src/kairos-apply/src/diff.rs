@@ -92,16 +92,18 @@ impl DiffEngine {
                 let first = ops.first().unwrap();
                 let last = ops.last().unwrap();
                 let mut lines = Vec::new();
-                for change in diff.iter_changes(ops) {
-                    let kind = match change.tag() {
-                        ChangeTag::Delete => "delete",
-                        ChangeTag::Insert => "insert",
-                        ChangeTag::Equal => "equal",
-                    };
-                    lines.push(DiffLine {
-                        kind: kind.to_string(),
-                        content: change.value().to_string(),
-                    });
+                for op in ops {
+                    for change in diff.iter_changes(op) {
+                        let kind = match change.tag() {
+                            ChangeTag::Delete => "delete",
+                            ChangeTag::Insert => "insert",
+                            ChangeTag::Equal => "equal",
+                        };
+                        lines.push(DiffLine {
+                            kind: kind.to_string(),
+                            content: change.value().to_string(),
+                        });
+                    }
                 }
                 DiffHunk {
                     old_start: first.old_range().start,
