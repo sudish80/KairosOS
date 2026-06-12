@@ -1,4 +1,4 @@
-use crate::*;
+use kairos_chaos::*;
 
 #[cfg(test)]
 mod integration {

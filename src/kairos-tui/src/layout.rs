@@ -42,7 +42,7 @@ impl LayoutEngine {
         if !panes.is_empty() {
             let tab_bar_height = if cfg.layout.tab_bar { 30 } else { 0 };
             let status_bar_height = if cfg.layout.status_bar { 24 } else { 0 };
-            let term_height = height.saturating_sub(tab_bar_height + status_bar_height);
+            let _term_height = height.saturating_sub(tab_bar_height + status_bar_height);
             // In production: render terminal cells to pixel buffer
         }
 

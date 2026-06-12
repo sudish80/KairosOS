@@ -4,9 +4,6 @@
 //! Item 18: CPU C-State Latency Overrider
 
 pub fn load() -> crate::error::Result<()> {
-    use libbpf_rs::{Object, ObjectBuilder};
-    use std::path::Path;
-
     // In production: load from compiled .o file
     // let obj = ObjectBuilder::default()
     //     .open_file("execsnoop.bpf.o")?
