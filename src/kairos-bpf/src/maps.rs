@@ -1,6 +1,6 @@
 //! eBPF map initialization and management
 use crate::error::Result;
-use libbpf_rs::{Map, MapType};
+use libbpf_rs::MapHandle;
 use std::collections::HashMap;
 
 pub fn init_ring_buffers() -> Result<()> {
@@ -23,7 +23,7 @@ pub fn init_hash_maps() -> Result<()> {
 }
 
 pub struct MapManager {
-    maps: HashMap<String, Map>,
+    maps: HashMap<String, MapHandle>,
 }
 
 impl MapManager {
@@ -33,15 +33,15 @@ impl MapManager {
         }
     }
 
-    pub fn get_ring_buffer(&self, name: &str) -> Option<&Map> {
+    pub fn get_ring_buffer(&self, name: &str) -> Option<&MapHandle> {
         self.maps.get(name)
     }
 
-    pub fn get_hash_map(&self, name: &str) -> Option<&Map> {
+    pub fn get_hash_map(&self, name: &str) -> Option<&MapHandle> {
         self.maps.get(name)
     }
 
-    pub fn get_array(&self, name: &str) -> Option<&Map> {
+    pub fn get_array(&self, name: &str) -> Option<&MapHandle> {
         self.maps.get(name)
     }
 }
