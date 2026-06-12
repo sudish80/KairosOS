@@ -1,4 +1,4 @@
-pub mod arch;
+﻿pub mod arch;
 pub mod audit;
 pub mod auth;
 pub mod client;
@@ -14,7 +14,7 @@ pub mod transport;
 use std::path::Path;
 use std::sync::Arc;
 use tokio::sync::RwLock;
-use tracing::{debug, info};
+use tracing::info;
 
 pub struct AppState {
     pub config: Arc<RwLock<config::Config>>,

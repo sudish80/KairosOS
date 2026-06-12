@@ -1,9 +1,9 @@
-use crate::config;
+﻿use crate::config;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 pub struct Telemetry {
-    c: Arc<RwLock<config::Config>>,
+    _c: Arc<RwLock<config::Config>>,
     frames: AtomicU64,
     detections: AtomicU64,
     fps: AtomicU64,
@@ -12,7 +12,7 @@ pub struct Telemetry {
 impl Telemetry {
     pub fn new(c: Arc<RwLock<config::Config>>) -> Self {
         Self {
-            c,
+            _c: c,
             frames: AtomicU64::new(0),
             detections: AtomicU64::new(0),
             fps: AtomicU64::new(0),

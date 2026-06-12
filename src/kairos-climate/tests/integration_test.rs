@@ -1,22 +1,25 @@
-use kairos_climate::config::Config;
+﻿use kairos_climate::config::Config;
 use kairos_climate::telemetry::Telemetry;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 #[test]
 fn test_config_default_grid_resolution() {
     let cfg = Config::default();
-    assert!(cfg.grid_resolution > 0.0 || cfg.grid_resolution == 0.0);
+    assert!(cfg.data.grid_resolution > 0.0 || cfg.data.grid_resolution == 0.0);
 }
 
 #[test]
-fn test_telemetry_assimilation_count() {
-    let t = Telemetry::new();
-    assert_eq!(t.assimilation_count(), 0);
-    t.incr_assimilation_count();
-    assert_eq!(t.assimilation_count(), 1);
+fn test_telemetry_record_assimilation() {
+    let cfg = Arc::new(RwLock::new(Config::default()));
+    let t = Telemetry::new(cfg);
+    t.record_assimilation();
+    let m = t.metrics();
+    assert_eq!(m["assimilations"], 1);
 }
 
 #[test]
-fn test_config_ensemble_members_default() {
+fn test_config_ensemble_size_default() {
     let cfg = Config::default();
-    assert!(cfg.ensemble_members == 50 || cfg.ensemble_members == 0);
+    assert!(cfg.data.ensemble_size == 50 || cfg.data.ensemble_size == 0);
 }

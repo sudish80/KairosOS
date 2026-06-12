@@ -1,23 +1,30 @@
-use kairos_orchestrator::config::Config;
+﻿use kairos_orchestrator::config::Config;
 use kairos_orchestrator::telemetry::Telemetry;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 #[test]
 fn test_config_default_timeout() {
     let cfg = Config::default();
-    assert!(cfg.task_timeout_secs > 0);
+    assert!(cfg.executor.timeout_secs > 0);
 }
 
 #[test]
-fn test_telemetry_task_count() {
-    let t = Telemetry::new();
-    assert_eq!(t.task_count(), 0);
-    t.incr_task_count();
-    assert_eq!(t.task_count(), 1);
+fn test_telemetry_record_task() {
+    let cfg = Arc::new(RwLock::new(Config::default()));
+    let t = Telemetry::new(cfg);
+    t.record_submission();
+    t.record_completion();
+    let m = t.metrics();
+    assert_eq!(m["submitted"], 1);
+    assert_eq!(m["completed"], 1);
 }
 
 #[test]
-fn test_telemetry_success_rate_on_init() {
-    let t = Telemetry::new();
-    assert_eq!(t.success_count(), 0);
-    assert_eq!(t.failure_count(), 0);
+fn test_telemetry_initial_metrics() {
+    let cfg = Arc::new(RwLock::new(Config::default()));
+    let t = Telemetry::new(cfg);
+    let m = t.metrics();
+    assert_eq!(m["submitted"], 0);
+    assert_eq!(m["completed"], 0);
 }

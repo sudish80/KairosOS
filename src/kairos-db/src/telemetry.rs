@@ -1,9 +1,9 @@
-use crate::config;
+﻿use crate::config;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 use tokio::sync::RwLock;
 pub struct Telemetry {
-    config: Arc<RwLock<config::Config>>,
+    _config: Arc<RwLock<config::Config>>,
     queries: AtomicU64,
     vectors_indexed: AtomicU64,
     bus_msgs: AtomicU64,
@@ -13,7 +13,7 @@ pub struct Telemetry {
 impl Telemetry {
     pub fn new(config: Arc<RwLock<config::Config>>) -> Self {
         Self {
-            config,
+            _config: config,
             queries: AtomicU64::new(0),
             vectors_indexed: AtomicU64::new(0),
             bus_msgs: AtomicU64::new(0),

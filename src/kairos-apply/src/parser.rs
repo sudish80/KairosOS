@@ -1,7 +1,6 @@
-//! Declarative config parser (YAML/HCL/TOML/JSON)
+﻿//! Declarative config parser (YAML/HCL/TOML/JSON)
 use crate::config;
 use crate::error::ApplyError;
-use serde_yaml;
 use std::collections::HashMap;
 use std::path::Path;
 use std::sync::Arc;

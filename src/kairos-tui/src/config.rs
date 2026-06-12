@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+﻿use serde::{Deserialize, Serialize};
 use std::path::Path;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -42,7 +42,6 @@ pub struct TerminalConfig {
 pub struct InputConfig {
     pub touch_device: String,
     pub keyboard_device: String,
-    #[allow(dead_code)]
     pub gesture_debounce_ms: u64,
     pub tap_threshold: f64,
     pub swipe_threshold: f64,

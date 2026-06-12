@@ -1,22 +1,25 @@
-use kairos_mesh::config::Config;
+﻿use kairos_mesh::config::Config;
 use kairos_mesh::telemetry::Telemetry;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 #[test]
 fn test_config_default_wg_port() {
     let cfg = Config::default();
-    assert!(cfg.wg_port == 51820 || cfg.wg_port == 0);
+    assert!(cfg.wg.listen_port == 51820 || cfg.wg.listen_port == 0);
 }
 
 #[test]
-fn test_telemetry_peer_count() {
-    let t = Telemetry::new();
-    assert_eq!(t.discovered_peers(), 0);
-    t.incr_discovered_peers();
-    assert_eq!(t.discovered_peers(), 1);
+fn test_telemetry_record_peer_connect() {
+    let cfg = Arc::new(RwLock::new(Config::default()));
+    let t = Telemetry::new(cfg);
+    t.record_peer_connect();
+    let m = t.metrics();
+    assert_eq!(m["peers_discovered"], 1);
 }
 
 #[test]
 fn test_config_key_path() {
     let cfg = Config::default();
-    assert!(cfg.wg_key_path.contains("wg") || cfg.wg_key_path.is_empty());
+    assert!(cfg.wg.private_key_file.contains("wg") || cfg.wg.private_key_file.is_empty());
 }

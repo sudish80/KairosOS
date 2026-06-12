@@ -1,8 +1,6 @@
-//! Layout engine — composites panes, status bar, tabs into final framebuffer
+﻿//! Layout engine — composites panes, status bar, tabs into final framebuffer
 use crate::config;
-use crate::framebuffer::Framebuffer;
 use crate::multiplexer::Multiplexer;
-use crate::terminal::TerminalEmulator;
 use std::sync::Arc;
 use tokio::sync::RwLock;
 

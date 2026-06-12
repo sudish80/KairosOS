@@ -1,28 +1,20 @@
-use kairos_bpf::config::Config;
-use kairos_bpf::telemetry::Telemetry;
+﻿use kairos_bpf::config::Config;
+use kairos_bpf::telemetry::TelemetryStore;
 
 #[test]
-fn test_config_default() {
+fn test_config_default_endpoint() {
     let cfg = Config::default();
-    assert_eq!(cfg.socket_path, "/var/run/kairos/bpf.sock");
+    assert_eq!(cfg.endpoints.get("bpf").unwrap(), "unix:///var/run/kairos/bpf.sock");
 }
 
 #[test]
-fn test_telemetry_incr() {
-    let t = Telemetry::new();
-    let v = t.incr_eval_count();
-    assert_eq!(v, 1);
-    assert!(t.eval_count() >= 1);
+fn test_telemetry_store_healthy() {
+    let t = TelemetryStore::new().unwrap();
+    assert!(t.is_healthy());
 }
 
 #[test]
-fn test_config_from_path_nonexistent() {
-    let cfg = Config::from_path("/nonexistent/bpf.toml");
+fn test_config_from_file_nonexistent() {
+    let cfg = Config::from_file("/nonexistent/bpf.toml");
     assert!(cfg.is_err());
-}
-
-#[test]
-fn test_thermal_zone_count_default() {
-    let t = Telemetry::new();
-    assert_eq!(t.thermal_events(), 0);
 }

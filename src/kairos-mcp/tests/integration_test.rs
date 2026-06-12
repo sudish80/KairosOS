@@ -1,27 +1,20 @@
-use kairos_mcp::config::Config;
-use kairos_mcp::telemetry::Telemetry;
+﻿use kairos_mcp::config::Config;
 
 #[test]
 fn test_config_default_socket() {
     let cfg = Config::default();
-    assert_eq!(cfg.socket_path, "/var/run/kairos/mcp.sock");
+    assert_eq!(cfg.transport.unix_socket_path, "/var/run/kairos/mcp.sock");
 }
 
 #[test]
-fn test_service_registry_empty_on_init() {
-    let t = Telemetry::new();
-    assert_eq!(t.eval_count(), 0);
-}
-
-#[test]
-fn test_telemetry_request_count() {
-    let t = Telemetry::new();
-    let c = t.incr_eval_count();
-    assert_eq!(c, 1);
-}
-
-#[test]
-fn test_config_deserialize_defaults() {
+fn test_config_default_log_level() {
     let cfg = Config::default();
-    assert!(cfg.log_level.is_empty() || cfg.log_level == "info");
+    assert_eq!(cfg.general.log_level, "info");
+}
+
+#[test]
+fn test_config_plugin_defaults() {
+    let cfg = Config::default();
+    assert_eq!(cfg.plugin.directory, "/usr/lib/kairos/plugins");
+    assert!(cfg.plugin.enabled);
 }
