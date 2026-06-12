@@ -133,7 +133,7 @@ impl RemediationEngine {
             timestamp: std::time::Instant::now(),
             action_type: action_type.to_string(),
             target: target.to_string(),
-            success: result.unwrap_or(false),
+            success: result.as_ref().map_or(false, |b| *b),
             details: details.to_string(),
         };
 
