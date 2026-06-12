@@ -216,7 +216,7 @@ impl HealingEngine {
                     info!("Auto-executing healing action: {}", action.id);
                     let mut acts = actions.write().await;
                     if let Some(a) = acts.iter_mut().find(|a| a.id == action.id) {
-                        a.status = "executed";
+                        a.status = "executed".to_string();
                         a.result = Some("auto-executed by healing loop".into());
                     }
                 }
