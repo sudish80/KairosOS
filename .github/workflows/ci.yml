@@ -57,6 +57,11 @@ jobs:
       - name: Print build errors
         if: failure()
         run: |
+          # Use ::error annotations for API visibility
+          while IFS= read -r line; do
+            echo "::error file=build.log,title=Rust error::${line}"
+          done < <(grep -E "error\[|Error ]|failed to|not found|aborting" build_output.txt | head -30)
+          # Also show full tail for log viewers
           echo "=== BUILD ERRORS (last 50 lines) ==="
           tail -50 build_output.txt
         working-directory: src
