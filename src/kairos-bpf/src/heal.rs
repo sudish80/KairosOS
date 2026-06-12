@@ -212,7 +212,7 @@ impl HealingEngine {
                         .collect();
                 }
 
-                for action in pending {
+                for action in &pending {
                     info!("Auto-executing healing action: {}", action.id);
                     let mut acts = actions.write().await;
                     if let Some(a) = acts.iter_mut().find(|a| a.id == action.id) {
