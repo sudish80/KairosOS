@@ -66,8 +66,8 @@ impl DiffEngine {
         let mut unchanged = 0usize;
 
         for path in &common {
-            let old_content = String::from_utf8_lossy(old.get(path).unwrap());
-            let new_content = String::from_utf8_lossy(new.get(path).unwrap());
+            let old_content = String::from_utf8_lossy(old.get(*path).unwrap());
+            let new_content = String::from_utf8_lossy(new.get(*path).unwrap());
             if old_content != new_content {
                 modified.push(self.compute_diff(path, &old_content, &new_content));
             } else {
